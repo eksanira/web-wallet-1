@@ -1,0 +1,485 @@
+{
+  "uid" : "829958fe291a62ea",
+  "name" : "Can't log in with incorrect password",
+  "fullName" : "Can't log in with incorrect password",
+  "historyId" : "Chrome Stable src/tests/stable/auth.test.ts Auth > Log in > Can't log in with incorrect password",
+  "time" : {
+    "start" : 1634743559247,
+    "stop" : 1634743568094,
+    "duration" : 8847
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Before Hooks",
+      "time" : {
+        "start" : 1634743559247,
+        "stop" : 1634743565517,
+        "duration" : 6270
+      },
+      "status" : "passed",
+      "steps" : [ {
+        "name" : "browserContext.newPage",
+        "time" : {
+          "start" : 1634743559252,
+          "stop" : 1634743559284,
+          "duration" : 32
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.goto(localhost:8080/main-index.html?network=testnet)",
+        "time" : {
+          "start" : 1634743559289,
+          "stop" : 1634743560487,
+          "duration" : 1198
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.balance)",
+        "time" : {
+          "start" : 1634743560488,
+          "stop" : 1634743560988,
+          "duration" : 500
+        },
+        "status" : "failed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.isVisible([placeholder=\"Password or PIN\"])",
+        "time" : {
+          "start" : 1634743560989,
+          "stop" : 1634743561005,
+          "duration" : 16
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#lang-en)",
+        "time" : {
+          "start" : 1634743561013,
+          "stop" : 1634743561338,
+          "duration" : 325
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#btn-restore)",
+        "time" : {
+          "start" : 1634743561339,
+          "stop" : 1634743561621,
+          "duration" : 282
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#restore-custom)",
+        "time" : {
+          "start" : 1634743561622,
+          "stop" : 1634743561916,
+          "duration" : 294
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.fill([type=\"password\"])",
+        "time" : {
+          "start" : 1634743561917,
+          "stop" : 1634743562200,
+          "duration" : 283
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(button.setup)",
+        "time" : {
+          "start" : 1634743562201,
+          "stop" : 1634743562529,
+          "duration" : 328
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.fill(#seedphrase-custom)",
+        "time" : {
+          "start" : 1634743562530,
+          "stop" : 1634743562814,
+          "duration" : 284
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#seed-phrase-next)",
+        "time" : {
+          "start" : 1634743562815,
+          "stop" : 1634743563802,
+          "duration" : 987
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.menu-item)",
+        "time" : {
+          "start" : 1634743563802,
+          "stop" : 1634743563812,
+          "duration" : 10
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.balance)",
+        "time" : {
+          "start" : 1634743563814,
+          "stop" : 1634743563847,
+          "duration" : 33
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.reload",
+        "time" : {
+          "start" : 1634743563848,
+          "stop" : 1634743565517,
+          "duration" : 1669
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      } ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 14,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "page.type([type=\"password\"], 111111)",
+      "time" : {
+        "start" : 1634743565518,
+        "stop" : 1634743567091,
+        "duration" : 1573
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.click(\" Enter\")",
+      "time" : {
+        "start" : 1634743567091,
+        "stop" : 1634743567406,
+        "duration" : 315
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.isVisible(.wrong)",
+      "time" : {
+        "start" : 1634743567407,
+        "stop" : 1634743567420,
+        "duration" : 13
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "After Hooks",
+      "time" : {
+        "start" : 1634743567421,
+        "stop" : 1634743568094,
+        "duration" : 673
+      },
+      "status" : "passed",
+      "steps" : [ {
+        "name" : "browserContext.close",
+        "time" : {
+          "start" : 1634743567646,
+          "stop" : 1634743568094,
+          "duration" : 448
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      } ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 1,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ {
+      "uid" : "e32ea9ad30002da6",
+      "name" : "stdout",
+      "source" : "e32ea9ad30002da6.txt",
+      "type" : "text/plain",
+      "size" : 54
+    }, {
+      "uid" : "9f8c20613f2a18fd",
+      "name" : "stdout",
+      "source" : "9f8c20613f2a18fd.txt",
+      "type" : "text/plain",
+      "size" : 208
+    }, {
+      "uid" : "73ceb825d92788a5",
+      "name" : "stdout",
+      "source" : "73ceb825d92788a5.txt",
+      "type" : "text/plain",
+      "size" : 225
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 20,
+    "attachmentsCount" : 3,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "language",
+    "value" : "JavaScript"
+  }, {
+    "name" : "framework",
+    "value" : "Playwright"
+  }, {
+    "name" : "parentSuite",
+    "value" : "Chrome Stable"
+  }, {
+    "name" : "suite",
+    "value" : "src/tests/stable/auth.test.ts"
+  }, {
+    "name" : "subSuite",
+    "value" : "Auth > > Log in >"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "history" : {
+      "statistic" : {
+        "failed" : 0,
+        "broken" : 0,
+        "skipped" : 0,
+        "passed" : 12,
+        "unknown" : 0,
+        "total" : 12
+      },
+      "items" : [ {
+        "uid" : "f4a61a447255739c",
+        "reportUrl" : "https://velas.github.io/JsWallet/468//#testresult/f4a61a447255739c",
+        "status" : "passed",
+        "time" : {
+          "start" : 1634736919050,
+          "stop" : 1634736926653,
+          "duration" : 7603
+        }
+      }, {
+        "uid" : "74f481c82a5b650d",
+        "reportUrl" : "https://velas.github.io/JsWallet/467//#testresult/74f481c82a5b650d",
+        "status" : "passed",
+        "time" : {
+          "start" : 1634248244012,
+          "stop" : 1634248252046,
+          "duration" : 8034
+        }
+      }, {
+        "uid" : "f909cb77b62d7a7c",
+        "reportUrl" : "https://velas.github.io/JsWallet/432//#testresult/f909cb77b62d7a7c",
+        "status" : "passed",
+        "time" : {
+          "start" : 1634141034559,
+          "stop" : 1634141044097,
+          "duration" : 9538
+        }
+      }, {
+        "uid" : "b900aa5554934437",
+        "reportUrl" : "https://velas.github.io/JsWallet/431//#testresult/b900aa5554934437",
+        "status" : "passed",
+        "time" : {
+          "start" : 1634139226041,
+          "stop" : 1634139236741,
+          "duration" : 10700
+        }
+      }, {
+        "uid" : "a8e60ab57c6d1d47",
+        "reportUrl" : "https://velas.github.io/JsWallet/430//#testresult/a8e60ab57c6d1d47",
+        "status" : "passed",
+        "time" : {
+          "start" : 1634131621904,
+          "stop" : 1634131631592,
+          "duration" : 9688
+        }
+      }, {
+        "uid" : "42bec2e09b02c096",
+        "reportUrl" : "https://velas.github.io/JsWallet/430//#testresult/42bec2e09b02c096",
+        "status" : "passed",
+        "time" : {
+          "start" : 1634125695197,
+          "stop" : 1634125703724,
+          "duration" : 8527
+        }
+      }, {
+        "uid" : "6df498c96a6b34e0",
+        "reportUrl" : "https://velas.github.io/JsWallet/428//#testresult/6df498c96a6b34e0",
+        "status" : "passed",
+        "time" : {
+          "start" : 1634124592400,
+          "stop" : 1634124600711,
+          "duration" : 8311
+        }
+      }, {
+        "uid" : "8353d8279faa32c0",
+        "reportUrl" : "https://velas.github.io/JsWallet/429//#testresult/8353d8279faa32c0",
+        "status" : "passed",
+        "time" : {
+          "start" : 1634124078561,
+          "stop" : 1634124091312,
+          "duration" : 12751
+        }
+      }, {
+        "uid" : "c2e7545b38149bf2",
+        "reportUrl" : "https://velas.github.io/JsWallet/428//#testresult/c2e7545b38149bf2",
+        "status" : "passed",
+        "time" : {
+          "start" : 1634122571088,
+          "stop" : 1634122579660,
+          "duration" : 8572
+        }
+      }, {
+        "uid" : "643f93338944d653",
+        "reportUrl" : "https://velas.github.io/JsWallet/427//#testresult/643f93338944d653",
+        "status" : "passed",
+        "time" : {
+          "start" : 1634121711992,
+          "stop" : 1634121720326,
+          "duration" : 8334
+        }
+      }, {
+        "uid" : "58a871d6bcfc14ff",
+        "reportUrl" : "https://velas.github.io/JsWallet/426//#testresult/58a871d6bcfc14ff",
+        "status" : "passed",
+        "time" : {
+          "start" : 1634119752149,
+          "stop" : 1634119761478,
+          "duration" : 9329
+        }
+      } ]
+    },
+    "tags" : [ ]
+  },
+  "source" : "829958fe291a62ea.json",
+  "parameterValues" : [ ]
+}
