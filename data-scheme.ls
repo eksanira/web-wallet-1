@@ -75,6 +75,22 @@ store =
             opened: no
             progress: \0
             update-progress: null
+    custom-token:
+        add: no
+        isLoading: no   
+        contract-address: ""
+        decimals: 0
+        symbol: ""
+        network: null
+        selected-network: network 
+        switch-network: false   
+        edit-symbol: no 
+        icon: "" 
+        errors:
+            contract-address: ""
+            network: ""  
+            decimals: ""
+            symbol: ""    
     preference:
         settings-visible: yes
         invoice-visible: yes

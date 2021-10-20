@@ -1,7 +1,7 @@
 require! {
     \react
     \../send-funcs.ls
-    \prelude-ls : { map, find, keys, filter, pairs-to-obj, obj-to-pairs }
+    \prelude-ls : { map, find, keys, filter, pairs-to-obj, obj-to-pairs, uniqueBy }
     \../get-primary-info.ls
     \./icon.ls
     \../get-lang.ls
@@ -19,6 +19,10 @@ require! {
     \../components/amount-field.ls
     \../components/amount-fiat-field.ls
     \../math.ls : { times, div }
+    \bignumber.js
+    \../install-plugin.ls : { get-install-list }
+    \../plugin-loader.ls : { common }
+    
 }
 .custom-token-content
     position: relative
@@ -46,6 +50,12 @@ require! {
         height: 20px
     .content-body
         max-width: 450px !important
+    .navigation-button
+        img
+            &.rotate
+                transform: rotate(-180deg)
+                transition: transform .3s
+                display: inline-block
     >.title
         position: fixed
         position: -webkit-fixed
@@ -114,6 +124,33 @@ require! {
             margin-top: -5px  
         a
             color: #6f6fe2
+        
+        .table-row-menu
+            border-bottom: 1px solid rgba(238, 238, 238, 0.07)
+            &:hover
+                background: var(--input)
+                .network-item-button
+                    background: #080e35    
+            .network-item-title
+                display: inline-block
+                margin-right: 10px
+                min-width: 90px
+            .networks
+                .network-item-button
+                    opacity: 0.8
+                    padding: 5px 10px
+                    display: inline-block
+                    margin: 0 5px
+                    background: #303372
+                    text-transform: uppercase
+                    font-size: 12px
+                    box-shadow: 0px 1px 2px black
+                    &:hover
+                        opacity: 1
+                    &.testnet-network
+                        background: #343434
+                        
+            
         >form
             >table
                 background: transparent
@@ -140,9 +177,30 @@ require! {
                             text-align: right
             text-align: left
             margin: auto 10px
+            
+            .switch-menu
+                .network-item
+                    padding: 2px 5px
+                    background: #ffffff
+                    text-align: center
+                    width: auto
+                    min-width: auto
+                    max-width: initial
+                    margin: 0 5px
+                    font-weight: 400
+                    border: 0.1px solid rgba(255, 255, 255, 0.1)
+                    color: #292b55
+                    display: inline-block
+                    &.testnet
+                        background: rgb(31, 31, 31)
+            
             >.form-group
                 margin-bottom: 10px
                 min-height: 80px
+                padding: 0px
+                text-overflow: ellipsis
+                background: transparent
+                border-radius: $border-radius
                 input 
                     padding: 0 10px 0 45px 
                     text-align: left
@@ -157,11 +215,10 @@ require! {
                         background: var(--input)
                 
                 .control-label
-                    padding-top: 0px
+                    padding-top: 5px
                     font-size: $label-font
-                    &.not-enought
-                        margin-bottom: -7px;
-                        margin-top: -4px;
+                    padding-bottom: 5px
+                    display: block
                 &.network
                     div
                         position: relative
@@ -181,17 +238,6 @@ require! {
                             top: 3px
                         svg
                             vertical-align: inherit !important
-                .address
-                    padding: 0px
-                    line-height: 36px
-                    overflow: hidden
-                    text-overflow: ellipsis
-                    background: transparent
-                    border-radius: $border-radius
-                    font-size: 14px
-                    overflow: hidden
-                    text-overflow: ellipsis
-                    color: #677897
                 input
                     outline: none
                     width: 100%
@@ -352,10 +398,9 @@ require! {
             text-align: center
             padding: 2px 5px
             cursor: pointer
-        .not-enough
-            color: red
-            min-height: 33px
-            padding: 0
+        .error
+            color: #ff5336
+            padding-top: 5px
             font-size: 12px
             max-height: 20px
             font-weight: 400f
@@ -372,7 +417,7 @@ require! {
                 overflow: hidden
                 .btn
                     width: auto
-                    min-width: 80px
+                    min-width: 110px
                     padding: 0 6px
                     line-height: 36px
                     height: 36px
@@ -380,13 +425,12 @@ require! {
                     text-align: center
                     font-weight: bold
                     border: 0
-                    margin: 5px
+                    margin: 5px 10px
                     font-size: 10px
                     border-radius: $border
                     display: inline-block
                     cursor: pointer
                     box-sizing: border-box
-                    transaction: all .5s
                     &.btn-primary
                         background: #6CA7ED
                         color: white
@@ -400,15 +444,44 @@ form-group = (classes, title, style, content)->
 custom-token = ({ store, web3t })->
     return null if store.custom-token.add is no
     
-    { symbol, icon, contract-address, decimals, edit-symbol } = store.custom-token
+    load-coins = require("../../web3t/load-coins.ls")
+    load-coins-keys = load-coins |> keys
+    err, $web3t-tokens <- load-coins {plugins:[]}
+    console.error err if err?
+    err, custom-tokens <- get-install-list
+    custom-tokens = custom-tokens |> filter (-> it.token not in load-coins-keys)
+    web3t-tokens = 
+        $web3t-tokens
+            |> obj-to-pairs 
+            |> filter (-> it[1]?)
+            |> map (-> it[1])
+    base-plugins = common
+    all-tokens = ((web3t-tokens ? []) ++ (custom-tokens ? [])) ++ base-plugins
+    
+    { symbol, icon, contract-address, decimals, edit-symbol, network, switch-network, errors, selected-network } = store.custom-token
+       
+        
+    WALLETS_FOR_NETWORKS = <[ vlx_eth vlx_erc20 bsc_vlx vlx_huobi ]>
+    wallets = all-tokens
+        |> filter (?token in WALLETS_FOR_NETWORKS) 
+        |> filter (-> it?[store.current.network]?disabled isnt yes) 
+        
+    get-wallet = (token)->
+        all-tokens |> find(-> it.token is token)
+    
+    if not network? then
+        evm-wallet = get-wallet(WALLETS_FOR_NETWORKS[0])
+        store.custom-token.network = { evm-wallet?token, ...evm-wallet?[store.current.network] }
     
     close = ->
         store.current.add-coin = no
+        store.custom-token.add = no
     
     theme = get-primary-info(store)
     round-money = (val)->
         +val |> (-> it * 100) |> Math.round |> (-> it / 100)
     style = get-primary-info store
+    styles = $styles(style)
     menu-style=
         background: style.app.background
         background-color: style.app.bgspare
@@ -454,14 +527,7 @@ custom-token = ({ store, web3t })->
     lang = get-lang store
     open-invoice = ->
  
-    activate = (convert)-> ->
-        store.current.convert = convert
-    activate-usd = activate \usd
-    activate-eur = activate \eur
-    active-class = (convert)->
-        if store.current.convert is convert then 'active' else ''
-    active-usd = active-class \usd
-    active-eur = active-class \eur
+    
     show-class =
         if store.current.open-menu then \hide else \ ""
     token-display = (symbol ? "").to-upper-case!
@@ -477,17 +543,86 @@ custom-token = ({ store, web3t })->
     
     up = (str)->
         (str ? "").to-upper-case!
+    
+    network-type = (store.current.network ? "").to-upper-case!
+    token = store.customToken.network.token
+    group = store.customToken.network.group  
+    subtitle = up(store.custom-token.selected-network ? "")
+    display-network = group + " " + up(subtitle)
         
+    /* Contract address */    
     contract-address-exists = (address)->
-        active-wallets = store.current.account.wallets
+        address = address.trim!
         found = 
-            active-wallets
+            all-tokens
                 |> find (it)-> 
-                    console.log { it: up(it?coin?network?address), n: up(address) }
-                    up(it?network?address) is up(address)
-        found?    
+                    up(it?[store.current.network]?address) is up(address)
+        found?
+        
+    check-token-unique = (token)->
+        plugins = all-tokens
+        found = plugins |> find(-> it.token is token) 
+        not found?
+        
+    getParentWallet = (token)-> 
+        wallet = all-tokens |> find (-> it.token is token)
+        wallet 
     
     save-custom-token = ->
+        store.custom-token.isLoading = yes
+        plugins = all-tokens
+        prototype-token = store.customToken.network.token
+        proto-plugin = plugins |> find (-> it.token is prototype-token)
+        
+        { symbol, decimals } = store.customToken
+        $token = symbol.replace(/\s/g, "_").toLowerCase()
+        /* Check if it is unique token */
+        is-unique = check-token-unique($token)
+        if not is-unique then
+            console.log("token is not unique!")
+            store.custom-token.isLoading = no
+            return null
+        
+        mainnet = proto-plugin?mainnet
+        delete mainnet?networks
+        delete mainnet?FOREIGN_BRIDGE
+        delete mainnet?FOREIGN_BRIDGE_TOKEN
+        delete mainnet?HOME_BRIDGE
+        delete mainnet?HOME_BRIDGE_TOKEN
+        mainnet = mainnet <<<< { decimals, address: contract-address }
+        
+        testnet = proto-plugin?testnet
+        delete testnet?networks
+        delete testnet?FOREIGN_BRIDGE
+        delete testnet?FOREIGN_BRIDGE_TOKEN
+        delete testnet?HOME_BRIDGE
+        delete testnet?HOME_BRIDGE_TOKEN        
+        testnet = testnet <<<< { decimals, address: contract-address }
+        
+        result-network = 
+            | up(store.customToken.selected-network) is "MAINNET" => { mainnet, testnet: {} }
+            | _ => { mainnet: {}, testnet }
+            
+        parentWallet = getParentWallet(proto-plugin?[store.current.network]?txFeeIn)
+        nickname = if parentWallet then parentWallet.nickname else proto-plugin.nickname
+        image = parentWallet?image ? proto-plugin.image
+        
+        res = { 
+            token: $token, 
+            custom: yes, 
+            enabled: yes, 
+            color: "white", 
+            name: symbol, 
+            image: image, 
+            type: "coin", 
+            usdInfo: 0,
+            nickname: nickname 
+        }    
+        res <<<< result-network
+        err <- web3t.install-quick res
+        console.error err if err?
+        store.custom-token.isLoading = no
+        close! if not err?
     
     decimals-change = (event)->
         value = event.target.value
@@ -504,76 +639,223 @@ custom-token = ({ store, web3t })->
         store.custom-token.decimals = value
         
     token-symbol-change = (event)->
-        $symbol = (event.target.value || "").trim!
-        if ($symbol.length > 12)
-            store.custom-token.errors.symbol = "Symbol must be 12 characters or fewer" 
+        $symbol = (event?target?value ? "").trim!
+        if $symbol.match(/[^a-zA-Z0-9\-_\s]+/g)
+            return store.custom-token.errors.symbol = "Symbol may contain latin characters, numbers, '_', '-' signs"     
+        if ($symbol.length > 30)
+            store.custom-token.errors.symbol = "Symbol must be 30 characters or fewer" 
         else
             store.custom-token.errors.symbol = ""
         store.custom-token.symbol = $symbol
         
     contract-address-change = (event)->
-        address = (event.target.value || "").trim!
+        store.custom-token.errors.contract-address = ""
+        address = (event?target?value ? "").trim!
         if (address.length > 0 and !/^(0x)?[0-9a-f]{40}$/i.test(address))
-            store.custom-token.errors.contract-address = "Invalid address" 
-        else
-            store.custom-token.errors.contract-address = ""   
+            store.custom-token.errors.contract-address = "Invalid address"
+            return store.custom-token.contract-address = address 
+        #else
+            #store.custom-token.errors.contract-address = ""   
         store.custom-token.contract-address = address
         if address.length > 0
             exists = contract-address-exists(address)
             if (exists)
-                store.custom-token.errors.contract-address = "Token has already been added"
-        err, data <- retrieve-info-by-token-address(address)
-        return store.custom-token.errors.contract-address = err if err? 
-        autofill-form(data)
+                return store.custom-token.errors.contract-address = "Token has already been added"
+        err <- retrieve-info-by-token-address(address)
+        err-msg = 
+            | typeof! err in <[ Object Error ]> => err?message ? "Error occured while fetching contract data"
+            | _ => (err ? "").toString!
+        return store.custom-token.errors.contract-address = err-msg if err? 
+
         
     retrieve-info-by-token-address = (address, cb)->
-        web3 = new Web3(new Web3.providers.HttpProvider(wallet.network.api.web3Provider))
-        web3.eth.provider-url = wallet.network.api.web3Provider
-        contract = web3.eth.contract(abis.ForeignBridgeNativeToErc).at(address)
+        return cb null if (address ? "").length is 0
+        { web3Provider } = store.custom-token.network?api
+        return cb "web3Provider is not found!" if not web3Provider?
+        web3 = new Web3(new Web3.providers.HttpProvider(web3Provider))
+        web3.eth.provider-url = web3Provider
+        abi = 
+            * {"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"}
+            * {"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"}
+        contract = web3.eth.contract(abi).at(address)
+        err, decimals-hex <- contract.decimals!
+        #return cb err if err?
+        decimals-hex = "0" if err?
+        error, symbol <- contract.symbol!
+        if error?
+            err-msg = 
+                | typeof! error in <[ Object Error ]> => error?message ? "Contract not found for chosen network"
+                | _ => (error ? "").toString!
+            return store.custom-token.errors.contract-address = err-msg
+        clear-errors!
+        decimals = new bignumber(decimals-hex + '').to-fixed!
+        store.custom-token <<<< { decimals, symbol }
         cb null 
         
-    autofill-form = (data)->   
     
     cancel = ->
         store.custom-token.add = no
         
-    has-contract-error = store.custom-token.errors.contract-address.trim!.length > 0
-    has-symbol-error   = store.custom-token.errors.symbol.trim!.length > 0
-    has-decimals-error = store.custom-token.errors.decimals.trim!.length > 0
+    has-contract-error = (store.custom-token.errors.contract-address ? "").trim!.length > 0
+    has-symbol-error   = (store.custom-token.errors.symbol ? "").trim!.length > 0
+    has-decimals-error = (store.custom-token.errors.decimals ? "").trim!.length > 0
+    has-network-error   = (store.custom-token.errors.network ? "").trim!.length > 0
 
     disabled = 
-        | decimals is 0 or symbol.trim!.length is 0 or contract-address.trim!.length is 0 => yes
+        | store.custom-token.decimals is 0 or store.custom-token.symbol.trim!.length is 0 or store.custom-token.contract-address.trim!.length is 0 => yes
         | has-contract-error || has-symbol-error || has-decimals-error => yes
         | _ => no  
 
+    
+    /* Network dropdown */
+    network-dropdown-click = ->
+        store.custom-token.switch-network = !store.custom-token.switch-network
+    rotate-class =
+        | store.custom-token.switch-network is yes => \rotate 
+        | _ => ""    
+    /*
+    * available-networks  <Array>[] Network> - Array of networks.
+    * Network: { api, group }
+    */    
+    available-networks = 
+        wallets
+            |> filter (-> it?[store.current.network]?disabled isnt yes) 
+            |> uniqueBy (-> it?[store.current.network]?api?web3Provider)
+            |> map (-> { token: it?token, api: it?[store.current.network]?api, group: it?[store.current.network]?group })
+    
+    change-network = (token, network) ->
+        return ->
+            return if not token? or not network?
+            store.custom-token.selected-network = network
+            found-wallet = get-wallet(token)
+            if not found-wallet?[network]?
+                return store.custom-token.errors.network = "No configuration found for chosen #{network} network"
+            store.custom-token.network = { token, ...found-wallet?[network] }
+            clear-chosen-token-data!
+            clear-errors!
+        
+    clear-chosen-token-data = ->
+        store.custom-token.decimals = 0
+        store.custom-token.symbol = ""
+        store.custom-token.contract-address = ""
+        
+    clear-errors = ->
+        store.custom-token.errors.contract-address = ""
+        store.custom-token.errors.symbol = ""
+        store.custom-token.errors.decimals = ""
+        store.custom-token.errors.network = ""
+            
+    create-network-position = (data)-->
+        { api, group, token } = data
+        { apiUrl, url, web3Provider, provider } = api
+        name = group
+        position-style =
+            color: if up(store.custom-token.network?api?provider) is up(provider) then '#3cd5af' else ''
+            padding: "10px"
+        get-button-style = (network-type)->
+            #return {} if network-type not in <[ testnet mainnet ]>
+            | up(store.custom-token.network?api?provider) is up(provider) and up(selected-network) is up(network-type) => { color: '#3cd5af' }
+            | _ => { color: "white" }  
+        button-style-mainnet = get-button-style("mainnet")
+        button-style-testnet = get-button-style("testnet")
+        change-mainnet-network = change-network(token, "mainnet")
+        change-testnet-network = change-network(token, "testnet")
+        /* Render */
+        .pug.table-row-menu(key="network-#{provider}" style=position-style)
+            .col.folder-menu.pug(style=styles.folder-menu)
+                .pug.network-item-title(style=styles.folder-menu-div) #{name}
+                span.pug.networks
+                    span.pug.network-item-button.mainnet-network(on-click=change-mainnet-network style=button-style-mainnet) Mainnet
+                    span.pug.network-item-button.testnet-network(on-click=change-testnet-network style=button-style-testnet) Testnet
+                
+    
+        
     
     /* Render */
     .pug.custom-token-content
         .pug.content-body(style=content-body-style)
                     
             form.pug
-                
+                form-group \sender, "Network", icon-style, ->
+                    .pug
+                        .pug.bold.default-network-input(style=styles.input-network on-click=network-dropdown-click)
+                            .pug.change-network-screen #{display-network}
+                            .pug.button.navigation-button.right(style=styles.navigation-button)
+                                 img.icon-svg.pug(src="#{icons.arrow-down}" style=styles.img-icon-style class="#{rotate-class}")
+                            if store.custom-token.switch-network
+                                .pug.switch-menu(style=styles.filter-body)
+                                    .pug.middle
+                                        available-networks  
+                                            |> map create-network-position
+                        if has-network-error
+                            .pug.control-label.error.text-left #{store.custom-token.errors.network}
                 form-group \sender, "Token Contract Address", icon-style, ->
                     .address.pug
                         input.pug(type='text' style=input-style on-change=contract-address-change value="#{contract-address}" id="contract-address" )
                         if has-contract-error
-                            .pug.control-label.not-enough.text-left #{store.custom-token.errors.contract-address}
+                            .pug.control-label.error.text-left #{store.custom-token.errors.contract-address}
                 form-group \receiver, "Token symbol", icon-style, ->
                     .pug
                         input.pug(type='text' style=input-style on-change=token-symbol-change value="#{symbol}"  id="symbol" )
                         if has-symbol-error
-                            .pug.control-label.not-enough.text-left #{store.custom-token.errors.symbol}
+                            .pug.control-label.error.text-left #{store.custom-token.errors.symbol}
                 form-group \send-amount, "Token Decimals", icon-style, ->
                     .pug
-                        .pug.amount-field
-                            .input-wrapper.pug(style=input-style)
-                                input.pug(type='number' style=input-style placeholder="0" on-change=decimals-change value="#{decimals}"  id="decimals" )
-                                if has-decimals-error
-                                    .pug.control-label.not-enough.text-left #{store.custom-token.errors.decimals}
+                        .input-wrapper.pug
+                            input.pug(type='number' style=input-style placeholder="0" on-change=decimals-change value="#{decimals}"  id="decimals" )
+                            if has-decimals-error
+                                .pug.control-label.error.text-left #{store.custom-token.errors.decimals}
             .pug.button-container
                 .pug.buttons
-                    button { store, text: "Add token" , on-click: save-custom-token , type: \primary,  makeDisabled: disabled, id: "send-confirm" }
+                    button { store, text: "Add token" , on-click: save-custom-token , type: \primary, no-icon:yes, makeDisabled: disabled, id: "send-confirm" }
                     button { store, text: \cancel , on-click: cancel, icon: \close2, id: "send-cancel" }
 
 
+        
+        
 module.exports = custom-token
+
+$styles = (style)->
+    {
+        input-network:
+            cursor: "pointer" 
+            min-height: "36px"
+            position: "relative"
+            display: "flex"
+            align-items: "center"
+            border-bottom: "0.1px solid rgb(238, 238, 238, 0.12)"
+        img-icon-style = 
+            width: "13px"
+            height: "8px"
+            margin-left: "0"
+            margin-top: "4px"
+            filter: "grayscale(100%) brightness(40%) sepia(100%) hue-rotate(14deg) saturate(790%) contrast(1.5)"
+        filter-body:
+            border: "1px solid #{style.app.border}"
+            background: style.app.account-bg
+            right: "-1px"
+            top: "38px"
+            width: "100%"
+            display: "inline-grid"
+            z-index: 3
+            box-shadow: "0px 13px 20px 0px rgba(0, 0, 0, 0.35)"
+            border-radius: "0 0 var(--border-btn) var(--border-btn)"
+            position: "absolute"
+        folder-menu:
+            width: "100%"
+        folder-menu-div:
+            text-overflow: "ellipsis"
+            white-space: "nowrap"
+            overflow: "hidden"
+            font-size: "12px"
+            text-transform: "uppercase"
+            letter-spacing: "2px"
+            opacity: ".7"
+            display: "inline-block"
+            margin-right: "10px"
+            margin-bottom: "-5px"
+        navigation-button:
+            position: "absolute"
+            right: 0
+            top: "5px"
+    }
