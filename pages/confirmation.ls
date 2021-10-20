@@ -64,6 +64,8 @@ require! {
     height: 100vh
     top: 0
     left: 0
+    right: 0
+    bottom: 0
     width: 100%
     box-sizing: border-box
     background: rgba(black, 0.7)
