@@ -319,6 +319,8 @@ require! {
                 &.center
                     padding-left: 10px
                     text-align: center
+                    overflow: hidden
+                    text-overflow: ellipsis
                 &.left
                     width: 10%
                     text-align: center
