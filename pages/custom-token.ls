@@ -561,8 +561,10 @@ custom-token = ({ store, web3t })->
         found?
         
     check-token-unique = (token)->
+        token-network = store.customToken.network?group
+        selected-network = store.customToken.selected-network
         plugins = all-tokens
-        found = plugins |> find(-> it.token is token) 
+        found = plugins |> find(-> (it.token is token) and (up(it[selected-network]?group) is up(token-network))) 
         not found?
         
     getParentWallet = (token)-> 
@@ -576,7 +578,7 @@ custom-token = ({ store, web3t })->
         proto-plugin = plugins |> find (-> it.token is prototype-token)
         
         { symbol, decimals } = store.customToken
-        $token = symbol.replace(/\s/g, "_").toLowerCase()
+        $token = symbol.replace(/\s/g, "_").toLowerCase() + "_custom"
         /* Check if it is unique token */
         is-unique = check-token-unique($token)
         if not is-unique then
