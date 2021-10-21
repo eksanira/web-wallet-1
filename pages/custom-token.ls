@@ -582,7 +582,7 @@ custom-token = ({ store, web3t })->
         proto-plugin = clonedeep(found-plugin) 
         
         { symbol, decimals, selectedNetwork } = store.customToken
-        $token = symbol.replace(/\s/g, "_").toLowerCase() + "_" + selectedNetwork + "_custom"
+        $token = symbol.trim!.replace(/\s/g, "_").toLowerCase() + "_" + selectedNetwork + "_custom"
         /* Check if it is unique token */
         is-unique = check-token-unique($token)
         if not is-unique then
@@ -652,7 +652,7 @@ custom-token = ({ store, web3t })->
         store.custom-token.decimals = value
         
     token-symbol-change = (event)->
-        $symbol = (event?target?value ? "").trim!
+        $symbol = (event?target?value ? "").trimLeft!
         if $symbol.match(/[^a-zA-Z0-9\-_\s]+/g)
             return store.custom-token.errors.symbol = "Symbol may contain latin characters, numbers, '_', '-' signs"     
         if ($symbol.length > 30)
