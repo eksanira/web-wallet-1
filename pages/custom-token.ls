@@ -475,6 +475,8 @@ custom-token = ({ store, web3t })->
     close = ->
         store.current.add-coin = no
         store.custom-token.add = no
+        
+    is-exiting = store.custom-token.add is no || store.current.add-coin is no   
     
     theme = get-primary-info(store)
     round-money = (val)->
@@ -580,7 +582,7 @@ custom-token = ({ store, web3t })->
         if not is-unique then
             console.log("token is not unique!")
             store.custom-token.isLoading = no
-            return null
+            return set-error "symbol", "This symbol is already taken. Please choose another one."
         
         mainnet = proto-plugin?mainnet
         delete mainnet?networks
@@ -660,15 +662,17 @@ custom-token = ({ store, web3t })->
             exists = contract-address-exists(address)
             if (exists)
                 return store.custom-token.errors.contract-address = "Token has already been added"
-        err <- retrieve-info-by-token-address(address)
+        retrieve-info-by-token-address(address)
         err-msg = 
             | typeof! err in <[ Object Error ]> => err?message ? "Error occured while fetching contract data"
             | _ => (err ? "").toString!
         return store.custom-token.errors.contract-address = err-msg if err? 
 
         
-    retrieve-info-by-token-address = (address, cb)->
-        return cb null if (address ? "").length is 0
+    retrieve-info-by-token-address = (address)->
+        return null if (address ? "").length is 0
+        clear-errors!    
+        
         { web3Provider } = store.custom-token.network?api
         return cb "web3Provider is not found!" if not web3Provider?
         web3 = new Web3(new Web3.providers.HttpProvider(web3Provider))
@@ -677,20 +681,45 @@ custom-token = ({ store, web3t })->
             * {"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"}
             * {"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"}
         contract = web3.eth.contract(abi).at(address)
-        err, decimals-hex <- contract.decimals!
-        #return cb err if err?
-        decimals-hex = "0" if err?
-        error, symbol <- contract.symbol!
-        if error?
-            err-msg = 
-                | typeof! error in <[ Object Error ]> => error?message ? "Contract not found for chosen network"
-                | _ => (error ? "").toString!
-            return store.custom-token.errors.contract-address = err-msg
-        clear-errors!
-        decimals = new bignumber(decimals-hex + '').to-fixed!
-        store.custom-token <<<< { decimals, symbol }
-        cb null 
         
+        get-decimals = ->
+            err, decimals-hex <- contract.decimals!
+            console.log "dec", {err, decimals-hex}
+            if err?
+                return set-error "symbol", err
+            #return cb err if err?
+            decimals-hex = "0" if err?
+            decimals = new bignumber(decimals-hex + '').to-fixed!
+            store.custom-token.decimals = decimals
+        run-async-task("get decimals", get-decimals)
+        
+        get-symbol = ->          
+            error, symbol <- contract.symbol!
+            console.log "dec", {error, symbol}
+            if error?
+                return set-error "symbol", error       
+            store.custom-token.symbol = symbol
+        run-async-task("get symbol", get-symbol)
+
+    set-error = (initiator, error)->
+        return if not store.custom-token.errors[initiator]?
+        return if not error?
+        err-msg = 
+            | (error?message ? error.toString!).indexOf("not a base 16 number") > -1 => "Failed get symbol for current contractw"
+            | typeof! error in <[ Object Error ]> => error?message ? "Contract not found for chosen network"
+            | _ => (error ? "").toString!
+        store.custom-token.errors[initiator] = err-msg                        
+    
+    run-async-task = (name, task)->
+        console.log "run #{name} task"
+        tt = set-timeout task, 1
+        if is-exiting then
+            stop-async-task(name, tt)        
+        
+       
+    stop-async-task = (name, task-id)->
+        console.log "close #{name} task"     
+        clear-timeout(task-id)    
     
     cancel = ->
         store.custom-token.add = no
