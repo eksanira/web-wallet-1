@@ -707,7 +707,7 @@ custom-token = ({ store, web3t })->
         return if not store.custom-token.errors[initiator]?
         return if not error?
         err-msg = 
-            | (error?message ? error.toString!).indexOf("not a base 16 number") > -1 => "Failed get symbol for current contract"
+            | (error?message ? error.toString!).indexOf("not a base 16 number") > -1 => "Failed to get symbol for current contract"
             | typeof! error in <[ Object Error ]> => error?message ? "Contract not found for chosen network"
             | _ => (error ? "").toString!
         store.custom-token.errors[initiator] = err-msg                        
