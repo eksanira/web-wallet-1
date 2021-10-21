@@ -22,6 +22,7 @@ require! {
     \bignumber.js
     \../install-plugin.ls : { get-install-list }
     \../plugin-loader.ls : { common }
+    \lodash/clonedeep
     
 }
 .custom-token-content
@@ -554,10 +555,12 @@ custom-token = ({ store, web3t })->
     /* Contract address */    
     contract-address-exists = (address)->
         address = address.trim!
+        console.log "check1", custom-tokens
         found = 
             all-tokens
                 |> find (it)-> 
                     up(it?[store.current.network]?address) is up(address)
+        console.log "found" found
         found?
         
     check-token-unique = (token)->
@@ -575,7 +578,8 @@ custom-token = ({ store, web3t })->
         store.custom-token.isLoading = yes
         plugins = all-tokens
         prototype-token = store.customToken.network.token
-        proto-plugin = plugins |> find (-> it.token is prototype-token)
+        found-plugin = plugins |> find (-> it.token is prototype-token)
+        proto-plugin = clonedeep(found-plugin) 
         
         { symbol, decimals, selectedNetwork } = store.customToken
         $token = symbol.replace(/\s/g, "_").toLowerCase() + "_" + selectedNetwork + "_custom"
@@ -592,7 +596,7 @@ custom-token = ({ store, web3t })->
         delete mainnet?FOREIGN_BRIDGE_TOKEN
         delete mainnet?HOME_BRIDGE
         delete mainnet?HOME_BRIDGE_TOKEN
-        mainnet = mainnet <<<< { decimals, address: contract-address }
+        mainnet <<<< { decimals, address: contract-address }
         
         testnet = proto-plugin?testnet
         delete testnet?networks
@@ -600,7 +604,7 @@ custom-token = ({ store, web3t })->
         delete testnet?FOREIGN_BRIDGE_TOKEN
         delete testnet?HOME_BRIDGE
         delete testnet?HOME_BRIDGE_TOKEN        
-        testnet = testnet <<<< { decimals, address: contract-address }
+        testnet <<<< { decimals, address: contract-address }        
         
         result-network = 
             | up(store.customToken.selected-network) is "MAINNET" => { mainnet, testnet: null }
@@ -625,6 +629,12 @@ custom-token = ({ store, web3t })->
         err <- web3t.install-quick res
         console.error err if err?
         store.custom-token.isLoading = no
+        store.just-added-token = $token
+        timer = {}
+        clear-task = ->
+             store.just-added-token = null
+             clear-timeout timer.id
+        timer.id = set-timeout clear-task, 1500
         close! if not err?
     
     decimals-change = (event)->
