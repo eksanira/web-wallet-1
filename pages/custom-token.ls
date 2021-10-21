@@ -33,7 +33,6 @@ require! {
     width: calc(100% - 0px) !important
     margin-left: 0px !important
     max-width: none !important
-    height: 100vh
     display: flex !important
     flex-direction: column  
     align-items: center

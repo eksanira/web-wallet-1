@@ -33,7 +33,6 @@ require! {
     padding: 10px
     background: rgba(black, 0.08)
     backdrop-filter: blur(5px)
-    height: 100vh
     display: flex
     align-items: center
     >.account-body
@@ -46,7 +45,7 @@ require! {
         margin: auto
         border-radius: var(--border-btn)
         position: relative
-        height: 65vh
+        max-height: 600px    
         overflow: hidden
         box-shadow: 17px 10px 13px #0000001f, -6px 10px 13px #00000024
         padding-bottom: 20px
@@ -108,7 +107,7 @@ require! {
                     left: 10px
         >.settings
             display: inline-block    
-            height: calc(65vh - 140px)
+            height: 480px   
             overflow-y: scroll
             margin-top: 0
             width: 100%
@@ -307,7 +306,8 @@ module.exports = ({ store, web3t } )->
         background-color: style.app.bgspare
         color: style.app.text
         transition: "height .5s"
-        height: "80vh"
+        height: "550px"
+        max-height: "550px"    
     color =
         color: style.app.text
     lang = get-lang store
