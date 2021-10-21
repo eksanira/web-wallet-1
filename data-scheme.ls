@@ -67,6 +67,7 @@ store =
     terms: "Loading..."
     terms2: "Loading..."
     collapse: ""
+    just-added-token: null    
     development:
         proposals: []
         new-proposal:
