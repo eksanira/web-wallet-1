@@ -577,8 +577,8 @@ custom-token = ({ store, web3t })->
         prototype-token = store.customToken.network.token
         proto-plugin = plugins |> find (-> it.token is prototype-token)
         
-        { symbol, decimals } = store.customToken
-        $token = symbol.replace(/\s/g, "_").toLowerCase() + "_custom"
+        { symbol, decimals, selectedNetwork } = store.customToken
+        $token = symbol.replace(/\s/g, "_").toLowerCase() + "_" + selectedNetwork + "_custom"
         /* Check if it is unique token */
         is-unique = check-token-unique($token)
         if not is-unique then
@@ -603,8 +603,8 @@ custom-token = ({ store, web3t })->
         testnet = testnet <<<< { decimals, address: contract-address }
         
         result-network = 
-            | up(store.customToken.selected-network) is "MAINNET" => { mainnet, testnet: {} }
-            | _ => { mainnet: {}, testnet }
+            | up(store.customToken.selected-network) is "MAINNET" => { mainnet, testnet: null }
+            | _ => { mainnet: null, testnet }
             
         parentWallet = getParentWallet(proto-plugin?[store.current.network]?txFeeIn)
         nickname = if parentWallet then parentWallet.nickname else proto-plugin.nickname
