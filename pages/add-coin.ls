@@ -351,7 +351,11 @@ module.exports = ({ store, web3t } )->
         store.custom-token.network = null  
         store.custom-token.contract-address = ""
         store.custom-token.symbol = ""
-        store.custom-token.decimals = 0   
+        store.custom-token.decimals = 0 
+        store.custom-token.errors.contract-address = ""
+        store.custom-token.errors.symbol = ""
+        store.custom-token.errors.decimals = ""
+        store.custom-token.errors.network = ""  
     button-style =
         border: "1px solid #{style.app.text}"
         color: style.app.text 
