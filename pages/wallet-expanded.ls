@@ -183,7 +183,7 @@ module.exports = (store, web3t, wallets, wallet)-->
                                 h3.text-message.pug(style=msg-txt-style) No wallet found   
                           
 
-    { uninstall, wallet, balance, balance-usd, pending, send, receive, swap, usd-rate } = wallet-funcs store, web3t, wallets, wallet
+    { wallet-icon, uninstall, wallet, balance, balance-usd, pending, send, receive, swap, usd-rate } = wallet-funcs store, web3t, wallets, wallet
     lang = get-lang store
     
     label-uninstall =
@@ -295,7 +295,7 @@ module.exports = (store, web3t, wallets, wallet)-->
                     .stats.pug
                         span.stats-style.pug
                             .pug.coin(style=text)
-                                img.label-coin.pug(class="#{placeholder-coin}" src="#{wallet?coin?image}")
+                                img.label-coin.pug(class="#{placeholder-coin}" src="#{wallet-icon}")
                                 .pug(class="#{placeholder}") #{ token-display }
                                 .pug.course(class="#{placeholder}" title="#{usd-rate}") $#{ round-human usd-rate}
                         wallet-stats store, web3t

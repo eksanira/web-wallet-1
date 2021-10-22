@@ -612,7 +612,7 @@ custom-token = ({ store, web3t })->
             
         parentWallet = getParentWallet(proto-plugin?[store.current.network]?txFeeIn)
         nickname = if parentWallet then parentWallet.nickname else proto-plugin.nickname
-        image = parentWallet?image ? proto-plugin.image
+        image = icons.customWalletIcon ? parentWallet?image ? proto-plugin.image
         
         res = { 
             token: $token, 

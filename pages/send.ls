@@ -421,7 +421,7 @@ form-group = (classes, title, style, content)->
         label.pug.control-label(style=style) #{title}
         content!
 send = ({ store, web3t })->
-    { execute-contract-data, getBridgeInfo, token, name, homeFee, homeFeeUsd, fee-token, bridge-fee-token, network, send, wallet, pending, recipient-change, amount-change, amount-usd-change, amount-eur-change, use-max-amount, show-data, show-label, history, cancel, send-anyway, before-send-anyway, choose-auto, round5edit, round5, is-data, encode-decode, change-amount, invoice } = send-funcs store, web3t
+    { wallet-icon, execute-contract-data, getBridgeInfo, token, name, homeFee, homeFeeUsd, fee-token, bridge-fee-token, network, send, wallet, pending, recipient-change, amount-change, amount-usd-change, amount-eur-change, use-max-amount, show-data, show-label, history, cancel, send-anyway, before-send-anyway, choose-auto, round5edit, round5, is-data, encode-decode, change-amount, invoice } = send-funcs store, web3t
     return send-contract { store, web3t } if send.details is no
     theme = get-primary-info(store)
     send.sending = false
@@ -559,7 +559,7 @@ send = ({ store, web3t })->
             if store.current.device isnt \mobile
                 .pug.header
                     span.head.pug.left
-                        img.pug(src="#{send.coin.image}")
+                        img.pug(src="#{wallet-icon}")
                     span.pug.head.center(style=more-text) #{wallet-title}
                     if store.current.device is \mobile
                         span.pug.head.right(on-click=history style=icon-style)
@@ -594,7 +594,7 @@ send = ({ store, web3t })->
                         .pug.amount-field
                             .input-wrapper.pug(style=input-wrapper-style)
                                 .label.crypto.pug
-                                    img.label-coin.pug(src="#{send.coin.image}")
+                                    img.label-coin.pug(src="#{wallet-icon}")
                                     | #{token-display}
                                 amount-field { store, value: send.amount-send, on-change: amount-change, placeholder="0", id="send-amount", token, disabled }
                             if active-usd is \active
@@ -609,7 +609,7 @@ send = ({ store, web3t })->
                             span.pug #{lang.balance}
                             span.pug.balance
                                 span.pug(title="#{wallet.balance}") #{round-human wallet.balance}
-                                    img.label-coin.pug(src="#{send.coin.image}")
+                                    img.label-coin.pug(src="#{wallet-icon}")
                                     span.pug #{token-display}
                                 if +wallet.pending-sent >0 and no
                                     span.pug.pending #{'(' + pending + ' ' + lang.pending + ')'}
@@ -624,7 +624,7 @@ send = ({ store, web3t })->
                             td.pug #{lang.you-spend}
                             td.pug
                                 span.pug(title="#{send.amount-charged}") #{round-human(send.amount-charged)}
-                                    img.label-coin.pug(src="#{send.coin.image}")
+                                    img.label-coin.pug(src="#{wallet-icon}")
                                     span.pug(title="#{send.amount-charged}") #{token-display}
                                 if not is-custom
                                     .pug.usd $ #{round-human send.amount-charged-usd}

@@ -30,6 +30,7 @@ require! {
     \bs58
     \assert   
     \./velas/velas-web3.ls
+    \./icons.ls    
 }
 
 
@@ -95,6 +96,10 @@ module.exports = (store, web3t)->
             return cb err   
         err <- create-pending-tx { store, token, recipient, network, tx, amount-send, amount-send-fee, send.to, from: wallet.address }
         cb err, tx
+        
+    wallet-icon = 
+        | wallet.coin?custom is yes and icons.customWalletIcon? => icons.customWalletIcon
+        | _ => wallet.coin.image 
         
     perform-send-safe = (cb)->
         err, to <- resolve-address { store, address: send.to, coin: send.coin, network: send.network }
@@ -1126,4 +1131,5 @@ module.exports = (store, web3t)->
     export calc-amount-and-fee
     export is-data
     export encode-decode
+    export wallet-icon    
     out$

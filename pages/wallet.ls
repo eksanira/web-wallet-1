@@ -215,7 +215,7 @@ require! {
                     line-height: 30px
 cb = console~log
 module.exports = (store, web3t, wallets, wallet)-->
-    { button-style, uninstall, wallet, active, big, balance, balance-usd, pending, send, receive, swap, expand, usd-rate, last } = wallet-funcs store, web3t, wallets, wallet
+    { wallet-icon, button-style, uninstall, wallet, active, big, balance, balance-usd, pending, send, receive, swap, expand, usd-rate, last } = wallet-funcs store, web3t, wallets, wallet
     lang = get-lang store
     style = get-primary-info store
     label-uninstall =
@@ -283,7 +283,7 @@ module.exports = (store, web3t, wallets, wallet)-->
         .wallet-top.pug(on-click=expand)
             .top-left.pug(style=wallet-style)
                 .img.pug(class="#{placeholder-coin}")
-                    img.pug(src="#{wallet.coin.image}")
+                    img.pug(src="#{wallet-icon}")
                 .info.pug
                     .balance.pug.title(class="#{placeholder}") #{name}
                     if store.current.device is \desktop

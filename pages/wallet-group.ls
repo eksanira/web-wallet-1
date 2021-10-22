@@ -276,9 +276,8 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
         .pug.group-name #{group-name} Network
 
         wallets |> map (wallet)->
-            res = wallet-funcs store, web3t, wallets, wallet
 
-            { button-style, uninstall, wallet, active, big, balance, balance-usd, pending, send, receive, swap, expand, usd-rate, last } = wallet-funcs store, web3t, wallets, wallet, wallets-groups, group-name
+            { wallet-icon, button-style, uninstall, wallet, active, big, balance, balance-usd, pending, send, receive, swap, expand, usd-rate, last } = wallet-funcs store, web3t, wallets, wallet, wallets-groups, group-name
             name = wallet.coin.name ? wallet.coin.token
             receive-click = receive(wallet)
             send-click = send(wallet)
@@ -297,7 +296,7 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
                 .wallet-top.pug(on-click=expand)
                     .top-left.pug(style=wallet-style)
                         .img.pug(class="#{placeholder-coin}")
-                            img.pug(src="#{wallet.coin.image}")
+                            img.pug(src="#{wallet-icon}")
                         .info.pug
                             .balance.pug.title(class="#{placeholder}") #{name}
                             if store.current.device is \desktop

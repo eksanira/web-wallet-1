@@ -9,6 +9,7 @@ require! {
     \./keyboard.ls
     \../numbers.js : {parseNum}
     \react-currency-input-field : { default: CurrencyInput }
+    \../icons.ls
 }
 .input-area
     @import scheme
@@ -141,10 +142,13 @@ module.exports = ({ store, value, on-change, placeholder, id, show-details, toke
         value = (value ? "0").toString()
         res = value.split(DECIMAL_SEPARATOR)
         value.index-of(DECIMAL_SEPARATOR) > -1 and (res.length > 1 and res[1] is "")
+    wallet-icon = 
+        | wallet.coin?custom is yes and icons.customWalletIcon? => icons.customWalletIcon
+        | _ => wallet.coin.image
     .pug.input-area
         CurrencyInput.pug(class="textfield" style=input-style key="amount" allowDecimals=yes allowNegativeValue=no value="#{value}" decimalsLimit=decimalsLimit label="Send" decimalSeparator=DECIMAL_SEPARATOR groupSeparator="," onValueChange=on-change-internal)
         span.suffix.pug(style=input-style)
-            img.icon.pug(src="#{wallet.coin.image}")
+            img.icon.pug(src="#{wallet-icon}")
             span.pug #{token-label}
         if show-details? and show-details then   
             .show-details.pug
