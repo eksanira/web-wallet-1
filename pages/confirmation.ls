@@ -120,6 +120,7 @@ require! {
         margin-right: 3px
         filter: invert(22%) sepia(65%) saturate(7127%) hue-rotate(694deg) brightness(94%) contrast(115%)
     >.confirmation-body
+        padding: 10px
         background: white
         text-align: center
         position: fixed
@@ -294,9 +295,12 @@ confirmation-modal = (store)->
         color: style.app.text
         border-bottom: "1px solid #{style.app.border}"
     lang = get-lang store
+    title = 
+        | (store.current.confirmation ? "").indexOf("You can add this token back in the future by going to “Add custom token”") > -1 => "Hide Token?"
+        | _ => lang.confirmation
     .pug.confirmation
         .pug.confirmation-body(style=confirmation)
-            .pug.header(style=confirmation-style) #{lang.confirmation}
+            .pug.header(style=confirmation-style) #{title}
             .pug.text(style=confirmation-style2) #{store.current.confirmation}
             if store.current.send.swap is yes
                 refer-to = store.current.send?chosen-network?refer-to

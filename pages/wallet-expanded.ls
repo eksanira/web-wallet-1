@@ -15,6 +15,7 @@ require! {
     \../components/address-holder.ls
     \./wallet-stats.ls
     \./loading.ls
+    \./confirmation.ls : { confirm }
 }
 .wallet-detailed
     @import scheme
@@ -229,7 +230,14 @@ module.exports = (store, web3t, wallets, wallet)-->
         (wallet?network?networks ? []) 
             |> obj-to-pairs
             |> map (-> it.1 )
-            |> filter (-> it.disabled isnt yes and it.referTo in installed-networks)    
+            |> filter (-> it.disabled isnt yes and it.referTo in installed-networks)
+            
+    uninstall-action = (e)->
+        if is-custom isnt yes
+            return uninstall(e) 
+        agree <- confirm store, "You can add this token back in the future by going to “Add custom token”."
+        return if not agree
+        uninstall(e)    
     
     wallet-style=
         color: style.app.text3
@@ -253,7 +261,7 @@ module.exports = (store, web3t, wallets, wallet)-->
                     .pug
                         span.title.pug(class="#{placeholder}") #{name}
                         if wallet?coin?token not in <[ btc vlx vlx_native vlx2 eth vlx_evm vlx_evm_legacy ]>
-                            span.pug.uninstall(on-click=uninstall style=uninstall-style) #{label-uninstall}
+                            span.pug.uninstall(on-click=uninstall-action style=uninstall-style) #{label-uninstall}
                     .balance.pug(class="#{placeholder}")
                         .pug.token-balance(title="#{wallet?balance}")
                             span.pug #{ round-human wallet?balance }
