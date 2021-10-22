@@ -582,7 +582,7 @@ custom-token = ({ store, web3t })->
         proto-plugin = clonedeep(found-plugin) 
         
         { symbol, decimals, selectedNetwork } = store.customToken
-        $token = symbol.trim!.replace(/\s/g, "_").toLowerCase() + "_" + selectedNetwork + "_custom"
+        $token = symbol.trim!.replace(/\s/g, "_").toLowerCase() + "_" + selectedNetwork + "_#{store.customToken.network?group}_" + "_custom"
         /* Check if it is unique token */
         is-unique = check-token-unique($token)
         if not is-unique then
