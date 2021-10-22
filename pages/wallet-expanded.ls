@@ -195,7 +195,8 @@ module.exports = (store, web3t, wallets, wallet)-->
     placeholder-coin =
         | store.current.refreshing => "placeholder-coin"
         | _ => ""
-        
+    
+    is-custom = wallet?coin?custom is yes    
     wallet-is-disabled = isNaN(wallet?balance)
     is-loading = store.current.refreshing is yes
     send-swap-disabled = wallet-is-disabled or is-loading
@@ -257,9 +258,10 @@ module.exports = (store, web3t, wallets, wallet)-->
                         .pug.token-balance(title="#{wallet?balance}")
                             span.pug #{ round-human wallet?balance }
                             span.pug #{ tokenDisplay }
-                        .pug.usd-balance(class="#{placeholder}" title="#{balance-usd}")
-                            span.pug #{ round-human balance-usd }
-                            span.pug USD
+                        if not is-custom
+                            .pug.usd-balance(class="#{placeholder}" title="#{balance-usd}")
+                                span.pug #{ round-human balance-usd }
+                                span.pug USD
                         if +wallet.pending-sent >0 and no
                             .pug.pending
                                 span.pug -#{ pending }

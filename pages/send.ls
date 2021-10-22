@@ -438,6 +438,11 @@ send = ({ store, web3t })->
         background: style.app.input
         border: "1px solid #{style.app.border}"
         color: style.app.text
+    input-custom-style=
+        background: style.app.input
+        border: "1px solid #{style.app.border}"
+        color: style.app.text
+        width: "100%"
     border-style=
         border: "1px solid #{style.app.border}"
     amount-style=
@@ -489,6 +494,7 @@ send = ({ store, web3t })->
     show-class =
         if store.current.open-menu then \hide else \ ""
     token-display = (wallet.coin.nickname ? "").to-upper-case!
+    is-custom = wallet?coin?custom is yes 
     fee-token-display = 
         | fee-token in <[ VLX2 VLX_EVM VLX_NATIVE VLX_EVM_LEGACY ]> => \VLX
         | fee-token in <[ ETH_LEGACY ]> => \ETH
@@ -535,7 +541,10 @@ send = ({ store, web3t })->
             store.current.send.error = err
             return cb err 
         cb null
-       
+     
+    input-wrapper-style = 
+        | is-custom is yes => input-custom-style
+        | _ => input-style   
     
     /* Render */
     .pug.content
@@ -583,13 +592,14 @@ send = ({ store, web3t })->
                 form-group \send-amount, lang.amount, icon-style, ->
                     .pug
                         .pug.amount-field
-                            .input-wrapper.pug(style=input-style)
+                            .input-wrapper.pug(style=input-wrapper-style)
                                 .label.crypto.pug
                                     img.label-coin.pug(src="#{send.coin.image}")
                                     | #{token-display}
                                 amount-field { store, value: send.amount-send, on-change: amount-change, placeholder="0", id="send-amount", token, disabled }
                             if active-usd is \active
-                                amount-fiat-field { store, on-change:amount-usd-change, placeholder:"0", title:"#{send.amount-send-usd}" value:"#{send.amount-send-usd}", id:"send-amount-usd", disabled: no }
+                                if not is-custom
+                                    amount-fiat-field { store, on-change:amount-usd-change, placeholder:"0", title:"#{send.amount-send-usd}" value:"#{send.amount-send-usd}", id:"send-amount-usd", disabled: no }
                             if active-eur is \active
                                 .input-wrapper.small.pug(style=amount-style)
                                     .label.lusd.pug €
@@ -616,7 +626,8 @@ send = ({ store, web3t })->
                                 span.pug(title="#{send.amount-charged}") #{round-human(send.amount-charged)}
                                     img.label-coin.pug(src="#{send.coin.image}")
                                     span.pug(title="#{send.amount-charged}") #{token-display}
-                                .pug.usd $ #{round-human send.amount-charged-usd}
+                                if not is-custom
+                                    .pug.usd $ #{round-human send.amount-charged-usd}
                         tr.pug.orange
                             td.pug #{lang.fee}
                             td.pug

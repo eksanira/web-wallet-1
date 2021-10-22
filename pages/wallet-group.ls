@@ -100,7 +100,7 @@ require! {
         >.wallet-top
             padding: 0 12px
             box-sizing: border-box
-            $card-top-height: 50px
+            $card-top-height: 55px
             width: 100%
             color: #677897
             font-size: 14px
@@ -253,6 +253,12 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
         filter: style.app.btn-icon
     icon-color=
         filter: style.app.icon-filter
+    custom-style=
+        border: "1px solid #71f4c0"
+        border-radius: "13px"
+        padding: "2px 4px"
+        font-size: "8px"
+        color: "#71f4c0"
     placeholder =
         | store.current.refreshing => "placeholder"
         | _ => ""
@@ -284,6 +290,7 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
             disabled-class = if not is-loading and wallet-is-disabled then "disabled-wallet-item" else ""
             wallet-is-disabled = isNaN(wallet.balance)
             send-swap-disabled = wallet-is-disabled or is-loading
+            is-custom = wallet.coin.custom is yes
 
             /* Render */
             .wallet.pug.wallet-item(class="#{big} #{disabled-class}" key="#{token}" style=border-style id="token-#{token}")
@@ -297,9 +304,13 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
                                 .price.token.pug(class="#{placeholder}" title="#{wallet.balance}")
                                     span.pug #{ round-human wallet.balance }
                                     span.pug #{ token-display }
-                            .price.pug(class="#{placeholder}" title="#{balance-usd}")
-                                span.pug #{ round-human balance-usd}
-                                span.pug USD
+                            if is-custom
+                                .price.pug(class="#{placeholder}" title="#{balance-usd}")
+                                    span.pug(style=custom-style) CUSTOM   
+                            else
+                                .price.pug(class="#{placeholder}" title="#{balance-usd}")
+                                    span.pug #{ round-human balance-usd}
+                                    span.pug USD
                     if store.current.device is \mobile
                         .top-middle.pug(style=wallet-style)
                             if +wallet.pending-sent is 0
