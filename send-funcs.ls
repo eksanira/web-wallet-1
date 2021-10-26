@@ -902,7 +902,14 @@ module.exports = (store, web3t)->
         navigate store, web3t, \invoice
     export token = send.coin.token.to-upper-case!
     export name = send.coin.name ? token
-    fee-token = (wallet.network.tx-fee-in ? send.coin.token).to-upper-case!
+    { wallets } = store.current.account
+    fee-wallet = 
+        | wallet.network.tx-fee-in? =>
+            wallets |> find (-> it.coin.token is wallet.network.tx-fee-in)
+        | _ => wallet
+    fee-wallet = fee-wallet ? wallet
+    fee-token = fee-wallet?coin?nickname ? ""
+    
     is-data = (send.data ? "").length > 0
     bridge-fee-token = wallet.network.txBridgeFeeIn
     choose-auto = ->
