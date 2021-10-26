@@ -623,7 +623,7 @@ custom-token = ({ store, web3t })->
             image: image, 
             type: "coin", 
             usdInfo: 0,
-            nickname: nickname 
+            nickname: symbol 
         }    
         res <<<< result-network
         err <- web3t.install-quick res
