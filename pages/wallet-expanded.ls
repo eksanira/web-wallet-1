@@ -297,7 +297,8 @@ module.exports = (store, web3t, wallets, wallet)-->
                             .pug.coin(style=text)
                                 img.label-coin.pug(class="#{placeholder-coin}" src="#{wallet-icon}")
                                 .pug(class="#{placeholder}") #{ token-display }
-                                .pug.course(class="#{placeholder}" title="#{usd-rate}") $#{ round-human usd-rate}
+                                if not is-custom
+                                    .pug.course(class="#{placeholder}" title="#{usd-rate}") $#{ round-human usd-rate}
                         wallet-stats store, web3t
                 .wallet-header-part.right.pug(style=text)
                     .pug.counts
