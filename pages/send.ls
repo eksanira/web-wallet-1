@@ -28,6 +28,7 @@ require! {
     \../swaping/networks.ls : \token-networks
     "../../web3t/contracts/HomeBridgeNativeToErc.json" : \HomeBridgeNativeToErc    
     "../../web3t/contracts/ForeignBridgeNativeToErc.json" : \ForeignBridgeNativeToErc
+    \../contract-data.ls
 }
 .content
     position: relative
@@ -438,6 +439,7 @@ send = ({ store, web3t })->
         background: style.app.input
         border: "1px solid #{style.app.border}"
         color: style.app.text
+        user-select: "text"
     input-custom-style=
         background: style.app.input
         border: "1px solid #{style.app.border}"
@@ -536,7 +538,7 @@ send = ({ store, web3t })->
         if err?
             store.current.send.error = err 
             return cb err     
-        err <- execute-contract-data!
+        err <- execute-contract-data { store }
         if err?
             store.current.send.error = err
             return cb err 
@@ -667,14 +669,14 @@ module.exports.init = ({ store, web3t }, cb)->
     if store.current.send.is-swap isnt yes
         store.current.send.contract-address = null
     is-swap-contract = contracts.is-swap-contract(store, send.to)
-    if is-swap-contract then
-        contract-address = if wallet.coin.token is \vlx2 then web3t.velas.HomeBridgeNativeToErc.address else web3t.velas.ForeignBridgeNativeToErc.address 
-        store.current.send.to = contract-address
-        network-type = store.current.network
-        networks = wallet.coin["#{network-type}s"]
-        store.current.send.networks = networks
-        network-keys = networks |> keys
-        default-network = networks[network-keys.0].name
+#    if is-swap-contract then
+#        contract-address = if wallet.coin.token is \vlx2 then web3t.velas.HomeBridgeNativeToErc.address else web3t.velas.ForeignBridgeNativeToErc.address 
+#        store.current.send.to = contract-address
+#        network-type = store.current.network
+#        networks = wallet.coin["#{network-type}s"]
+#        store.current.send.networks = networks
+#        network-keys = networks |> keys
+#        default-network = networks[network-keys.0].name
     /* If it is Swap! */
     if wallet.network.networks? and (store.current.send.isSwap is yes) then
         $wallets = store.current.account.wallets |> map (-> [it.coin.token, it]) |> pairs-to-obj
@@ -692,14 +694,12 @@ module.exports.init = ({ store, web3t }, cb)->
         else
             console.error "networks prop in #{store.current.send.token} wallet is defined but is empty" 
     
-    #err <- execute-contract-data
-    #console.log "err " err
+    err <- contract-data({store}).form-contract-data!
+    console.log "form-contract-data err: " err if err?
     #return cb err if err?
-    #try
+    
     err <- getBridgeInfo!
     return cb err if err?
-    #catch err
-        #console.error err
     
     { wallets } = wallets-funcs store, web3t
     current-wallet =
