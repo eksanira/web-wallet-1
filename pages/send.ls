@@ -658,6 +658,7 @@ send = ({ store, web3t })->
 
 module.exports = send
 module.exports.init = ({ store, web3t }, cb)->
+    return cb null if not store? or not web3t? 
     { execute-contract-data, wallet, getBridgeInfo } = send-funcs store, web3t
     return cb null if not wallet?
     return cb null if send.sending is yes
