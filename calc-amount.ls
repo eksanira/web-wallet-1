@@ -71,13 +71,14 @@ change-amount-generic = (field)-> (store, amount-send, fast, cb)->
     send.amount-send-usd = calc-usd store, amount-send
     send.amount-send-eur = calc-eur store, amount-send
     calc-fee-fun = if fast then calc-fee else calc-fee-proxy
+                
+    dataBuilder = contract-data({ store })
+    err <- dataBuilder.form-contract-data!
+    
     send-to = 
         | store.current.send.isSwap is yes => store.current.send.contract-address
         | store.current.send.to.trim!.length is 0 => store.current.send.wallet.address
         | _ => store.current.send.to
-        
-    dataBuilder = contract-data({ store })
-    err <- dataBuilder.form-contract-data!
     
     err, calced-fee <- calc-fee-fun { store, token, to: send-to, send.data, send.network, amount: result-amount-send, fee-type, tx-type, account, send.swap }
     send.error = "#{err.message ? err}" if err?
@@ -134,14 +135,15 @@ export change-amount-send = (store, amount-send, fast, cb)->
     send.amount-obtain = result-amount-send
     send.amount-obtain-usd = send.amount-obtain `times` usd-rate
     calc-fee-fun = if fast then calc-fee else calc-fee-proxy
-    send-to = 
-        | store.current.send.isSwap is yes => store.current.send.contract-address
-        | store.current.send.to.trim!.length is 0 => store.current.send.wallet.address
-        | _ => store.current.send.to
     
     dataBuilder = contract-data({ store })
     err <- dataBuilder.form-contract-data!
     
+    send-to = 
+        | store.current.send.isSwap is yes => store.current.send.contract-address
+        | store.current.send.to.trim!.length is 0 => store.current.send.wallet.address
+        | _ => store.current.send.to
+  
     err, calced-fee <- calc-fee-fun { token, to: send-to, send.data, send.network, amount: result-amount-send, fee-type, tx-type, account, send.swap }
     send.error = "#{err.message ? err}" if err?
     return cb "#{err.message ? err}" if err?
@@ -208,13 +210,14 @@ export change-amount-calc-fiat = (store, amount-send, fast, cb)->
     send.amount-obtain = result-amount-send
     send.amount-obtain-usd = send.amount-obtain `times` usd-rate   
     calc-fee-fun = if fast then calc-fee else calc-fee-proxy
+    
+    dataBuilder = contract-data({ store })
+    err <- dataBuilder.form-contract-data!
+    
     send-to = 
         | store.current.send.isSwap is yes => store.current.send.contract-address
         | store.current.send.to.trim!.length is 0 => store.current.send.wallet.address
         | _ => store.current.send.to
-    
-    dataBuilder = contract-data({ store })
-    err <- dataBuilder.form-contract-data!
     
     err, calced-fee <- calc-fee-fun { token, to: send-to, send.data, send.network, amount: result-amount-send, fee-type, tx-type, account, send.swap }
     send.error = "#{err.message ? err}" if err?
