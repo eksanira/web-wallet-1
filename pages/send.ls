@@ -499,14 +499,8 @@ send = ({ store, web3t })->
     token-display = 
         | is-custom is yes => (wallet.coin.name ? "").to-upper-case!
         | _ => (wallet.coin.nickname ? "").to-upper-case!
-    
-    fee-token-display = 
-        | fee-token in <[ VLX2 VLX_EVM VLX_NATIVE VLX_EVM_LEGACY ]> => \VLX
-        | fee-token in <[ ETH_LEGACY ]> => \ETH
-        | bridge-fee-token? => bridge-fee-token
-        | wallet.network.tx-fee-in? => wallet.network.tx-fee-in
-        | _ => fee-token
-    fee-token-display = fee-token-display.to-upper-case!
+       
+    fee-token-display = fee-token.to-upper-case!
     fee-coin-image = 
         | send.fee-coin-image? => send.fee-coin-image
         |_ => send.coin.image
@@ -622,7 +616,7 @@ send = ({ store, web3t })->
                 if is-data
                     form-group \contract-data, 'Data', icon-style, ->
                         .pug.smart-contract(style=input-style) #{show-data!}
-                trx-fee { store, web3t, wallet }
+                trx-fee { store, web3t, wallet, fee-token }
                 table.pug(style=border-style)
                     tbody.pug
                         tr.pug
