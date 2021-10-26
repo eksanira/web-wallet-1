@@ -137,7 +137,10 @@ module.exports = ({ store, value, on-change, placeholder, id, show-details, toke
         value = $value 
         on-change { target: { value } }
     token = \vlx if token is \vlx2
-    token-label = (wallet.coin.nickname ? token).to-upper-case!
+    is-custom = wallet?coin?custom is yes 
+    token-label = 
+        | is-custom is yes => wallet.coin.name 
+        | _ => (wallet.coin.nickname ? token).to-upper-case!
     value-without-decimal-with-dot = (value)->
         value = (value ? "0").toString()
         res = value.split(DECIMAL_SEPARATOR)

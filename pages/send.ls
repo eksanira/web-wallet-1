@@ -495,8 +495,11 @@ send = ({ store, web3t })->
     active-eur = active-class \eur
     show-class =
         if store.current.open-menu then \hide else \ ""
-    token-display = (wallet.coin.nickname ? "").to-upper-case!
     is-custom = wallet?coin?custom is yes 
+    token-display = 
+        | is-custom is yes => (wallet.coin.name ? "").to-upper-case!
+        | _ => (wallet.coin.nickname ? "").to-upper-case!
+    
     fee-token-display = 
         | fee-token in <[ VLX2 VLX_EVM VLX_NATIVE VLX_EVM_LEGACY ]> => \VLX
         | fee-token in <[ ETH_LEGACY ]> => \ETH
