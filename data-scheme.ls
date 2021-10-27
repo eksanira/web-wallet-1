@@ -82,6 +82,7 @@ store =
         contract-address: ""
         decimals: 0
         symbol: ""
+        symbol-display: ""
         network: null
         selected-network: network 
         switch-network: false   

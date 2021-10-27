@@ -458,7 +458,7 @@ custom-token = ({ store, web3t })->
     base-plugins = common
     all-tokens = ((web3t-tokens ? []) ++ (custom-tokens ? [])) ++ base-plugins
     
-    { symbol, icon, contract-address, decimals, edit-symbol, network, switch-network, errors, selected-network } = store.custom-token
+    { symbol, symbol-display, icon, contract-address, decimals, edit-symbol, network, switch-network, errors, selected-network } = store.custom-token
        
         
     WALLETS_FOR_NETWORKS = <[ vlx_eth vlx_erc20 bsc_vlx vlx_huobi ]>
@@ -476,6 +476,7 @@ custom-token = ({ store, web3t })->
     close = ->
         store.current.add-coin = no
         store.custom-token.add = no
+        clear-chosen-token-data!
         
     is-exiting = store.custom-token.add is no || store.current.add-coin is no   
     
@@ -575,6 +576,7 @@ custom-token = ({ store, web3t })->
         wallet 
     
     save-custom-token = ->
+        return set-error "contractAddress", "Please fill all required fields" if not (contract-address isnt "" or symbol isnt "" or symbol-display isnt "" or decimals isnt "")
         store.custom-token.isLoading = yes
         plugins = all-tokens
         prototype-token = store.customToken.network.token
@@ -582,13 +584,16 @@ custom-token = ({ store, web3t })->
         proto-plugin = clonedeep(found-plugin) 
         
         { symbol, decimals, selectedNetwork } = store.customToken
+        err <- get-contract-symbol(contract-address)
+        return set-error "symbol", "Contract not found for chosen network" if err?
         $token = symbol.trim!.replace(/\s/g, "_").toLowerCase() + "_" + selectedNetwork + "_#{store.customToken.network?group}_" + "_custom"
         /* Check if it is unique token */
         is-unique = check-token-unique($token)
         if not is-unique then
             console.log("token is not unique!")
-            store.custom-token.isLoading = no
-            return set-error "symbol", "This symbol is already taken. Please choose another one."
+            $token = $token + ":" + Date.now()       
+            #store.custom-token.isLoading = no
+            #return set-error "symbol", "This symbol is already taken. Please choose another one."
         
         mainnet = proto-plugin?mainnet
         delete mainnet?networks
@@ -619,7 +624,7 @@ custom-token = ({ store, web3t })->
             custom: yes, 
             enabled: yes, 
             color: "white", 
-            name: symbol, 
+            name: symbol-display, 
             image: image, 
             type: "coin", 
             usdInfo: 0,
@@ -658,8 +663,9 @@ custom-token = ({ store, web3t })->
         if ($symbol.length > 30)
             store.custom-token.errors.symbol = "Symbol must be 30 characters or fewer" 
         else
-            store.custom-token.errors.symbol = ""
-        store.custom-token.symbol = $symbol
+            store.custom-token.errors.symbol = ""        
+        store.custom-token.symbol-display = $symbol
+        store.custom-token.symbol = $symbol if (store.custom-token.symbol ? "").trim!.length is 0
         
     contract-address-change = (event)->
         store.custom-token.errors.contract-address = ""
@@ -680,10 +686,22 @@ custom-token = ({ store, web3t })->
             | _ => (err ? "").toString!
         return store.custom-token.errors.contract-address = err-msg if err? 
 
+    get-contract-symbol = (address, cb)->
+        { web3Provider } = store.custom-token.network?api
+        
+        web3 = new Web3(new Web3.providers.HttpProvider(web3Provider))
+        web3.eth.provider-url = web3Provider
+        abi = 
+            * {"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"}
+            * {"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"}
+        contract = web3.eth.contract(abi).at(address)   
+        error, symbol <- contract.symbol!
+        cb null, symbol 
         
     retrieve-info-by-token-address = (address)->
         return null if (address ? "").length is 0
-        clear-errors!    
+        clear-errors! 
+        store.custom-token.isLoading = yes   
         
         { web3Provider } = store.custom-token.network?api
         return cb "web3Provider is not found!" if not web3Provider?
@@ -694,24 +712,22 @@ custom-token = ({ store, web3t })->
             * {"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"}
         contract = web3.eth.contract(abi).at(address)
         
-        get-decimals = ->
-            err, decimals-hex <- contract.decimals!
-            console.log "dec", {err, decimals-hex}
-            if err?
-                return set-error "symbol", err
-            #return cb err if err?
-            decimals-hex = "0" if err?
-            decimals = new bignumber(decimals-hex + '').to-fixed!
-            store.custom-token.decimals = decimals
-        run-async-task("get decimals", get-decimals)
+        error, symbol <- contract.symbol!
+        if error?
+            set-default-chosen-token-data! 
+            store.custom-token.isLoading = no       
+            return set-error "symbol", error       
+        store.custom-token.symbol = symbol
+        store.custom-token.symbol-display = symbol
         
-        get-symbol = ->          
-            error, symbol <- contract.symbol!
-            console.log "dec", {error, symbol}
-            if error?
-                return set-error "symbol", error       
-            store.custom-token.symbol = symbol
-        run-async-task("get symbol", get-symbol)
+        err, decimals-hex <- contract.decimals!
+        if err?
+            store.custom-token.isLoading = no
+            return set-error "symbol", err
+        decimals-hex = "0" if err?
+        decimals = new bignumber(decimals-hex + '').to-fixed!
+        store.custom-token.decimals = decimals         
+        store.custom-token.isLoading = no
 
     set-error = (initiator, error)->
         return if not store.custom-token.errors[initiator]?
@@ -730,11 +746,11 @@ custom-token = ({ store, web3t })->
         
        
     stop-async-task = (name, task-id)->
-        console.log "close #{name} task"     
         clear-timeout(task-id)    
     
     cancel = ->
         store.custom-token.add = no
+        clear-chosen-token-data!
         
     has-contract-error = (store.custom-token.errors.contract-address ? "").trim!.length > 0
     has-symbol-error   = (store.custom-token.errors.symbol ? "").trim!.length > 0
@@ -772,11 +788,17 @@ custom-token = ({ store, web3t })->
                 return store.custom-token.errors.network = "No configuration found for chosen #{network} network"
             store.custom-token.network = { token, ...found-wallet?[network] }
             clear-chosen-token-data!
-            clear-errors!
+            clear-default-errors!
+            
+    set-default-chosen-token-data = ->
+        store.custom-token.decimals = 0
+        store.custom-token.symbol = ""
+        store.custom-token.symbol-display = ""
         
     clear-chosen-token-data = ->
         store.custom-token.decimals = 0
         store.custom-token.symbol = ""
+        store.custom-token.symbol-display = ""
         store.custom-token.contract-address = ""
         
     clear-errors = ->
@@ -784,6 +806,13 @@ custom-token = ({ store, web3t })->
         store.custom-token.errors.symbol = ""
         store.custom-token.errors.decimals = ""
         store.custom-token.errors.network = ""
+        
+    clear-default-errors = ->
+        store.custom-token.errors.contract-address = ""
+        store.custom-token.errors.decimals = ""
+        store.custom-token.errors.network = ""
+
+    input-disabled = (store.custom-token.symbol ? "".trim!).length is 0        
             
     create-network-position = (data)-->
         { api, group, token } = data
@@ -836,13 +865,13 @@ custom-token = ({ store, web3t })->
                             .pug.control-label.error.text-left #{store.custom-token.errors.contract-address}
                 form-group \receiver, "Token symbol", icon-style, ->
                     .pug
-                        input.pug(type='text' style=input-style on-change=token-symbol-change value="#{symbol}"  id="symbol" )
+                        input.pug(type='text' disabled=input-disabled style=input-style on-change=token-symbol-change value="#{symbol-display}"  id="symbol" )
                         if has-symbol-error
                             .pug.control-label.error.text-left #{store.custom-token.errors.symbol}
                 form-group \send-amount, "Token Decimals", icon-style, ->
                     .pug
                         .input-wrapper.pug
-                            input.pug(type='number' style=input-style placeholder="0" on-change=decimals-change value="#{decimals}"  id="decimals" )
+                            input.pug(type='number' disabled=input-disabled style=input-style placeholder="0" on-change=decimals-change value="#{decimals}"  id="decimals" )
                             if has-decimals-error
                                 .pug.control-label.error.text-left #{store.custom-token.errors.decimals}
             .pug.button-container
