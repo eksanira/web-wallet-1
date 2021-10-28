@@ -200,7 +200,6 @@ module.exports = ({store})->
         cb null, data        
         
     form-contract-data = (cb)->
-        console.log "[form-contract-data]"    
         if not store.current.send.chosen-network?
             return cb null 
         
@@ -441,7 +440,8 @@ module.exports = ({store})->
             web3.eth.provider-url = wallet.network.api.web3Provider
             contract = web3.eth.contract(abis.EvmToNativeBridge).at(EVM_TO_NATIVE_BRIDGE)
             
-            send.data = contract.transferToNative.get-data(eth-address)           
+            data = contract.transferToNative.get-data(eth-address)
+            send.data = data         
             store.current.send.contract-address = EVM_TO_NATIVE_BRIDGE
         
         send.data = data
