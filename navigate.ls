@@ -47,9 +47,7 @@ module.exports = (store, web3t, page, ask-pin, cb) !->
                 store.pages.splice(-(store.pages.length - index), 1)
             store.pages.push(page) 
     store.pages = [\wallets] if page is \wallets
-    prev = 
-        | store.current.page is \locked => \wallets
-        | _ => store.current.page
+    prev = store.current.page
     store.current.page = \loading
     store.current.loading = yes
     name = get-page store, page, prev
