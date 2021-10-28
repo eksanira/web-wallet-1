@@ -15,6 +15,7 @@ require! {
     \./render-error.ls
     \./scam-warning.ls
     \./service-worker.ls
+    \./navigate.ls
 }
 is-allowed-context = ->
     return yes if window == window.parent
@@ -29,8 +30,9 @@ change-device = ->
     store.current.device = get-device!
     store.current.size = get-size!
 lock-wallet = ->
-    return if window.nolock is yes or store.current.page isnt \wallets
-    store.current.page = \locked
+    return if window.nolock is yes or store.current.transactionsAreLoading is yes
+    navigate store, web3t, \locked
+    #store.current.page = \locked
 new-idle = ->
     set-timeout lock-wallet, 90000
 reset-idle = ->
