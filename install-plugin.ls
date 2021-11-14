@@ -1,6 +1,6 @@
 require! {
     \localStorage
-    \prelude-ls : { any, map, filter }
+    \prelude-ls : { keys, any, map, filter, obj-to-pairs }
     #react controls
     \./modal.ls : { install, replace }
     \../web3t/providers/superagent.ls : { get }
@@ -36,6 +36,7 @@ plugin-pairs = {
     vlx_erc20: \eth 
     vlx_usdc: \usdc   
     bsc_vlx: \bnb 
+    usdc: <[ vlx_usdc ]>  
 }    
 required-fields = <[ type token enabled ]>
 not-in = (arr, arr2)->
@@ -96,8 +97,16 @@ build-name = (token)-> "plugin-#{token}"
 
 install-plugins = (plugin, cb)->
     result-plugins = 
+        | plugin-pairs[plugin.token]? and typeof! plugin-pairs[plugin.token] is \Array =>
+            rest = 
+                current-configs
+                    |> obj-to-pairs 
+                    |> filter (it)->
+                        it?1?token in plugin-pairs[plugin.token] 
+                    |> map (-> it?1)                            
+            [plugin] ++ rest      
         | plugin-pairs[plugin.token]? => [plugin, current-configs[plugin-pairs[plugin.token]]]
-        | _ => [plugin]  
+        | _ => [plugin]
     err <- install-all-plugins result-plugins
     return cb err if err?
     cb null 
