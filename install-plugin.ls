@@ -34,9 +34,9 @@ plugin-pairs = {
     vlx_huobi: \huobi
     busd: \bnb
     vlx_erc20: \eth 
-    vlx_usdc: \usdc   
+    #vlx_usdc: \usdc   
     bsc_vlx: \bnb 
-    usdc: <[ vlx_usdc ]>  
+    #usdc: <[ vlx_usdc ]>  
 }    
 required-fields = <[ type token enabled ]>
 not-in = (arr, arr2)->
