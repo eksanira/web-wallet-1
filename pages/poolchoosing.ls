@@ -790,10 +790,11 @@ staking-content = (store, web3t)->
             | _ => "..."
         mystake-class = if +my-stake > 0 then "with-stake" else ""
         chosen = if store.staking.chosen-pool? and store.staking.chosen-pool.address is item.address then "chosen" else ""
+        config = {decimals: 2}
         tr.pug(class="#{item.status} #{chosen}")
             td.pug(datacolumn='Staker Address' title="#{item.address}")
                 address-holder-popup { store, wallet }
-            td.pug #{stake}
+            td.pug #{ round-human(stake, config) }
             td.pug #{fee}%
             td.pug(class="#{mystake-class}")
                 my-stake |> map build-my-stake
