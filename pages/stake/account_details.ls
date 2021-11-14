@@ -678,8 +678,8 @@ Rewards = (props)->
             apr
         } = item
         return null if epoch is store.staking.current-epoch   
-        $amount = amount `div` (10^9)
-        $newBalance = newBalance `div` (10^9)
+        $amount = round-human(amount `div` (10^9), {decimals: 9})
+        $newBalance = round-human(newBalance `div` (10^9), {decimals: 9})
         if store.staking.current-epoch is epoch then
             rewardSlot = $amount = $newBalance = percentChange = apr =  "Loading..."
         $class = if epoch is store.staking.current-epoch then "syncing" else ""
