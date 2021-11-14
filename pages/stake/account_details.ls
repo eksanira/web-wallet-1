@@ -1003,9 +1003,9 @@ staking-content = (store, web3t)->
                     h3.pug #{lang.balance}
                 .description.pug
                     span.pug
-                        | #{your-balance} VLX
+                        | #{round-human(your-balance)} VLX
                     span.pug.usd-amount
-                        | $#{usd-balance}
+                        | $#{round-human(usd-balance)}
             .pug
             .pug
             .pug.section
@@ -1031,7 +1031,7 @@ staking-content = (store, web3t)->
                     h3.pug #{lang.creditsObserved}
                 .description.pug
                     span.pug
-                        | #{credits_observed}
+                        | #{round-human(credits_observed)}
             .pug.section
                 .title.pug
                     h3.pug #{lang.delegatedStake}
@@ -1039,7 +1039,7 @@ staking-content = (store, web3t)->
                     span.pug
                         | #{round-human(delegated_stake)} VLX
                     span.pug.usd-amount
-                        | $#{usd-delegated_stake}
+                        | $#{round-human(usd-delegated_stake)}
             .pug.section
                 .title.pug
                     h3.pug #{lang.activeStake}
@@ -1047,7 +1047,7 @@ staking-content = (store, web3t)->
                     span.pug
                         | #{round-human(active_stake)} VLX
                     span.pug.usd-amount
-                        | $#{usd-active_stake}
+                        | $#{round-human(usd-active_stake)}
                     if store.staking.myStakeMaxPart? and no
                         span.pug.myStakeMaxPart
                             .pug.animation
@@ -1062,7 +1062,7 @@ staking-content = (store, web3t)->
                     span.pug
                         | #{round-human(inactive_stake)} VLX
                     span.pug.usd-amount
-                        | $#{usd-inactive_stake}
+                        | $#{round-human(usd-inactive_stake)}
                     if store.staking.chosenAccount.status is "activating"
                         more-style =
                             text-decoration: "none"
