@@ -283,7 +283,7 @@ module.exports = (store, web3t)->
             store.current.switch-account = no
             store.staking.getAccountsFromCashe = no
             <- web3t.refresh
-        default-account-name = -> "#{lang.account} #{index}"
+        default-account-name = -> "Account #{index}"
         current-account-name = ->
             local-storage.get-item(default-account-name!) ? default-account-name!
         account-name = current-account-name!
