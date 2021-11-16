@@ -115,7 +115,7 @@ test.describe.parallel('Auth', () => {
         kr: '어서 오십시오!',
         cn: '欢迎！',
         // in: 'स्वागत हे!',
-        sp: '¡Bienvenido!',
+        es: '¡Bienvenido!',
         ua: 'Ласкаво просимо!',
         ru: 'Добро пожаловать!',
         ar: 'مرحبا!',
