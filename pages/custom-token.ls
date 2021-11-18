@@ -559,6 +559,7 @@ custom-token = ({ store, web3t })->
         console.log "check1", custom-tokens
         found = 
             all-tokens
+                |> filter (-> it?[store.current.network]?group is group)
                 |> find (it)-> 
                     up(it?[store.current.network]?address) is up(address)
         console.log "found" found
