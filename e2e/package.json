@@ -9,7 +9,8 @@
     "allure:serve": "npx allure serve",
     "test": "npx playwright test tests/stable",
     "blockchain-health-check": "ts-node src/tests/blockchain-health-check.ts",
-    "balances-api-health-check": "ts-node src/tests/balances-api-healcheck.ts"
+    "balances-api-health-check": "ts-node src/tests/balances-api-healcheck.ts",
+    "prod-monitoring-test": "NETWORK=mainnet ENVIRONMENT=prod npx playwright test monitoring"
   },
   "repository": {
     "type": "git",

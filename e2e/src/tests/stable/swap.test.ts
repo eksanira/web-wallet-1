@@ -23,7 +23,8 @@ test.describe('Swap: ', () => {
   test('VLX Native > VLX Legacy', async ({ page }) => {
     await walletsScreen.swapTokens('token-vlx_native', 'token-vlx2', 0.0001);
 
-    const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
+    const txSignatureLink = await page.getAttribute('.sent .text a', 'href');
+    if (!txSignatureLink) throw new Error('No txSignatureLink');
     const txSignature = txSignatureLink.replace('https://native.velas.com/tx/', '');
     log.debug(`txSignature: ${txSignature}`);
     await velasNative.waitForConfirmedTransaction(txSignature);
@@ -32,7 +33,8 @@ test.describe('Swap: ', () => {
   test('VLX Native > EVM', async ({ page }) => {
     await walletsScreen.swapTokens('token-vlx_native', 'token-vlx_evm', 0.0001);
 
-    const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
+    const txSignatureLink = await page.getAttribute('.sent .text a', 'href');
+    if (!txSignatureLink) throw new Error('No txSignatureLink');
     const txSignature = txSignatureLink.replace('https://native.velas.com/tx/', '');
     log.debug(`txSignature: ${txSignature}`);
 
@@ -67,5 +69,30 @@ test.describe('Swap: ', () => {
   test.skip('EVM > VLX ERC-20', async () => {
     await walletsScreen.swapTokens('token-vlx_evm', 'token-vlx_erc20', 0.01);
     await walletsScreen.confirmTxFromEvmExplorer();
+  });
+
+  test.skip('EVM > BEP-20', async () => {
+    await walletsScreen.swapTokens('token-vlx_evm', 'token-bsc_vlx', 1);
+    await walletsScreen.confirmTxFromEvmExplorer();
+  });
+
+  test.skip('EVM > HRC-20', async () => {
+    await walletsScreen.swapTokens('token-vlx_evm', 'token-vlx_huobi', 0.0001);
+    await walletsScreen.confirmTxFromEvmExplorer();
+  });
+
+  test('HRC-20 > EVM', async () => {
+    await walletsScreen.swapTokens('token-vlx_huobi', 'token-vlx_evm', 0.0001);
+    await walletsScreen.confirmTxFromForeignExplorer();
+  });
+
+  test('ERC-20 > EVM', async () => {
+    await walletsScreen.swapTokens('token-vlx_erc20', 'token-vlx_evm', 0.01);
+    await walletsScreen.confirmTxFromForeignExplorer();
+  });
+
+  test('BEP-20 > EVM', async () => {
+    await walletsScreen.swapTokens('token-bsc_vlx', 'token-vlx_evm', 1);
+    await walletsScreen.confirmTxFromForeignExplorer();
   });
 });
