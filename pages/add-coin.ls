@@ -59,7 +59,6 @@ require! {
         .add-custom-token
             float: right  
         >.title
-            background-color: var(--bgspare)
             box-sizing: border-box
             font-size: 22px
             padding: 10px
