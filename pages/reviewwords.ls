@@ -185,7 +185,7 @@ review-words-panel = (store, web3t)->
     style = get-primary-info store
     button-primary1-style=
         border: "0"
-        color: style.app.text2
+        color: style.app.text-seed-btn
         background: style.app.primary1
         background-color: style.app.primary1-spare
     button-primary2-style=
@@ -199,7 +199,7 @@ review-words-panel = (store, web3t)->
         background: style.app.primary3
         background-color: style.app.primary3-spare
     btn-icon =
-        filter: style.app.btn-icon
+        filter: style.app.primary-button-filter
     back = ->
         store.current.page = 'chooseinit'
     text-style =

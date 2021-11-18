@@ -135,7 +135,7 @@ newseed = ({ store, web3t })->
         background: "transparent"
     button-primary1-style=
         border: "1px solid #{style.app.primary1}"
-        color: style.app.text2
+        color: style.app.text-seed-btn
         background: style.app.primary1
         background-color: style.app.primary1-spare
     button-primary3-style=
@@ -144,7 +144,7 @@ newseed = ({ store, web3t })->
         background: style.app.primary3
         background-color: style.app.primary3-spare
     btn-icon =
-        filter: style.app.btn-icon
+        filter: style.app.primary-button-filter
     seed-style=
         border: "1px solid #{style.app.border}"
         color: style.app.text
