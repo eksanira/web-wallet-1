@@ -135,7 +135,7 @@ newseed = ({ store, web3t })->
         background: "transparent"
     button-primary1-style=
         border: "1px solid #{style.app.primary1}"
-        color: style.app.text
+        color: style.app.text2
         background: style.app.primary1
         background-color: style.app.primary1-spare
     button-primary3-style=
@@ -187,7 +187,7 @@ newseed = ({ store, web3t })->
                     | #{lang.cancel}
             button.pug.right(style=button-primary1-style on-click=verify-seed)
                 span.pug
-                    img.icon-svg.pug(src="#{icons.right}")
+                    img.icon-svg.pug(src="#{icons.right}" style=btn-icon)
                     | #{lang.next}
         if store.current.verify-seed-error is yes
             .pug.warning(style=text-style)
