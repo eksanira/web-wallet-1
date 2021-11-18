@@ -80,7 +80,7 @@ test.describe.parallel('Settings', () => {
       kr: ['계정 관리', '한국어'],
       cn: ['管理帐户', '中文語言'],
       // in:
-      sp: ['Administrar Cuenta', 'Español'],
+      es: ['Administrar Cuenta', 'Español'],
       ua: ['Управління аккаунтом', 'Українська'],
       ru: ['Управлять аккаунтом', 'Русский'],
       ar: ['إدارة الحساب', 'عربى'],

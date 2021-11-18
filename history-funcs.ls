@@ -118,7 +118,7 @@ module.exports = (store, web3t)->
         delete store.current.filter["#{key}"]
         apply-transactions store  
     delete-pending-tx = (tx)-> (event)->
-        agree <- confirm store, "Would you like to remove pending transaction? Your balance will be increased till confirmed transaction"
+        agree <- confirm store, "Would you like to remove pending transaction?  Your balance will be updated once the transaction is confirmed"
         return if not agree
         err <- remove-tx { store, ...tx }
         <- web3t.refresh

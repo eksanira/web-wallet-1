@@ -29,7 +29,7 @@ require! {
     \./claim-stake.ls
     \../staking/can-make-staking.ls
     \./epoch.ls
-    \./confirmation.ls : { alert, notify }
+    \./confirmation.ls : { alert, notify, confirm }
     \../components/button.ls
     \../components/address-holder-popup.ls
     \../components/pagination.ls
@@ -756,7 +756,16 @@ staking-content = (store, web3t)->
             item.checked = yes
             store.staking.chosen-pool = item
             store.staking.add.new-address = ""
-            store.staking.error = "" 
+            store.staking.error = ""
+            delegate-amount = your-balance
+            delegate-receiver = store.staking.chosen-pool.address
+            confirmText = "Please confirm that you would like to delegate #{delegate-amount} VLX to #{delegate-receiver}"
+            agree <- confirm store, confirmText
+            return if agree is no
+            delegate!
+             
+        cancel-pool = ->
+            store.staking.chosen-pool = null
         to-eth = ->
             item.eth = not item.eth
         reward =
@@ -781,18 +790,18 @@ staking-content = (store, web3t)->
             | _ => "..."
         mystake-class = if +my-stake > 0 then "with-stake" else ""
         chosen = if store.staking.chosen-pool? and store.staking.chosen-pool.address is item.address then "chosen" else ""
+        config = {decimals: 2}
         tr.pug(class="#{item.status} #{chosen}")
             td.pug(datacolumn='Staker Address' title="#{item.address}")
                 address-holder-popup { store, wallet }
-            td.pug #{stake}
+            td.pug #{ round-human(stake, config) }
             td.pug #{fee}%
             td.pug(class="#{mystake-class}")
                 my-stake |> map build-my-stake
             td.pug #{item.stakers}
             td.pug
                 button { store, on-click: choose-pull , type: \secondary , icon : \arrowRight }
-    cancel-pool = ->
-        store.staking.chosen-pool = null
+    
     activate = (step)-> ->
         store.current.step = step
     activate-first = activate \first
@@ -854,7 +863,7 @@ staking-content = (store, web3t)->
                                     paginate(store.staking.pools, per-page, store.staking.current_validators_page)
                                         |> map build-staker store, web3t
                         pagination {store, type: \validators, disabled: pagination-disabled, config: {array: store.staking.pools }}
-        if store.staking.chosen-pool?
+        if no and store.staking.chosen-pool?
             .pug.single-section.form-group(id="choosen-pull")
                 .pug.section
                     .title.pug

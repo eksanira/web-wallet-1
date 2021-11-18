@@ -185,7 +185,7 @@ review-words-panel = (store, web3t)->
     style = get-primary-info store
     button-primary1-style=
         border: "0"
-        color: style.app.text-inverts
+        color: style.app.text-seed-btn
         background: style.app.primary1
         background-color: style.app.primary1-spare
     button-primary2-style=
@@ -199,7 +199,7 @@ review-words-panel = (store, web3t)->
         background: style.app.primary3
         background-color: style.app.primary3-spare
     btn-icon =
-        filter: style.app.btn-icon
+        filter: style.app.primary-button-filter
     back = ->
         store.current.page = 'chooseinit'
     text-style =
@@ -219,7 +219,7 @@ review-words-panel = (store, web3t)->
                     img.icon-svg.pug(src="#{icons.print}")
                     | #{lang.print }
                 button.pug.right.save(on-click=next style=button-primary1-style id='seed-next')
-                    img.icon-svg.pug(src="#{icons.right}")
+                    img.icon-svg.pug(src="#{icons.right}" style=btn-icon)
                     | #{lang.next }
         .pug.hint(style=text-style) #{lang.new-seed-warning}
 reviewwords = ({ store, web3t })->

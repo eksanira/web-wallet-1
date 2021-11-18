@@ -2,7 +2,7 @@ import { log } from '../tools/logger';
 import { Page } from '../types';
 import { BaseScreen } from './base';
 
-export type Language = 'fr' | 'en' | 'kr' | 'cn' | 'sp' | 'ua' | 'ru' | 'ar';
+export type Language = 'fr' | 'en' | 'kr' | 'cn' | 'es' | 'ua' | 'ru' | 'ar';
 
 export class Auth extends BaseScreen {
   constructor(public page: Page) {

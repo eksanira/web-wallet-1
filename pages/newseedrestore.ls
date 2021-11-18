@@ -147,7 +147,7 @@ newseed = ({ store, web3t })->
     text-style =
         color: style.app.text
     btn-icon =
-        filter: style.app.btn-icon
+        filter: style.app.primary-button-filter
     address-input=
         color: style.app.text
         background: style.app.wallet
@@ -210,15 +210,15 @@ newseed = ({ store, web3t })->
         .pug.align-v
             button.pug.left(style=button-primary1-style on-click=restore12 id="restore-12")
                 span.pug
-                    img.icon-svg.pug(src="#{icons.restore}")
+                    img.icon-svg.pug(src="#{icons.restore}" style=btn-icon)
                     | 12 #{lang.restore-words12}
             button.pug.right(style=button-primary1-style on-click=restore24 id="restore-24")
                 span.pug
-                    img.icon-svg.pug(src="#{icons.restore}")
+                    img.icon-svg.pug(src="#{icons.restore}" style=btn-icon)
                     | 24 #{lang.restore-words24}
             button.pug.right(style=button-primary1-style on-click=restorecustom id="restore-custom")
                 span.pug
-                    img.icon-svg.pug(src="#{icons.restore}")
+                    img.icon-svg.pug(src="#{icons.restore}" style=btn-icon)
                     | Custom
             button.pug.right(on-click=back style=button-primary3-style id="restore-back")
                 img.icon-svg.pug(src="#{icons.arrow-left}" style=btn-icon)

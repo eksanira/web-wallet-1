@@ -210,6 +210,8 @@ restore-words-panel = (store, web3t)->
         color: style.app.text2
         background: style.app.primary3
         background-color: style.app.primary3-spare
+    icon-style=
+        filter: style.app.filter
     btn-icon =
         filter: style.app.btn-icon
     text-style =
@@ -237,7 +239,7 @@ restore-words-panel = (store, web3t)->
                 img.icon-svg.pug(src="#{icons.close2}" style=btn-icon)
                 | #{lang.cancel }
             button.pug.right(on-click=next style=button-primary1-style id="seed-phrase-next")
-                img.icon-svg.pug(src="#{icons.right}")
+                img.icon-svg.pug(src="#{icons.right}" style=icon-style)
                 | #{lang.next }
         .pug.hint(style=text-style) #{lang.new-seed-warning-restore}
 newseed = ({ store, web3t })->

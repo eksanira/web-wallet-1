@@ -275,6 +275,7 @@ store =
     releases: []
     current:
         switch-network: no  
+        search-language: ""
         current-network-details: 
             show: no    
         network-details:

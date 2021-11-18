@@ -11,7 +11,7 @@ require! {
     \../components/button.ls
     \../components/burger.ls
     \./choose-themes.ls
-    \prelude-ls : { obj-to-pairs, pairs-to-obj, map }
+    \prelude-ls : { keys, obj-to-pairs, pairs-to-obj, map, filter }
 }
 .settings-menu
     @import scheme
@@ -202,7 +202,7 @@ require! {
                 right: 0
                 padding: 0
                 top: 25px
-                height: 300px
+                height: auto
                 margin: 5px
                 width: 180px
                 box-sizing: border-box
@@ -211,6 +211,7 @@ require! {
                 box-shadow: 0px 13px 20px 0px rgba(0, 0, 0, 0.15)
                 ul
                     padding: 15px
+                    max-height: 250px
                     margin: 0
                     overflow: scroll
                     background: linear-gradient(var(--color1) 30%, rgba(50,18,96, 0)), linear-gradient(rgba(50,18,96, 0), var(--color1) 70%) 0 100%, radial-gradient(farthest-side at 50% 0, var(--color2), rgba(0,0,0,0)), radial-gradient(farthest-side at 50% 100%, var(--color2), rgba(0,0,0,0)) 0 100%
@@ -340,103 +341,51 @@ require! {
 list-language = (store, web3t)->
     style = get-primary-info store
     lang = get-lang store
+    country-codes = 
+        en: \English
+        ru: \Русский
+        ua: \Українська
+        cn: \中文語言
+        kr: \한국어
+        fr: \Français
+        es: \Español
+        ar: \عربى
+        in: "हिंदी"
+        id: \Indonesian
+        ph: \Pilipino
+        yr: \Yoruba
+        vn: "Tiếng Việt"
+        
     set-lang = (lang)->
-        #return alert "lang is not available" if not store.langs[store.lang]?
         local-storage.set-item \lang, lang
         store.lang = lang
-    change-lang-en = ->
-        store.current.language-menu = no
-        return set-lang \en
-    change-lang-ru = ->
-        store.current.language-menu = no
-        return set-lang \ru
-    change-lang-ua = ->
-        store.current.language-menu = no
-        return set-lang \uk
-    change-lang-cn = ->
-        store.current.language-menu = no
-        return set-lang \zh
-    change-lang-kr = ->
-        store.current.language-menu = no
-        return set-lang \ko
-    change-lang-fr = ->
-        store.current.language-menu = no
-        return set-lang \fr
-    change-lang-es = ->
-        store.current.language-menu = no
-        return set-lang \es
-    change-lang-ar = ->
-        store.current.language-menu = no
-        return set-lang \ar
-    change-lang-in = ->
-        store.current.language-menu = no
-        return set-lang \in
-    change-lang-id = ->
-        store.current.language-menu = no
-        return set-lang \id
-    change-lang-ph = ->
-        store.current.language-menu = no
-        return set-lang \ph
-    change-lang-yr = ->
-        store.current.language-menu = no
-        return set-lang \yr
-    change-lang-vn = ->
-        store.current.language-menu = no
-        return set-lang \vn
+    
+    change-lang = (code)->
+        ->
+            store.current.language-menu = no
+            return set-lang code
     color =
         color: style.app.text
-    comming-soon =
-        opacity: ".3"
-        cursor: "no-drop"
+
+    up = (it)->
+        it.to-upper-case!
+
     ul.pug
-        li.pug.lang-item(key="langs-gr" style=comming-soon)
-            img.pug(src="#{icons.langs-gr}")
-            | Deutsch
-        li.pug.lang-item(key="langs-fr" on-click=change-lang-fr style=color)
-            img.pug(src="#{icons.langs-fr}")
-            | Français
-        li.pug.lang-item(key="langs-en" on-click=change-lang-en style=color)
-            img.pug(src="#{icons.langs-en}")
-            | English
-        li.pug.lang-item(key="langs-kr" on-click=change-lang-kr style=color)
-            img.pug(src="#{icons.langs-cn}")
-            | 한국어
-        li.pug.lang-item(key="langs-cn" on-click=change-lang-cn style=color)
-            img.pug(src="#{icons.langs-kr}")
-            | 中文語言
-        li.pug.lang-item(key="langs-ar" on-click=change-lang-ar style=color)
-            img.pug(src="#{icons.langs-ar}")
-            | عربى
-        li.pug.lang-item(key="langs-jp" style=comming-soon)
-            img.pug(src="#{icons.langs-jp}")
-            | 日本語
-        li.pug.lang-item(key="langs-in" on-click=change-lang-in style=color)
-            img.pug(src="#{icons.langs-in}")
-            | हिंदी
-        li.pug.lang-item(key="langs-es" on-click=change-lang-es style=color)
-            img.pug(src="#{icons.langs-sp}")
-            | Español
-        li.pug.lang-item(key="langs-ua" on-click=change-lang-ua style=color)
-            img.pug(src="#{icons.langs-ua}")
-            | Українська
-        li.pug.lang-item(key="langs-ru" on-click=change-lang-ru style=color)
-            img.pug(src="#{icons.langs-ru}")
-            | Русский
-        li.pug.lang-item(key="langs-kz" style=comming-soon)
-            img.pug(src="#{icons.langs-kz}")
-            | Қазақ
-        li.pug.lang-item(key="langs-id" on-click=change-lang-id style=color id="lang-id")
-            img.pug(src="#{icons.langs-id}")
-            .pug Indonesian
-        li.pug.lang-item(key="langs-ph" on-click=change-lang-ph style=color id="lang-ph")
-            img.pug(src="#{icons.langs-ph}")
-            .pug Pilipino
-        li.pug.lang-item(key="langs-yr" on-click=change-lang-yr style=color id="lang-yr")
-            img.pug(src="#{icons.langs-yr}")
-            .pug Yoruba
-        li.pug.lang-item(key="langs-vn" on-click=change-lang-vn style=color id="lang-vn")
-            img.pug(src="#{icons.langs-vn}")
-            .pug Tiếng Việt
+        country-codes
+            |> keys
+            |> filter (it)->
+                name = country-codes[it]
+                (store.current.search-language.trim!.length is 0) or 
+                    up(name).startsWith(up(store.current.search-language)) or
+                    up(it).startsWith(up(store.current.search-language))    
+            |> map (code) ->
+                lang-style = color
+                name = country-codes[code]
+                tag = "langs_#{code}"
+                li.pug.lang-item(key="langs_#{code}" on-click=change-lang(code) class="#{code}" style=lang-style)
+                    img.pug(src="#{icons[tag]}")
+                    | #{name}
+        
 switch-language = (store, web3t)->
     style = get-primary-info store
     lang = get-lang store
@@ -451,11 +400,16 @@ switch-language = (store, web3t)->
         store.current.language-menu = not store.current.language-menu
     menu-out = ->
         store.current.language-menu = no
+    search-lang = (event)->
+        input = (event.target.value ? "")
+        store.current.search-language = input
+        
+        
     span.pug
         button { store, on-click: open-language , type: \secondary , icon : \arrowRight, text: \languageType }
         if store.current.language-menu
             .pug.langs-drop(style=filter-body on-mouse-leave=menu-out)
-                input.pug.search(value="" style=input-style placeholder="#{lang.search}")
+                input.pug.search(value="#{store.current.search-language}" style=input-style placeholder="#{lang.search}" on-change=search-lang)
                 list-language store, web3t
 switch-account = (store, web3t)->
     {  account-left, account-right, change-account-index } = menu-funcs store, web3t

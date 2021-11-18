@@ -7,7 +7,7 @@ require! {
     \./icon.ls
     \../navigate.ls
     \../../web3t/providers/superagent.ls : { get }
-    \prelude-ls : { find }
+    \prelude-ls : { each, map, find }
     \../menu-funcs.ls
     \../icons.ls
     \../navigate.ls
@@ -227,39 +227,37 @@ language = (store, web3t)->
         filter: style.app.filterIcon
     text-style =
         color: style.app.text
+        
+    country-codes = 
+        en: \English
+        ru: \Русский
+        ua: \Українська
+        cn: \中文語言
+        kr: \한국어
+        fr: \Français
+        es: \Español
+        ar: \عربى
+        in: "हिंदी"
+        id: \Indonesian
+        ph: \Pilipino
+        yr: \Yoruba
+        vn: "Tiếng Việt"
+        
+    order =
+        * <[ fr en cn kr ]>
+        * <[ ru ua es ar ]>
+        * <[ in id ph yr ]>
+        * <[ vn ]>
+        
     set-lang = (lang)->
-        #return alert "lang is not available" if not store.langs[store.lang]?
         store.lang = lang
         store.current.choose-language = no
-    change-lang-en = ->
-        return set-lang \en
-    change-lang-ru = ->
-        return set-lang \ru
-    change-lang-ua = ->
-        return set-lang \uk
-    change-lang-cn = ->
-        return set-lang \zh
-    change-lang-kr = ->
-        return set-lang \ko
-    change-lang-fr = ->
-        return set-lang \fr
-    change-lang-es = ->
-        return set-lang \es
-    change-lang-ar = ->
-        return set-lang \ar
-    change-lang-id = ->
-        return set-lang \id
-    change-lang-ph = ->
-        return set-lang \ph
-    change-lang-yr = ->
-        return set-lang \yr
-    change-lang-vn = ->
-        return set-lang \vn
-    change-lang-in = ->
-        return set-lang \in
-    comming-soon =
-        opacity: ".3"
-        cursor: "no-drop"
+    
+    change-lang = (code)->
+        ->
+            store.current.language-menu = no
+            return set-lang code    
+    
     download = ->
         navigate store, web3t, \downloadwallet
     .pug
@@ -270,65 +268,27 @@ language = (store, web3t)->
                 span.pug.version.low #{store.version}
             .welcome.pug(style=text-style) #{lang.language}
             .pug.langs
-                ul.pug
-                    li.pug.lang-item(key="lang-gr" style=comming-soon id="lang-gr")
-                        img.pug(src="#{icons.langs-gr}")
-                        .pug Deutsch
-                    li.pug.lang-item(key="lang-fr" on-click=change-lang-fr style=color id="lang-fr")
-                        img.pug(src="#{icons.langs-fr}")
-                        .pug Français
-                    li.pug.lang-item(key="lang-en" on-click=change-lang-en style=color id="lang-en")
-                        img.pug(src="#{icons.langs-en}")
-                        .pug English
-                    li.pug.lang-item(key="lang-kr" on-click=change-lang-kr style=color id="lang-kr")
-                        img.pug(src="#{icons.langs-cn}")
-                        .pug 한국어
-                ul.pug
-                    li.pug.lang-item(key="lang-cn" on-click=change-lang-cn style=color id="lang-cn")
-                        img.pug(src="#{icons.langs-kr}")
-                        .pug 中文語言
-                    li.pug.lang-item(key="lang-jp" style=comming-soon id="lang-jp")
-                        img.pug(src="#{icons.langs-jp}")
-                        .pug 日本語
-                    li.pug.lang-item(key="lang-in" on-click=change-lang-in style=color id="lang-in")
-                        img.pug(src="#{icons.langs-hn}")
-                        .pug हिंदी
-                    li.pug.lang-item(key="lang-sp" on-click=change-lang-es style=color id="lang-sp")
-                        img.pug(src="#{icons.langs-sp}")
-                        .pug Español
-                ul.pug
-                    li.pug.lang-item(key="lang-ua" on-click=change-lang-ua style=color id="lang-ua")
-                        img.pug(src="#{icons.langs-ua}")
-                        .pug Українська
-                    li.pug.lang-item(key="lang-ru" on-click=change-lang-ru style=color id="lang-ru")
-                        img.pug(src="#{icons.langs-ru}")
-                        .pug Русский
-                    li.pug.lang-item(key="lang-kz" style=comming-soon id="lang-kz")
-                        img.pug(src="#{icons.langs-kz}")
-                        .pug Қазақ
-                    li.pug.lang-item(key="lang-ar" on-click=change-lang-ar style=color id="lang-ar")
-                        img.pug(src="#{icons.langs-ar}")
-                        .pug عربى
-                ul.pug
-                    li.pug.lang-item(key="lang-id" on-click=change-lang-id style=color id="lang-id")
-                        img.pug(src="#{icons.langs-id}")
-                        .pug Indonesian
-                    li.pug.lang-item(key="lang-ph" on-click=change-lang-ph style=color id="lang-ph")
-                        img.pug(src="#{icons.langs-ph}")
-                        .pug Pilipino
-                    li.pug.lang-item(key="lang-yr" on-click=change-lang-yr style=color id="lang-yr")
-                        img.pug(src="#{icons.langs-yr}")
-                        .pug Yoruba
-                    li.pug.lang-item(key="lang-vn" on-click=change-lang-vn style=color id="lang-vn")
-                        img.pug(src="#{icons.langs-vn}")
-                        .pug Tiếng Việt
-            .pug.downloadwalletlist
-                a.pug(href="https://apps.apple.com/us/app/velas-mobile-wallet/id1541032748" target="_blank" id="download-ios")
-                    img.icon-download.pug(src="#{icons[\ios]}")
-                a.pug(href="https://play.google.com/store/apps/details?id=com.velas.mobile_wallet" target="_blank" id="download-android")
-                    img.icon-download.pug(src="#{icons[\android]}")
-                span.pug(id="download-desktop")
-                    img.icon-download.pug(on-click=download src="#{icons[\desktop]}")
+                order
+                    |> map (arr)->
+                        ul.pug
+                            arr
+                                |> map (code) ->
+                                    lang-style = color
+                                    name = country-codes[code]
+                                    tag = "langs_#{code}"
+                                    
+                                    li.pug.lang-item(key="lang_#{code}" on-click=change-lang(code) style=color id="lang-#{code}")
+                                        img.pug(src="#{icons[tag]}")
+                                        .pug #{name}
+                            
+            if not process?versions?electron?    
+                .pug.downloadwalletlist
+                    a.pug(href="https://apps.apple.com/us/app/velas-mobile-wallet/id1541032748" target="_blank" id="download-ios")
+                        img.icon-download.pug(src="#{icons[\ios]}")
+                    a.pug(href="https://play.google.com/store/apps/details?id=com.velas.mobile_wallet" target="_blank" id="download-android")
+                        img.icon-download.pug(src="#{icons[\android]}")
+                    span.pug(id="download-desktop")
+                        img.icon-download.pug(on-click=download src="#{icons[\desktop]}")
 module.exports = ({ store, web3t } )->
     return null if store.current.choose-language isnt yes
     { close-language } = menu-funcs store, web3t
