@@ -185,11 +185,7 @@ review-words-panel = (store, web3t)->
     style = get-primary-info store
     button-primary1-style=
         border: "0"
-<<<<<<< HEAD
         color: style.app.text2
-=======
-        color: style.app.text-inverts
->>>>>>> 0ec5c7877db431aa5a85115763980ce846963a75
         background: style.app.primary1
         background-color: style.app.primary1-spare
     button-primary2-style=
