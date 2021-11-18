@@ -26,7 +26,7 @@ jobs:
         run: rm -rf ./test-results/
 
       - name: run tests
-        run: CI=true LOG_LEVEL=debug ENVIRONMENT=prod NETWORK=testnet npm test
+        run: CI=true LOG_LEVEL=debug ENVIRONMENT=prod NETWORK=testnet npm run prod-monitoring-test
 
       - name: upload artifacts
         if: always()
