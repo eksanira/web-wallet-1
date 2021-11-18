@@ -143,17 +143,17 @@ export class WalletsScreen extends BaseScreen {
     }
   }
 
-  async swapTokens(swapFromToken: Currency, swapToToken: Currency, transactionAmount: number): Promise<void> {
-    if (swapFromToken === swapToToken) {
+  async swapTokens(fromToken: Currency, toToken: Currency, transactionAmount: number): Promise<void> {
+    if (fromToken === toToken) {
       throw TypeError('You can\'t swap to the same token you are swapping from');
     }
 
-    await this.addToken(swapFromToken);
-    await this.addToken(swapToToken);
-    await this.selectWallet(swapFromToken);
+    await this.addToken(fromToken);
+    await this.addToken(toToken);
+    await this.selectWallet(fromToken);
     await this.swap.click();
     await this.swap.fill(String(transactionAmount));
-    await this.swap.chooseDestinationNetwork(swapToToken);
+    await this.swap.chooseDestinationNetwork(toToken);
     await this.swap.confirm();
   }
 
@@ -178,7 +178,7 @@ export class WalletsScreen extends BaseScreen {
     fill: async (transactionAmount: string) => {
       await this.page.fill('div.amount-field .input-area input[label="Send"]', transactionAmount);
     },
-    whatNetwork: async (swapToToken: Currency): Promise<string> => {
+    destinationNetwork: async (swapToToken: Currency): Promise<string> => {
       switch (swapToToken) {
         case 'token-vlx2':
           return 'Velas Legacy';
@@ -187,19 +187,20 @@ export class WalletsScreen extends BaseScreen {
         case 'token-vlx_evm':
           return 'Velas EVM';
         case 'token-bsc_vlx':
-          return 'Binance Smart Chain (VLX BEP20)';
+          return 'Binance';
         case 'token-vlx_huobi':
-          return 'Huobi ECO Chain (VLX HRC20)';
+          return 'Huobi ECO Chain';
         case 'token-vlx_erc20':
           return 'Ethereum';
         default: return 'default'
       }
     },
     chooseDestinationNetwork: async (swapToToken: Currency) => {
-      const destinationNetwork = await this.swap.whatNetwork(swapToToken);
-      if (destinationNetwork === 'default') {
-        return
+      if (await this.page.isVisible('.inactive.navigation-button')) {
+        return;
       }
+      const destinationNetwork = await this.swap.destinationNetwork(swapToToken);
+
       let chosenNetwork = await this.page.getAttribute('.change-network', 'value');
       if (chosenNetwork !== destinationNetwork) {
         await this.page.click('.network-slider .right');
@@ -212,6 +213,7 @@ export class WalletsScreen extends BaseScreen {
     confirm: async () => {
       await this.page.click('#send-confirm');
       await this.page.click('#confirmation-confirm', { timeout: 10000 });
+      await this.page.waitForSelector('div.sent');
     },
   }
 
@@ -221,18 +223,83 @@ export class WalletsScreen extends BaseScreen {
       this.page.click('.sent .text a'),
     ]);
 
+    let url = txPage.url();
+    if (url.includes('https://explorer.testnet.velas.com/')) {
+      url = url.replace('https://explorer', 'https://evmexplorer');
+      await txPage.goto(url);
+    }
+
     await txPage.waitForLoadState();
 
     let counter = 0;
-    while (await txPage.isVisible('.error-title') && counter < 30) {
+    while (await txPage.isVisible('.error-title') && counter < 100) {
       counter++;
       await txPage.waitForLoadState();
-      log.debug(`Tx hash not found on explorer, refreshing...\n${txPage.url()}`);
+      log.debug(`Tx hash not been found on explorer, refreshing...\n${txPage.url()}`);
       await txPage.waitForTimeout(1000);
       await txPage.reload();
     }
 
     await txPage.waitForSelector('[data-transaction-status="Success"]');
+  }
+
+  async confirmTxFromForeignExplorer(): Promise<void> {
+    const [txPage] = await Promise.all([
+      this.context.waitForEvent('page'),
+      this.page.click('.sent .text a'),
+    ]);
+
+    await txPage.waitForLoadState();
+
+    let url = txPage.url();
+
+    if (url.includes('https://testnet.hecoinfo.com/')) {
+      await this.foreignExplorer.waitForTxPending(txPage);
+      await this.foreignExplorer.waitForTxFound(txPage);
+    } else {
+      await this.foreignExplorer.waitForTxFound(txPage);
+      await this.foreignExplorer.waitForTxPending(txPage);
+    }
+
+    await this.foreignExplorer.waitForTxIndexing(txPage);
+
+    try {
+      await txPage.waitForSelector('span.rounded:has-text("Success")');
+    } catch (e) {
+      await txPage.waitForSelector('span.rounded:has-text("Fail")');
+      throw new Error(`Transaction ${txPage.url()} has failed`);
+    }
+  }
+
+  private foreignExplorer = {
+    waitForTxFound: async (page: Page) => {
+      let counter = 0;
+      while (await page.isVisible('.normalMode[alt="Search Not Found"]') && counter < 50) {
+        counter++;
+        await page.waitForLoadState();
+        log.debug(`Tx hash not been found on explorer, refreshing...\n${this.page.url()}`);
+        await page.waitForTimeout(1000);
+        await page.reload();
+      }
+    },
+    waitForTxPending: async (page: Page) => {
+      let counter = 0;
+      while (await page.isVisible('span.rounded:has-text("Pending")') && counter < 50) {
+        counter++;
+        await page.waitForLoadState();
+        log.debug(`Tx is pending, refreshing...\n${this.page.url()}`);
+        await page.waitForTimeout(1000);
+        await page.reload();
+      }
+    },
+    waitForTxIndexing: async (page: Page) => {
+      let counter = 0;
+      while (await page.isVisible('span.rounded:has-text("Indexing")') && counter < 50) {
+        log.debug(`Tx is indexing, refreshing...\n${this.page.url()}`);
+        await page.waitForTimeout(1000);
+        await page.reload();
+      }
+    }
   }
 
   async getLastTxSignatureInHistory(): Promise<string> {
