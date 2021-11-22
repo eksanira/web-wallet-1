@@ -94,4 +94,51 @@ test.describe.parallel('Wallets screen >', () => {
       await walletsScreen.waitForWalletsDataLoaded();
     });
   });
+
+  test.describe('Add custom tokens: ', () => {
+    test.beforeEach(async () => {
+      await auth.loginByRestoringSeed(data.wallets.withFunds.seed);
+      await walletsScreen.waitForWalletsDataLoaded();
+    });
+
+    test('WAG on Velas', async ({ page }) => {
+      await walletsScreen.addCustomToken(data.customTokens.velas.wag, 'Velas', 'testnet')
+
+      const customTokenElement = await page.$('#token-wag_testnet_Velas__custom');
+      if (customTokenElement) {
+        const customTokenBalance = await walletsScreen.getAmountOfTokensFromOfWalletItemElement(customTokenElement);
+        assert.equal(customTokenBalance, '1');
+      }
+    });
+    
+    test('WEENUS on Ethereum', async ({ page }) => {
+      await walletsScreen.addCustomToken(data.customTokens.eth.weenus, 'Ethereum', 'testnet')
+
+      const customTokenElement = await page.$('#token-dai_testnet_BSC__custom');
+      if (customTokenElement) {
+        const customTokenBalance = await walletsScreen.getAmountOfTokensFromOfWalletItemElement(customTokenElement);
+        assert.equal(customTokenBalance, '2');
+      }
+    });
+
+    test('DAI on BSC', async ({ page }) => {
+      await walletsScreen.addCustomToken(data.customTokens.bsc.dai, 'BSC', 'testnet')
+
+      const customTokenElement = await page.$('#token-wag_testnet_Velas__custom');
+      if (customTokenElement) {
+        const customTokenBalance = await walletsScreen.getAmountOfTokensFromOfWalletItemElement(customTokenElement);
+        assert.equal(customTokenBalance, '3');
+      }
+    });
+    
+    test('DAI on Heco', async ({ page }) => {
+      await walletsScreen.addCustomToken(data.customTokens.heco.dai, 'Heco', 'testnet')
+
+      const customTokenElement = await page.$('#token-dai_testnet_Heco__custom');
+      if (customTokenElement) {
+        const customTokenBalance = await walletsScreen.getAmountOfTokensFromOfWalletItemElement(customTokenElement);
+        assert.equal(customTokenBalance, '4');
+      }
+    });
+  });
 });

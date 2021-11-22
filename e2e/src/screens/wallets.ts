@@ -23,8 +23,12 @@ export type Currency =
   'token-bnb' |
   'token-busd' |
   'token-bsc_vlx';
+import { Network } from '../types';
 
 export type Balances = Record<Currency, string | null>;
+
+type CustomTokenNetwork = 'Velas' | 'Ethereum' | 'Heco' | 'BSC';
+type NetworkType = Exclude<Network, 'devnet'>;
 
 export class WalletsScreen extends BaseScreen {
   constructor(public page: Page) {
@@ -100,7 +104,7 @@ export class WalletsScreen extends BaseScreen {
     return this.page.isVisible(`#${tokenName}`);
   }
 
-  private async getAmountOfTokensFromOfWalletItemElement(walletElement: ElementHandle<SVGElement | HTMLElement>): Promise<string> {
+  async getAmountOfTokensFromOfWalletItemElement(walletElement: ElementHandle<SVGElement | HTMLElement>): Promise<string> {
     const amountOfTokens = await (await walletElement.$('.info .token.price'))?.getAttribute('title');
     if (!amountOfTokens) throw new Error('Cannot get amount of tokens');
     return amountOfTokens;
@@ -207,7 +211,7 @@ export class WalletsScreen extends BaseScreen {
         chosenNetwork = await this.page.getAttribute('.change-network', 'value');
         const destinationNetowkSelector = `.switch-menu div:text-matches("${destinationNetwork}", "i")`;
         await this.page.click(destinationNetowkSelector);
-        await this.waitForSelectorDisappears('.switch-menu', { timeout: 5000 });
+        await this.waitForSelectorDisappears('.switch-menu');
       }
     },
     confirm: async () => {
@@ -330,5 +334,23 @@ export class WalletsScreen extends BaseScreen {
     } else {
       log.info(`You tried to add token "${currency}" but it's already in the list.`)
     }
+  }
+
+  async addCustomToken(contract: string, customTokenNetwork: CustomTokenNetwork, networkType: NetworkType): Promise<void> {
+    await this.addWalletsPopup.open();
+    await this.page.click('#add-custom-token');
+    await this.page.click('.default-network-input .button');
+    await this.page.click(`.network-item-title:has-text('${customTokenNetwork}') + .networks .${networkType}-network`);
+    await this.waitForSelectorDisappears('.switch-menu');
+    await this.page.fill('#contract-address', `${contract}`);
+    await this.page.waitForSelector('#send-confirm:not([disabled])');
+    await this.page.click('#send-confirm');
+
+    const pageLoaderSelector = '.loading-pulse';
+    while (await this.page.isVisible(pageLoaderSelector)) {
+      await this.page.waitForTimeout(500);
+    }
+
+    await this.waitForSelectorDisappears('#add-custom-token');
   }
 }
