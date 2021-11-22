@@ -1080,16 +1080,17 @@ module.exports = (store, web3t)->
         
         store.current.send.homeDailyLimit = dailyLimit     
         store.current.network-details <<<< { dailyLimit, homeFeePercent, minPerTx, maxPerTx, maxAvailablePerTx, remainingDailyLimit }
-        return cb null  
+        if token isnt \busd     
+            return cb null  
         
             
-        #{ wallets } = store.current.account
-        #wallet-to = wallets |> find (-> it.coin.token is chosen-network.referTo)   
-        #{ HOME_BRIDGE, FOREIGN_BRIDGE, BSC_SWAP__HOME_BRIDGE, HECO_SWAP__HOME_BRIDGE } = wallet-to.network
-        #web3 = new Web3(new Web3.providers.HttpProvider(wallet-to?network?api?web3Provider))
-        #web3.eth.provider-url = wallet-to.network.api.web3Provider
+        { wallets } = store.current.account
+        wallet-to = wallets |> find (-> it.coin.token is chosen-network.referTo)   
+        { HOME_BRIDGE, FOREIGN_BRIDGE, BSC_SWAP__HOME_BRIDGE, HECO_SWAP__HOME_BRIDGE } = wallet-to.network
+        web3 = new Web3(new Web3.providers.HttpProvider(wallet-to?network?api?web3Provider))
+        web3.eth.provider-url = wallet-to.network.api.web3Provider
         
-        #addr =
+        addr =
             #| token is \usdt_erc20 and chosen-network.referTo is \vlx_usdt => HOME_BRIDGE
             #| token is \vlx_eth and chosen-network.referTo is \eth => HOME_BRIDGE 
             #| token is \usdc and chosen-network.referTo is \vlx_usdc => HOME_BRIDGE  
@@ -1097,11 +1098,11 @@ module.exports = (store, web3t)->
             #| token is \vlx_erc20 and chosen-network.referTo is \vlx_evm => HOME_BRIDGE
             #| token is \bsc_vlx and chosen-network.referTo is \vlx_evm => BSC_SWAP__HOME_BRIDGE
             #| token is \vlx_huobi and chosen-network.referTo is \vlx_evm => HECO_SWAP__HOME_BRIDGE 
-            #| token is \busd and chosen-network.referTo is \vlx_busd => HOME_BRIDGE
+            | token is \busd and chosen-network.referTo is \vlx_busd => HOME_BRIDGE
             #| _ => FOREIGN_BRIDGE
-        #contract = web3.eth.contract(abi).at(addr)
+        contract = web3.eth.contract(abi).at(addr)
         
-        #{ network } = wallet-to 
+        { network } = wallet-to 
         
         /* Retrieve maxPerTx, minPerTx, dailyLimit, brridgeFee */
         #try
@@ -1112,12 +1113,14 @@ module.exports = (store, web3t)->
         #catch err
             #console.log "[dminPerTx/maxPerTx Error]: " err
         
-        #try    
-            #homeFee = contract.getHomeFee!
-            #homeFeePercent = homeFee `div` (10 ^ network.decimals)
-        #catch err
-            #console.log "[getHomeFee Error]: " err 
-        
+        try    
+            homeFee = contract.getForeignFee!
+            homeFeePercent = homeFee `div` (10 ^ network.decimals)
+            store.current.send.homeFeePercent = homeFeePercent  
+            store.current.network-details <<<< { homeFeePercent }  
+        catch err
+            console.log "[getHomeFee Error]: " err 
+        console.log {homeFeePercent}    
         #try       
             #dailyLimit = contract.dailyLimit!
             #dailyLimit = dailyLimit `div` (10 ^ network.decimals) 
@@ -1126,7 +1129,7 @@ module.exports = (store, web3t)->
         
         #store.current.foreign-network-details <<<< { dailyLimit, homeFeePercent, minPerTx, maxPerTx }  
         
-        #cb null  
+        cb null  
     
     export execute-contract-data    
     export getBridgeInfo
