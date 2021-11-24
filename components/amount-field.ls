@@ -8,7 +8,7 @@ require! {
     \../math.ls : { times }
     \./keyboard.ls
     \../numbers.js : {parseNum}
-    \react-currency-input-field : { default: CurrencyInput }
+    \./react-currency-input-field : { default: CurrencyInput }
     \../icons.ls
 }
 .input-area
