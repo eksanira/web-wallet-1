@@ -2,6 +2,7 @@ require! {
     \react
     \../send-funcs.ls
     \prelude-ls : { map, find, keys, filter, pairs-to-obj, obj-to-pairs }
+    \../calc-amount.ls : { calc-fee-before-send }
     \../get-primary-info.ls
     \./icon.ls
     \../get-lang.ls
@@ -15,6 +16,7 @@ require! {
     \../components/address-holder.ls
     \../components/identicon.ls
     \../components/trx-fee.ls
+    \../components/trx-custom-gas-price.ls
     \./send-contract.ls
     \../history-funcs.ls
     \../components/burger.ls
@@ -378,13 +380,27 @@ require! {
             padding: 2px 5px
             cursor: pointer
         .not-enough
+            height: 0
+            border: none;
             color: red
-            min-height: 33px
-            padding: 0 4px
             font-size: 12px
-            max-height: 20px
             font-weight: 400
             overflow: hidden
+            border-radius: 4px; 
+            width: auto;
+            min-width: auto;
+            display: inline-block;
+            line-height: initial;
+            margin-top: 7px;
+            max-height: initial;
+            
+            &.visible
+                height: auto
+                padding-top: 2.5px !important
+                padding-left: 5px !important
+                min-height: auto;
+                padding: 2.5px 5px;
+                border: 1px solid;
         .bold
             font-weight: bold
         .button-container
@@ -501,6 +517,9 @@ send = ({ store, web3t })->
     token-display = 
         | is-custom is yes => (wallet.coin.name ? "").to-upper-case!
         | _ => (wallet.coin.nickname ? "").to-upper-case!
+        
+    down = (it)->
+        (it ? "").to-lower-case!
        
     fee-token-display = fee-token.to-upper-case!
     fee-coin-image = 
@@ -645,7 +664,11 @@ send = ({ store, web3t })->
                 if is-data
                     form-group \contract-data, 'Data', icon-style, ->
                         .pug.smart-contract(style=input-style) #{show-data!}
-                trx-fee { store, web3t, wallet, fee-token }
+                if down(wallet.network?group) in <[ bitcoin ]>
+                or wallet.coin.token in <[ vlx_native ]>
+                    trx-fee { store, web3t, wallet, fee-token }
+                else
+                    trx-custom-gas-price { store, web3t, wallet, fee-token }
                 table.pug(style=border-style)
                     tbody.pug
                         tr.pug
@@ -695,6 +718,10 @@ module.exports.init = ({ store, web3t }, cb)->
     store.current.send.amountChargedUsd = 0
     store.current.send.homeFeePercent = 0
     store.current.send.gasEstimate = \0
+    store.current.send.gasPriceAuto = null
+    store.current.send.gas-price-type = \auto
+    store.current.send.gas-price-custom-amount = \0
+    
     store.current.send.amount-buffer.val = \0
     store.current.send.amount-buffer.usdVal = \0
     store.current.send.error = ''
@@ -750,10 +777,24 @@ module.exports.init = ({ store, web3t }, cb)->
         #bridge-fee-token = wallet.network.txBridgeFeeIn
         #second-wallet = wallets |> find (-> it.coin.token is bridge-fee-token)
         #store.current.send.fee-coin-image = second-wallet?coin?image if second-wallet?coin?image?
+    
+    { send } = store.current
+    account = { wallet.address, wallet.private-key, wallet.balance }
+    query = { store, token: wallet.coin.token, to: wallet.address, send.data, send.network, amount: 0, fee-type: \auto, account }
+    
+    err, result <- calc-fee-before-send { store, query, fast: yes }
+    return cb err if err?
+
+    #{ calced-fee, gas-price, gas-estimate } = result
+    send.gas-price-auto = result?gas-price ? 0
+    send.gas-price-custom-amount = +((result?gas-price ? 0) `div` (10^9))
+    send.amount-send-fee = +(result?calced-fee ? 0)
+    
     return cb null if current-wallet.address is wallet.address
     return cb null if not wallet?
     return cb null if not web3t[wallet.coin.token]?   
     { send-transaction } = web3t[wallet.coin.token]
     err <- send-transaction { to: "", value: 0 }
     send.sending = false
+    
     cb null
