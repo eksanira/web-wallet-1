@@ -26,5 +26,13 @@ export const helpers = {
     const fixedNumber = Number(number.toString().match(re));
     if (!fixedNumber) throw new Error('Failed to trim decimal\'s fractional part')
     return fixedNumber;
-  }
+  },
+
+  async sleep(miliSeconds = 1000): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, miliSeconds));
+  },
+
+  stringify(json: object): string {
+    return JSON.stringify(json, null, 2);
+  },
 };

@@ -9,7 +9,7 @@ import { data } from '../../test-data';
 let auth: Auth;
 let walletsScreen: WalletsScreen;
 
-test.describe.parallel('Wallets screen >', () => {
+test.describe.parallel('Wallets screen', () => {
   test.beforeEach(async ({ page }) => {
     setupPage(page);
     auth = new Auth(page);

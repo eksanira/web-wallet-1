@@ -9,7 +9,7 @@ import { walletURL } from '../../config';
 let walletsScreen: WalletsScreen;
 let auth: Auth;
 
-test.describe.parallel('Validation >', () => {
+test.describe.parallel('Validation', () => {
   test.beforeEach(async ({ page }) => {
     setupPage(page);
     auth = new Auth(page);

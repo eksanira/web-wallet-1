@@ -11,7 +11,7 @@ import { helpers } from '../../tools/helpers';
 let auth: Auth;
 let walletsScreen: WalletsScreen;
 
-test.describe.parallel('Transactions >', () => {
+test.describe.parallel('Transactions', () => {
   test.beforeEach(async ({ page }) => {
     setupPage(page);
     auth = new Auth(page);

@@ -4,6 +4,6 @@ import balancesAPI from '../api/balances-api';
   await balancesAPI.bitcore();
   await balancesAPI.apiVelasCom();
   await balancesAPI.explorer();
-  await balancesAPI.infura();
+  await balancesAPI.ethBalance();
   await balancesAPI.evmExplorer();
 })();
