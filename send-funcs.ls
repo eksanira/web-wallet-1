@@ -973,7 +973,7 @@ module.exports = (store, web3t)->
     
     /* Gas Price */
     choose-auto-gas-price = ->
-        return if send.gas-price-type is \auto     
+        #return if send.gas-price-type is \auto     
         return if has-send-error!  
         send.gas-price-type = \auto
         send.gas-price-auto = null 
