@@ -400,7 +400,6 @@ require! {
                 padding-left: 5px !important
                 min-height: auto;
                 padding: 2.5px 5px;
-                border: 1px solid;
         .bold
             font-weight: bold
         .button-container

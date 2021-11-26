@@ -11,6 +11,7 @@ require! {
     \./react-currency-input-field : { default: CurrencyInput }
 }
 .trx-custom-gas-price
+    position: relative
     @import scheme
     $border-radius: var(--border-btn)
     &.disabled
@@ -49,6 +50,82 @@ require! {
                 margin-bottom: 20px
         .coin
             text-transform: uppercase
+    .warn-label
+        display: inline-block;
+        margin: 0 10px 2px;
+        font-size: 13px;
+        cursor: pointer;
+        
+        &:hover
+            .warn-label-text
+                display: inline-block !important    
+        .warn-label-text
+            display: none !important
+            background: #121212 
+            position: absolute;
+            top: 30px
+            z-index: 3;
+            padding: 10px;
+            left: 10px;
+            min-width: 270px;
+            .triangle
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 0 10px 15px 10px;
+                border-color: transparent transparent #121212 transparent
+                position: absolute;
+                left: 51px;
+                top: -9px;
+    .question-mark
+        display: inline-block
+        .label
+            background: white
+            padding: 0px 3.6px !important
+            margin-left: 5px
+            font-weight: bold
+            border-radius: 50%
+            margin-bottom: 1px
+            position: relative
+            bottom: 2px
+            cursor: pointer
+            display: inline-block
+            font-size: 10px
+        
+        &:hover
+            .question-mark-text
+                display: block
+        .question-mark-text
+            display: none
+            background: #121212 
+            position: absolute;
+            top: 30px
+            z-index: 3;
+            padding: 10px;
+            left: 10px;
+            min-width: 270px;
+            .triangle
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 0 10px 15px 10px;
+                border-color: transparent transparent #121212 transparent
+                position: absolute;
+                left: 51px;
+                top: -9px;
+            span
+                font-size: 12px
+                font-weight: 500;
+                color: white
+    .low-gas-price-warn
+        p
+            font-size: 13px
+            color: red
+            padding: 10px
+            position: absolute
+            right: 0
+            
+                
     label
         padding-top: 5px
         padding-left: 3px
@@ -162,14 +239,36 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
         td.pug(on-click=choose-auto-gas-price class="#{active-class \auto}")
             .pug.field.type #{lang.auto}
             .pug.field.coin(class="#{auto-fee-display-field-class}") #{auto-gas-price  + " GWEI"}
+            
+    gas-price-tooltip = "Gas price specifies the amount of #{wallet.coin.name} you are willing to pay for each unit of gas."
+    gas-price-islower = send.gas-price-custom-amount < ((send.gas-price-auto ? 0) `div` (10^9))
+    low-gas-warn = 
+        | send.gas-price-type is \custom and gas-price-islower =>
+            "Gas price lower than Auto can cause long time transaction confirmation"
+        | _ => ""
+    warn-label = ->
+        .warn-label.pug
+            if send.gas-price-type is \custom and gas-price-islower => 
+                span.pug ⚠️
+            .warn-label-text.pug #{low-gas-warn}
+                
+            
     .pug.trx-custom-gas-price(class="#{disabled-class}")
-        label.pug(style=text) Gas Price
+        .pug
+            label.pug(style=text) Gas Price
+            .question-mark.pug 
+                .pug.label(style=text) ?
+                .pug.question-mark-text
+                    .triangle.pug
+                    span.pug #{gas-price-tooltip}
+            warn-label!
         table.pug.fee(style=border-style)
             tbody.pug
                 tr.pug
                     custom-option!
-                    auto-option!
-        if store.current.send.gas-price-type is \custom       
+                    auto-option! 
+      
+        if store.current.send.gas-price-type is \custom             
             CurrencyInput.pug(class="textfield tx-fee" key="tx-fee-input" allowNegativeValue=no style=input-style defaultValue="0" allowDecimals=yes value="#{gas-price-custom-amount_GWEI}" decimalsLimit=decimalsLimit label="Send" decimalSeparator=DECIMAL_SEPARATOR groupSeparator="," onValueChange=on-change-internal)
 module.exports = trx-fee
 #???store.current.send.send.gas-price-custom-amountcheaon-change-xcon-change-custom-fee.send""store.current.send.send.fstore.current.send.gas-price-custom-amount
