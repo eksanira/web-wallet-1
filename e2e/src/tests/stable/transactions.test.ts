@@ -11,7 +11,7 @@ import { helpers } from '../../tools/helpers';
 let auth: Auth;
 let walletsScreen: WalletsScreen;
 
-test.describe.parallel('Transactions >', () => {
+test.describe.parallel('Transactions', () => {
   test.beforeEach(async ({ page }) => {
     setupPage(page);
     auth = new Auth(page);
@@ -34,7 +34,8 @@ test.describe.parallel('Transactions >', () => {
     await page.waitForSelector('#confirmation-confirm', { timeout: 30000 });
     await page.click('#confirmation-confirm');
 
-    const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
+    const txSignatureLink = await page.getAttribute('.sent .text a', 'href');
+    if (!txSignatureLink) throw new Error('No txSignatureLink');
     const txSignature = txSignatureLink.replace('https://native.velas.com/tx/', '');
     if (!txSignature) throw new Error('Cannot get transaction signature from tx link');
 
@@ -62,7 +63,8 @@ test.describe.parallel('Transactions >', () => {
     await page.fill('div.amount-field input[label="Send"]', '0.00001');
     await page.click('#send-confirm:not([disabled])');
     await page.click('#confirmation-confirm');
-    const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
+    const txSignatureLink = await page.getAttribute('.sent .text a', 'href');
+    if (!txSignatureLink) throw new Error('No txSignatureLink');
     assert.isTrue(txSignatureLink.includes('https://bitpay.com/insight/#/BTC/testnet/'));
   });
 
@@ -79,13 +81,14 @@ test.describe.parallel('Transactions >', () => {
     await page.click('#send-confirm:not([disabled])');
     await page.click('#confirmation-confirm');
 
-    const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
+    const txSignatureLink = await page.getAttribute('.sent .text a', 'href');
+    if (!txSignatureLink) throw new Error('No txSignatureLink');
     assert.isTrue(txSignatureLink.includes('https://testnet.litecore.io/'));
   });
 
   test('Send ETH', async ({ page }) => {
     await walletsScreen.waitForWalletsDataLoaded();
-    
+
     const transactionAmount = 0.00001;
 
     await walletsScreen.selectWallet('token-eth_legacy');
@@ -96,7 +99,8 @@ test.describe.parallel('Transactions >', () => {
     await page.click('#send-confirm:not([disabled])');
     await page.click('#confirmation-confirm');
 
-    const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
-    assert.isTrue(txSignatureLink.includes('https://ropsten.etherscan.io/'));
+    const txSignatureLink = await page.getAttribute('.sent .text a', 'href');
+    if (!txSignatureLink) throw new Error('No txSignatureLink');
+    assert.isTrue(txSignatureLink?.includes('https://ropsten.etherscan.io/'));
   });
 });

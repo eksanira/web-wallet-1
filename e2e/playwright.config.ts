@@ -8,7 +8,7 @@ const config: PlaywrightTestConfig = {
   // globalTeardown: '',
   maxFailures: globalConfig.CI ? 10 : 2,
   retries: globalConfig.CI ? 2 : 0,
-  timeout: 180000,
+  timeout: 240000,
   workers: 2,
   reportSlowTests: { threshold: 120000, max: 0 },
   // reporter: 'list',
@@ -19,6 +19,7 @@ const config: PlaywrightTestConfig = {
       name: 'Chrome Stable',
       use: {
         browserName: 'chromium',
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36',
         channel: 'chrome',
         headless: globalConfig.CI,
         launchOptions: {
@@ -35,6 +36,7 @@ const config: PlaywrightTestConfig = {
             height: 1080,
           },
         },
+        trace: 'retain-on-failure'
       },
       // testDir: '',
     },

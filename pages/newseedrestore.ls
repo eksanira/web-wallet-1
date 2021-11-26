@@ -147,7 +147,7 @@ newseed = ({ store, web3t })->
     text-style =
         color: style.app.text
     btn-icon =
-        filter: style.app.btn-icon
+        filter: style.app.primary-button-filter
     address-input=
         color: style.app.text
         background: style.app.wallet

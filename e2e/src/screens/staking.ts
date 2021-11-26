@@ -22,18 +22,17 @@ export class StakingScreen extends BaseScreen {
   async waitForLoaded(): Promise<void> {
     try {
       const pageLoaderSelector = '.loading-pulse';
-      while (await this.page.isVisible(pageLoaderSelector)){
-        await this.page.waitForTimeout(500);
+      while (await this.page.isVisible(pageLoaderSelector)) {
+        await this.page.waitForTimeout(100);
       }
-      const loadingSelector = '" Loading..."';
-      await this.page.waitForSelector(loadingSelector, { timeout: 1000 });
+      const loadingSelector = '#staking-accounts .entities-loader';
       while (await this.page.isVisible(loadingSelector)) {
-        await this.page.waitForTimeout(500);
+        await this.page.waitForTimeout(100);
       }
     } catch (e) {
       log.debug('No loading after opening staking. Looks like it\'s already fully loaded.');
     }
-    await this.page.waitForSelector('.validator-item', { timeout: 31000 });
+    await this.page.waitForSelector('.validator-item', { timeout: 30000 });
 
     // wait staking account item or make sure there are no accounts
     await this.page.waitForSelector(`${this.stakingAccountAddress}, #staking-accounts .amount:text(" (0) ")`);
@@ -45,7 +44,7 @@ export class StakingScreen extends BaseScreen {
     let timer = 0;
     const waitTime = 4000;
     while (finalAmountOfStakingAccounts === initialStakesAmount) {
-      log.warn('Amount of stake accounts still the same. Wait and refresh the staking data...');
+      log.debug('Amount of stake accounts still the same. Wait and refresh the staking data...');
       await this.page.waitForTimeout(waitTime);
       await this.refresh();
       finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);
@@ -225,7 +224,6 @@ export class StakingScreen extends BaseScreen {
 
   stakingCleanup = {
     stakesToUndelegate: async () => {
-      await this.waitForLoaded();
       let toUndelegateStakesAmount = await this.getAmountOfStakes('Undelegate');
       while (toUndelegateStakesAmount > 0) {
         log.debug(`There are ${toUndelegateStakesAmount} delegated stakes to be undelegate as precondition`);
@@ -236,15 +234,15 @@ export class StakingScreen extends BaseScreen {
         await this.waitForLoaded();
         let previousToUndelegateStakesAmount = toUndelegateStakesAmount;
         toUndelegateStakesAmount = await this.getAmountOfStakes('Undelegate');
-        while (previousToUndelegateStakesAmount === toUndelegateStakesAmount){
+        while (previousToUndelegateStakesAmount === toUndelegateStakesAmount) {
           await this.page.waitForTimeout(1000);
           this.refresh();
           log.debug('Amount of staking accounts hasn\'t changed, refreshing...');
+          toUndelegateStakesAmount = await this.getAmountOfStakes('Undelegate');
         }
       }
     },
     stakesToWithdraw: async () => {
-      await this.waitForLoaded();
       let toWithdrawStakesAmount = await this.getAmountOfStakes('Withdraw');
       while (toWithdrawStakesAmount > 0) {
         log.debug(`There are ${toWithdrawStakesAmount} stakes to be withdrawn as precondition`);
@@ -254,16 +252,16 @@ export class StakingScreen extends BaseScreen {
         await this.page.click('" Ok"');
         await this.waitForLoaded();
         let previousToWithdrawStakesAmount = toWithdrawStakesAmount;
-        toWithdrawStakesAmount = await this.getAmountOfStakes('Undelegate');
+        toWithdrawStakesAmount = await this.getAmountOfStakes('Withdraw');
         while (previousToWithdrawStakesAmount === toWithdrawStakesAmount){
           await this.page.waitForTimeout(1000);
           this.refresh();
           log.debug('Amount of staking accounts hasn\'t changed, refreshing...');
+          toWithdrawStakesAmount = await this.getAmountOfStakes('Withdraw');
         }
       }
     },
     stakesNotDelegated: async () => {
-      await this.waitForLoaded();
       let notDelegatedStakesAmount = await this.getAmountOfStakes('Delegate');
       while (notDelegatedStakesAmount > 0) {
         log.debug(`There are ${notDelegatedStakesAmount} not delegated stakes to be withdrawn as precondition`);
@@ -274,14 +272,15 @@ export class StakingScreen extends BaseScreen {
         await this.page.click('" Ok"');
         await this.waitForLoaded();
         let previousNotDelegatedStakesAmount = notDelegatedStakesAmount;
-        notDelegatedStakesAmount = await this.getAmountOfStakes('Undelegate');
+        notDelegatedStakesAmount = await this.getAmountOfStakes('Delegate');
         while (previousNotDelegatedStakesAmount === notDelegatedStakesAmount){
           await this.page.waitForTimeout(1000);
           this.refresh();
           log.debug('Amount of staking accounts hasn\'t changed, refreshing...');
+          notDelegatedStakesAmount = await this.getAmountOfStakes('Delegate');
         }
       }
-    },
+    }
   }
 
   async makeSureUiBalanceEqualsChainBalance(address: string): Promise<void> {

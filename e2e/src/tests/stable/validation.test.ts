@@ -9,7 +9,7 @@ import { walletURL } from '../../config';
 let walletsScreen: WalletsScreen;
 let auth: Auth;
 
-test.describe.parallel('Validation >', () => {
+test.describe.parallel('Validation', () => {
   test.beforeEach(async ({ page }) => {
     setupPage(page);
     auth = new Auth(page);
@@ -25,7 +25,7 @@ test.describe.parallel('Validation >', () => {
     await page.waitForSelector('text=/(?=.*not)(?=.*valid)(?=.*address)/i');
 
     await page.fill('#send-recipient', 'BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW');
-    await walletsScreen.waitForSelectorDisappears('text=/(?=.*not)(?=.*valid)(?=.*address)/i', {timeout: 3000});
+    await walletsScreen.waitForSelectorDisappears('text=/(?=.*not)(?=.*valid)(?=.*address)/i');
     assert.isFalse(await page.isVisible('text=/(?=.*not)(?=.*valid)(?=.*address)/i'));
   });
 
@@ -42,6 +42,6 @@ test.describe.parallel('Validation >', () => {
     await page.fill('div.amount-field .textfield[label="Send"]', '');
     
     await page.click('#send-max');
-    await walletsScreen.waitForSelectorDisappears('text=/not enough/i', {timeout: 3000});
+    await walletsScreen.waitForSelectorDisappears('text=/not enough/i');
   });
 });

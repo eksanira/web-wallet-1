@@ -43,7 +43,7 @@ export abstract class BaseScreen {
     }
   }
 
-  async waitForSelectorDisappears(selector: string, { timeout = config.defaultWaitTimeout }): Promise<void> {
+  async waitForSelectorDisappears(selector: string, timeout = config.defaultWaitTimeout): Promise<void> {
     let isElementVisible = await this.page.isVisible(selector);
     let totalWaitTime = 0;
     const oneIterationWaitTime = 100;
@@ -53,7 +53,7 @@ export abstract class BaseScreen {
       totalWaitTime += oneIterationWaitTime;
       isElementVisible = await this.page.isVisible(selector);
     }
-    
+
     if (isElementVisible) throw new Error(`Element with selector "${selector}" has not disappeared in ${totalWaitTime / 1000} seconds`);
   }
 }
