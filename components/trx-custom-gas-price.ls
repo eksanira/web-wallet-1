@@ -7,6 +7,7 @@ require! {
     \../send-funcs.ls
     \../numbers.js : {parseNum}
     \../math.ls : { times, minus, div, plus }
+    \prelude-ls : { find }
     \../round-human.ls
     \./react-currency-input-field : { default: CurrencyInput }
 }
@@ -219,6 +220,7 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
     
     border-style = border: "1px solid #{style.app.border}"
     text = color: "#{style.app.icon}"
+    icon-style = color: "rgb(38 98 145)"
     input-style=
         background: style.app.input
         border: "1px solid #{style.app.border}"
@@ -239,8 +241,13 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
         td.pug(on-click=choose-auto-gas-price class="#{active-class \auto}")
             .pug.field.type #{lang.auto}
             .pug.field.coin(class="#{auto-fee-display-field-class}") #{auto-gas-price  + " GWEI"}
-            
-    gas-price-tooltip = "Gas price specifies the amount of #{wallet.coin.name} you are willing to pay for each unit of gas."
+    
+    fee-payer = 
+        | wallet.network.tx-fee-in? =>
+            tx-fee-in-wallet = store.current.account.wallets |> find (-> it.coin.token is wallet.network.tx-fee-in)           
+            tx-fee-in-wallet?coin?name  
+        | _ => wallet.coin.name        
+    gas-price-tooltip = "Gas price specifies the amount of #{fee-payer} you are willing to pay for each unit of gas."
     gas-price-islower = send.gas-price-custom-amount < ((send.gas-price-auto ? 0) `div` (10^9))
     low-gas-warn = 
         | send.gas-price-type is \custom and gas-price-islower =>
@@ -257,7 +264,7 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
         .pug
             label.pug(style=text) Gas Price
             .question-mark.pug 
-                .pug.label(style=text) ?
+                .pug.label(style=icon-style) ?
                 .pug.question-mark-text
                     .triangle.pug
                     span.pug #{gas-price-tooltip}
