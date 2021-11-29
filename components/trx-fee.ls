@@ -152,7 +152,6 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
         disabled-class = 
             | custom-is-disabled => "disabled"
             | _ => ""
-        console.log "class" wallet?coin?token
         td.pug(on-click=select-custom class="tx-fee-mode #{active-class \custom} #{disabled-class}" disabled=disabled)
             .pug.field.type #{lang.custom}
             .pug.field.coin #{custom-fee-value! + " " + token-display}
