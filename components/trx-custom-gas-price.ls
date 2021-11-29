@@ -53,31 +53,16 @@ require! {
             text-transform: uppercase
     .warn-label
         display: inline-block;
-        margin: 0 10px 2px;
+        margin: 0;
         font-size: 13px;
-        cursor: pointer;
-        
-        &:hover
-            .warn-label-text
-                display: inline-block !important    
+  
         .warn-label-text
-            display: none !important
-            background: #121212 
-            position: absolute;
+            background: #191919 
             top: 30px
             z-index: 3;
             padding: 10px;
             left: 10px;
-            min-width: 270px;
-            .triangle
-                width: 0;
-                height: 0;
-                border-style: solid;
-                border-width: 0 10px 15px 10px;
-                border-color: transparent transparent #121212 transparent
-                position: absolute;
-                left: 51px;
-                top: -9px;
+
     .question-mark
         display: inline-block
         .label
@@ -251,13 +236,12 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
     gas-price-islower = send.gas-price-custom-amount < ((send.gas-price-auto ? 0) `div` (10^9))
     low-gas-warn = 
         | send.gas-price-type is \custom and gas-price-islower =>
-            "Gas price lower than Auto can cause long time transaction confirmation"
+            "Gas price is lower than offered. Transaction will be confirmed longer or canceled."
         | _ => ""
     warn-label = ->
         .warn-label.pug
-            if send.gas-price-type is \custom and gas-price-islower => 
-                span.pug ⚠️
-            .warn-label-text.pug #{low-gas-warn}
+            if send.gas-price-type is \custom and gas-price-islower 
+                .warn-label-text.pug #{low-gas-warn}
                 
             
     .pug.trx-custom-gas-price(class="#{disabled-class}")
