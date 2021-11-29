@@ -1,0 +1,863 @@
+{
+  "uid" : "62e45f1e8b31175c",
+  "name" : "EVM > VLX Native",
+  "fullName" : "EVM > VLX Native",
+  "historyId" : "Chrome Stable src/tests/stable/swap.test.ts Swap:  In Velas network:  EVM > VLX Native",
+  "time" : {
+    "start" : 1638205322987,
+    "stop" : 1638205371028,
+    "duration" : 48041
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "Before Hooks",
+      "time" : {
+        "start" : 1638205322988,
+        "stop" : 1638205334710,
+        "duration" : 11722
+      },
+      "status" : "passed",
+      "steps" : [ {
+        "name" : "browserContext.newPage",
+        "time" : {
+          "start" : 1638205322997,
+          "stop" : 1638205323048,
+          "duration" : 51
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      }, {
+        "name" : "page.goto(127.0.0.1:8080/main-index.html?network=testnet)",
+        "time" : {
+          "start" : 1638205323050,
+          "stop" : 1638205328875,
+          "duration" : 5825
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      }, {
+        "name" : "page.waitForSelector(.balance)",
+        "time" : {
+          "start" : 1638205328877,
+          "stop" : 1638205329406,
+          "duration" : 529
+        },
+        "status" : "failed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      }, {
+        "name" : "page.isVisible([placeholder=\"Password or PIN\"])",
+        "time" : {
+          "start" : 1638205329409,
+          "stop" : 1638205329432,
+          "duration" : 23
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      }, {
+        "name" : "page.click(#lang-en)",
+        "time" : {
+          "start" : 1638205329434,
+          "stop" : 1638205329775,
+          "duration" : 341
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      }, {
+        "name" : "page.click(#btn-restore)",
+        "time" : {
+          "start" : 1638205329776,
+          "stop" : 1638205330115,
+          "duration" : 339
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      }, {
+        "name" : "page.click(#restore-custom)",
+        "time" : {
+          "start" : 1638205330115,
+          "stop" : 1638205330449,
+          "duration" : 334
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      }, {
+        "name" : "page.fill([type=\"password\"])",
+        "time" : {
+          "start" : 1638205330450,
+          "stop" : 1638205330792,
+          "duration" : 342
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      }, {
+        "name" : "page.click(button.setup)",
+        "time" : {
+          "start" : 1638205330794,
+          "stop" : 1638205331216,
+          "duration" : 422
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      }, {
+        "name" : "page.fill(#seedphrase-custom)",
+        "time" : {
+          "start" : 1638205331217,
+          "stop" : 1638205331513,
+          "duration" : 296
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      }, {
+        "name" : "page.click(#seed-phrase-next)",
+        "time" : {
+          "start" : 1638205331514,
+          "stop" : 1638205333114,
+          "duration" : 1600
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      }, {
+        "name" : "page.waitForSelector(.menu-item)",
+        "time" : {
+          "start" : 1638205333114,
+          "stop" : 1638205333161,
+          "duration" : 47
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      }, {
+        "name" : "page.waitForSelector(.balance)",
+        "time" : {
+          "start" : 1638205333162,
+          "stop" : 1638205333209,
+          "duration" : 47
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      }, {
+        "name" : "page.waitForSelector(.wallet-item .top-left [class=\" img\"])",
+        "time" : {
+          "start" : 1638205333210,
+          "stop" : 1638205334570,
+          "duration" : 1360
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      }, {
+        "name" : "page.waitForTimeout",
+        "time" : {
+          "start" : 1638205334571,
+          "stop" : 1638205334710,
+          "duration" : 139
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      } ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : true,
+      "stepsCount" : 15,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.waitForSelector(.wallet-item .top-left [class=\" img\"])",
+      "time" : {
+        "start" : 1638205334711,
+        "stop" : 1638205334843,
+        "duration" : 132
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1638205334843,
+        "stop" : 1638205334963,
+        "duration" : 120
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.isVisible(#token-vlx_evm)",
+      "time" : {
+        "start" : 1638205334963,
+        "stop" : 1638205335005,
+        "duration" : 42
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.waitForSelector(.wallet-item .top-left [class=\" img\"])",
+      "time" : {
+        "start" : 1638205335008,
+        "stop" : 1638205335068,
+        "duration" : 60
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1638205335068,
+        "stop" : 1638205335205,
+        "duration" : 137
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.isVisible(#token-vlx_native)",
+      "time" : {
+        "start" : 1638205335206,
+        "stop" : 1638205335230,
+        "duration" : 24
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.waitForSelector(.wallet-item .top-left [class=\" img\"])",
+      "time" : {
+        "start" : 1638205335231,
+        "stop" : 1638205335288,
+        "duration" : 57
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1638205335288,
+        "stop" : 1638205335403,
+        "duration" : 115
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.isVisible(div.big.wallet-item#token-vlx_evm)",
+      "time" : {
+        "start" : 1638205335403,
+        "stop" : 1638205335410,
+        "duration" : 7
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.click(#token-vlx_evm)",
+      "time" : {
+        "start" : 1638205335410,
+        "stop" : 1638205336346,
+        "duration" : 936
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1638205336346,
+        "stop" : 1638205337369,
+        "duration" : 1023
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.isVisible(div.big.wallet-item#token-vlx_evm)",
+      "time" : {
+        "start" : 1638205337370,
+        "stop" : 1638205337417,
+        "duration" : 47
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.waitForSelector(.wallet-item .top-left [class=\" img\"])",
+      "time" : {
+        "start" : 1638205337418,
+        "stop" : 1638205337491,
+        "duration" : 73
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1638205337492,
+        "stop" : 1638205337634,
+        "duration" : 142
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.waitForSelector(.with-swap #wallet-swap)",
+      "time" : {
+        "start" : 1638205337635,
+        "stop" : 1638205337687,
+        "duration" : 52
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.click(.with-swap #wallet-swap)",
+      "time" : {
+        "start" : 1638205337688,
+        "stop" : 1638205338353,
+        "duration" : 665
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.waitForSelector(.network-slider)",
+      "time" : {
+        "start" : 1638205338354,
+        "stop" : 1638205338421,
+        "duration" : 67
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.isVisible(.inactive.navigation-button)",
+      "time" : {
+        "start" : 1638205338421,
+        "stop" : 1638205338433,
+        "duration" : 12
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.getAttribute(.change-network)",
+      "time" : {
+        "start" : 1638205338434,
+        "stop" : 1638205338458,
+        "duration" : 24
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.fill(div.amount-field .input-area input[label=\"Send\"])",
+      "time" : {
+        "start" : 1638205338459,
+        "stop" : 1638205339031,
+        "duration" : 572
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.waitForSelector(#send-confirm:not([disabled]))",
+      "time" : {
+        "start" : 1638205339031,
+        "stop" : 1638205339085,
+        "duration" : 54
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.$(#confirmation-confirm)",
+      "time" : {
+        "start" : 1638205339086,
+        "stop" : 1638205339092,
+        "duration" : 6
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.click(#confirmation-confirm)",
+      "time" : {
+        "start" : 1638205339092,
+        "stop" : 1638205344106,
+        "duration" : 5014
+      },
+      "status" : "failed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.click(#send-confirm)",
+      "time" : {
+        "start" : 1638205344107,
+        "stop" : 1638205344476,
+        "duration" : 369
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.click(#confirmation-confirm)",
+      "time" : {
+        "start" : 1638205344477,
+        "stop" : 1638205346115,
+        "duration" : 1638
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "page.getAttribute(.sent .text a)",
+      "time" : {
+        "start" : 1638205346115,
+        "stop" : 1638205347070,
+        "duration" : 955
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : false,
+      "stepsCount" : 0,
+      "attachmentsCount" : 0
+    }, {
+      "name" : "After Hooks",
+      "time" : {
+        "start" : 1638205352100,
+        "stop" : 1638205371024,
+        "duration" : 18924
+      },
+      "status" : "passed",
+      "steps" : [ {
+        "name" : "browserContext.close",
+        "time" : {
+          "start" : 1638205354925,
+          "stop" : 1638205371021,
+          "duration" : 16096
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "shouldDisplayMessage" : false,
+        "hasContent" : false,
+        "stepsCount" : 0,
+        "attachmentsCount" : 0
+      } ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "shouldDisplayMessage" : false,
+      "hasContent" : true,
+      "stepsCount" : 1,
+      "attachmentsCount" : 0
+    } ],
+    "attachments" : [ {
+      "uid" : "f714c63f6cb1f3e",
+      "name" : "stdout",
+      "source" : "f714c63f6cb1f3e.txt",
+      "type" : "text/plain",
+      "size" : 54
+    }, {
+      "uid" : "772c1600ae94547",
+      "name" : "stdout",
+      "source" : "772c1600ae94547.txt",
+      "type" : "text/plain",
+      "size" : 205
+    }, {
+      "uid" : "87957a7401194164",
+      "name" : "stdout",
+      "source" : "87957a7401194164.txt",
+      "type" : "text/plain",
+      "size" : 222
+    }, {
+      "uid" : "49a40739bf997e9c",
+      "name" : "stdout",
+      "source" : "49a40739bf997e9c.txt",
+      "type" : "text/plain",
+      "size" : 105
+    }, {
+      "uid" : "f60a591cd4bc852e",
+      "name" : "stdout",
+      "source" : "f60a591cd4bc852e.txt",
+      "type" : "text/plain",
+      "size" : 108
+    }, {
+      "uid" : "5f336b58a1be41de",
+      "name" : "stdout",
+      "source" : "5f336b58a1be41de.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "884203221ce90113",
+      "name" : "stdout",
+      "source" : "884203221ce90113.txt",
+      "type" : "text/plain",
+      "size" : 142
+    }, {
+      "uid" : "c8c13df52ca6dcc2",
+      "name" : "stdout",
+      "source" : "c8c13df52ca6dcc2.txt",
+      "type" : "text/plain",
+      "size" : 127
+    }, {
+      "uid" : "98104d3bb56786e9",
+      "name" : "stdout",
+      "source" : "98104d3bb56786e9.txt",
+      "type" : "text/plain",
+      "size" : 57
+    } ],
+    "parameters" : [ ],
+    "shouldDisplayMessage" : false,
+    "hasContent" : true,
+    "stepsCount" : 44,
+    "attachmentsCount" : 9
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "language",
+    "value" : "JavaScript"
+  }, {
+    "name" : "framework",
+    "value" : "Playwright"
+  }, {
+    "name" : "parentSuite",
+    "value" : "Chrome Stable"
+  }, {
+    "name" : "suite",
+    "value" : "src/tests/stable/swap.test.ts"
+  }, {
+    "name" : "subSuite",
+    "value" : "Swap:  > In Velas network: "
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "history" : {
+      "statistic" : {
+        "failed" : 0,
+        "broken" : 0,
+        "skipped" : 2,
+        "passed" : 8,
+        "unknown" : 0,
+        "total" : 10
+      },
+      "items" : [ {
+        "uid" : "f7bc90b0fff1ca59",
+        "reportUrl" : "https://velas.github.io/JsWallet/571//#testresult/f7bc90b0fff1ca59",
+        "status" : "passed",
+        "time" : {
+          "start" : 1638202763518,
+          "stop" : 1638202824919,
+          "duration" : 61401
+        }
+      }, {
+        "uid" : "e403c2b8ef9b726a",
+        "reportUrl" : "https://velas.github.io/JsWallet/566//#testresult/e403c2b8ef9b726a",
+        "status" : "passed",
+        "time" : {
+          "start" : 1638059654013,
+          "stop" : 1638059699300,
+          "duration" : 45287
+        }
+      }, {
+        "uid" : "c1d62b401c7e7b98",
+        "reportUrl" : "https://velas.github.io/JsWallet/565//#testresult/c1d62b401c7e7b98",
+        "status" : "skipped",
+        "time" : {
+          "start" : 1637931292024,
+          "stop" : 1637931292024,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "e68874f0dda14706",
+        "reportUrl" : "https://velas.github.io/JsWallet/564//#testresult/e68874f0dda14706",
+        "status" : "skipped",
+        "time" : {
+          "start" : 1637858274633,
+          "stop" : 1637858274633,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "2ccd8bc6a275b40b",
+        "reportUrl" : "https://velas.github.io/JsWallet/563//#testresult/2ccd8bc6a275b40b",
+        "status" : "passed",
+        "time" : {
+          "start" : 1637771687203,
+          "stop" : 1637771734332,
+          "duration" : 47129
+        }
+      }, {
+        "uid" : "f0292670ad4c0dc3",
+        "reportUrl" : "https://velas.github.io/JsWallet/562//#testresult/f0292670ad4c0dc3",
+        "status" : "passed",
+        "time" : {
+          "start" : 1637770382752,
+          "stop" : 1637770467922,
+          "duration" : 85170
+        }
+      }, {
+        "uid" : "ba0ed0140708e7fa",
+        "reportUrl" : "https://velas.github.io/JsWallet/561//#testresult/ba0ed0140708e7fa",
+        "status" : "passed",
+        "time" : {
+          "start" : 1637747182402,
+          "stop" : 1637747232380,
+          "duration" : 49978
+        }
+      }, {
+        "uid" : "28c8426ddd13c7b",
+        "reportUrl" : "https://velas.github.io/JsWallet/560//#testresult/28c8426ddd13c7b",
+        "status" : "passed",
+        "time" : {
+          "start" : 1637687712190,
+          "stop" : 1637687769618,
+          "duration" : 57428
+        }
+      }, {
+        "uid" : "65a2aa144febb05",
+        "reportUrl" : "https://velas.github.io/JsWallet/559//#testresult/65a2aa144febb05",
+        "status" : "passed",
+        "time" : {
+          "start" : 1637684594219,
+          "stop" : 1637684656433,
+          "duration" : 62214
+        }
+      } ]
+    },
+    "tags" : [ ]
+  },
+  "source" : "62e45f1e8b31175c.json",
+  "parameterValues" : [ ]
+}
