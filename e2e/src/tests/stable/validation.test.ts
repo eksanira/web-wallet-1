@@ -29,7 +29,7 @@ test.describe.parallel('Validation', () => {
     assert.isFalse(await page.isVisible('text=/(?=.*not)(?=.*valid)(?=.*address)/i'));
   });
 
-  test.only('VLX Native: Show Not Enough Funds error', async ({ page }) => {
+  test('VLX Native: Show Not Enough Funds error', async ({ page }) => {
     await walletsScreen.selectWallet('token-vlx_native')
     await page.click('#wallets-send');
     await page.fill('#send-recipient', 'BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW');
