@@ -16,7 +16,7 @@ require! {
     table
         margin-bottom: -1px
         border-radius: $border-radius $border-radius 0 0
-    td
+    .tx-fee-mode
         cursor: pointer
         padding: 2px 5px 10px
         transition: all .5s
@@ -37,6 +37,9 @@ require! {
                     &:after
                         opacity: 1
                         filter: none
+        &.disabled
+            opacity: 0.2;
+            cursor: not-allowed;
         .type
             &:after
                 content: $check-xs
@@ -79,8 +82,9 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
     decimalsLimit = wallet?network?decimals ? 4
     { choose-cheap, choose-custom, choose-auto, has-send-error} = send-funcs store, web3t
     disabled-class = if has-send-error! then "disabled" else ""
+    custom-is-disabled = wallet.coin.token in <[ vlx_native ]>
     select-custom = ->
-        return if has-send-error!
+        return if has-send-error! or custom-is-disabled
         choose-custom send.amount-send-fee
     get-number = (val)->
         number = (val ? "").toString!
@@ -140,12 +144,20 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
         td.pug(on-click=choose-cheap class="#{active-class \cheap}")
             .pug.field.type #{lang.cheap}
             .pug.field.coin #{if send.amount-send-fee-options.cheap then send.amount-send-fee-options.cheap + " " + token-display else ""}
+    
     custom-option = ->
-        td.pug(on-click=select-custom class="#{active-class \custom}")
+        disabled = 
+            | custom-is-disabled => yes
+            | _ => no
+        disabled-class = 
+            | custom-is-disabled => "disabled"
+            | _ => ""
+        console.log "class" wallet?coin?token
+        td.pug(on-click=select-custom class="tx-fee-mode #{active-class \custom} #{disabled-class}" disabled=disabled)
             .pug.field.type #{lang.custom}
             .pug.field.coin #{custom-fee-value! + " " + token-display}
     auto-option = ->
-        td.pug(on-click=choose-auto class="#{active-class \auto}")
+        td.pug(on-click=choose-auto class="tx-fee-mode #{active-class \auto}")
             .pug.field.type #{lang.auto}
             .pug.field.coin #{if send.amount-send-fee-options.auto then send.amount-send-fee-options.auto + " " + token-display else ""}
     .pug.trx-fee(class="#{disabled-class}")
