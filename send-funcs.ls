@@ -61,7 +61,7 @@ module.exports = (store, web3t)->
         background: color
     default-button-style = { color }
     amount-buffer = send.amount-buffer  
-    send-tx = ({ to, wallet, network, amount-send, amount-send-fee, data, coin, tx-type, gas, gas-price, swap }, cb)->
+    send-tx = ({ to, wallet, network, amount-send, amount-send-fee, data, coin, tx-type, gas, swap }, cb)->
         { token } = send.coin
         return cb "Fee amount must be more than 0" if +amount-send-fee is 0    
         current-network = store.current.network 
@@ -70,6 +70,9 @@ module.exports = (store, web3t)->
         recipient =
             | receiver.starts-with \V => to-eth-address(receiver)     
             | _ => receiver
+        $gas-price = 
+            | send.gas-price-type is \custom => send.gas-price-custom-amount `times` (10^9)
+            | _ => send.gas-price  
         tx-obj =
             account: { wallet.address, wallet.private-key, wallet.secret-key }
             recipient: recipient
@@ -80,7 +83,7 @@ module.exports = (store, web3t)->
             amount-fee: amount-send-fee
             data: data
             gas: gas
-            gas-price: gas-price
+            gas-price: $gas-price
             fee-type: fee-type
             swap: swap
         #console.log "pass to create-tx -->" { gas, gas-price }    
@@ -139,8 +142,11 @@ module.exports = (store, web3t)->
         send.sending = yes
         err, data <- perform-send-safe
         send.sending = no
-        return send.error = "#{err.message ? err}" if err?
-        return cb err if err?    
+        send.error = "#{err.message ? err}" if err?
+        if err? and "#{err.message ? err}".indexOf("Fee amount must be more than 0") > -1
+            <- set-timeout _, 1000
+            send.error = ""   
+        return if err?    
         # If cancel was pressed
         return null if not data?
         notify-form-result send.id, null, data
@@ -364,7 +370,7 @@ module.exports = (store, web3t)->
             amount-fee: "0.0002"    
             data: data
             gas: 150000
-            gas-price: gas-price   
+            gas-price: null  
             fee-type: fee-type
 
         err, tx-data <- create-transaction tx-obj
@@ -866,10 +872,7 @@ module.exports = (store, web3t)->
         value
             
     amount-change = (event)->                   
-        value = get-value event
-        /* Prevent call onChange twice */
-        if (value ? "0").toString() is (amount-buffer.val).toString() and amount-buffer.address is store.current.send.to  then 
-            return store.current.send.amount-send = value  
+        value = get-value event    
         # if empty string return zero!    
         value = "0" if not value? or isNaN(value)   
         <- change-amount store, value, no
@@ -957,6 +960,32 @@ module.exports = (store, web3t)->
     chosen-cheap = if send.fee-type is \cheap then \chosen else ""
     chosen-auto  = if send.fee-type is \auto then \chosen else ""
     chosen-custom  = if send.fee-type is \custom then \chosen else ""
+    
+    from-gwei-to-wei = (value)-> 
+        value `times` (10^9)    
+    
+    /* Gas Price */
+    choose-auto-gas-price = ->
+        #return if send.gas-price-type is \auto     
+        return if has-send-error!  
+        send.gas-price-type = \auto
+        send.gas-price-auto = null 
+        <- change-amount store, send.amount-send, no
+            
+    
+    choose-custom-gas-price = (gas-price-gwei)->
+        #return if send.gas-price-type is \custom     
+        return if has-send-error!    
+        send.gas-price-type = \custom
+        send.gas-price-custom-amount = gas-price-gwei
+        <- change-amount store, send.amount-send, no
+        
+        
+    chosen-cheap-gas-price = if send.gas-price-type is \cheap then \chosen else ""
+    chosen-auto-gas-price  = if send.gas-price-type is \auto then \chosen else ""
+    chosen-custom-gas-price  = if send.gas-price-type is \custom then \chosen else ""    
+    
+    
     send-options = send.coin.tx-types ? []
     pending = wallet.pending-sent + ' ' + token
     calc-amount-and-fee = (amount-send, trials, cb)->
@@ -1080,16 +1109,17 @@ module.exports = (store, web3t)->
         
         store.current.send.homeDailyLimit = dailyLimit     
         store.current.network-details <<<< { dailyLimit, homeFeePercent, minPerTx, maxPerTx, maxAvailablePerTx, remainingDailyLimit }
-        return cb null  
+        if token isnt \busd     
+            return cb null  
         
             
-        #{ wallets } = store.current.account
-        #wallet-to = wallets |> find (-> it.coin.token is chosen-network.referTo)   
-        #{ HOME_BRIDGE, FOREIGN_BRIDGE, BSC_SWAP__HOME_BRIDGE, HECO_SWAP__HOME_BRIDGE } = wallet-to.network
-        #web3 = new Web3(new Web3.providers.HttpProvider(wallet-to?network?api?web3Provider))
-        #web3.eth.provider-url = wallet-to.network.api.web3Provider
+        { wallets } = store.current.account
+        wallet-to = wallets |> find (-> it.coin.token is chosen-network.referTo)   
+        { HOME_BRIDGE, FOREIGN_BRIDGE, BSC_SWAP__HOME_BRIDGE, HECO_SWAP__HOME_BRIDGE } = wallet-to.network
+        web3 = new Web3(new Web3.providers.HttpProvider(wallet-to?network?api?web3Provider))
+        web3.eth.provider-url = wallet-to.network.api.web3Provider
         
-        #addr =
+        addr =
             #| token is \usdt_erc20 and chosen-network.referTo is \vlx_usdt => HOME_BRIDGE
             #| token is \vlx_eth and chosen-network.referTo is \eth => HOME_BRIDGE 
             #| token is \usdc and chosen-network.referTo is \vlx_usdc => HOME_BRIDGE  
@@ -1097,11 +1127,11 @@ module.exports = (store, web3t)->
             #| token is \vlx_erc20 and chosen-network.referTo is \vlx_evm => HOME_BRIDGE
             #| token is \bsc_vlx and chosen-network.referTo is \vlx_evm => BSC_SWAP__HOME_BRIDGE
             #| token is \vlx_huobi and chosen-network.referTo is \vlx_evm => HECO_SWAP__HOME_BRIDGE 
-            #| token is \busd and chosen-network.referTo is \vlx_busd => HOME_BRIDGE
+            | token is \busd and chosen-network.referTo is \vlx_busd => HOME_BRIDGE
             #| _ => FOREIGN_BRIDGE
-        #contract = web3.eth.contract(abi).at(addr)
+        contract = web3.eth.contract(abi).at(addr)
         
-        #{ network } = wallet-to 
+        { network } = wallet-to 
         
         /* Retrieve maxPerTx, minPerTx, dailyLimit, brridgeFee */
         #try
@@ -1112,12 +1142,13 @@ module.exports = (store, web3t)->
         #catch err
             #console.log "[dminPerTx/maxPerTx Error]: " err
         
-        #try    
-            #homeFee = contract.getHomeFee!
-            #homeFeePercent = homeFee `div` (10 ^ network.decimals)
-        #catch err
-            #console.log "[getHomeFee Error]: " err 
-        
+        try    
+            homeFee = contract.getForeignFee!
+            homeFeePercent = homeFee `div` (10 ^ network.decimals)
+            store.current.send.homeFeePercent = homeFeePercent  
+            store.current.network-details <<<< { homeFeePercent }  
+        catch err
+            console.log "[getHomeFee Error]: " err 
         #try       
             #dailyLimit = contract.dailyLimit!
             #dailyLimit = dailyLimit `div` (10 ^ network.decimals) 
@@ -1126,7 +1157,7 @@ module.exports = (store, web3t)->
         
         #store.current.foreign-network-details <<<< { dailyLimit, homeFeePercent, minPerTx, maxPerTx }  
         
-        #cb null  
+        cb null  
     
     export execute-contract-data    
     export getBridgeInfo
@@ -1156,6 +1187,11 @@ module.exports = (store, web3t)->
     export chosen-auto
     export chosen-cheap
     export chosen-custom
+    export choose-auto-gas-price  
+    export choose-custom-gas-price
+    export chosen-auto-gas-price
+    export chosen-cheap-gas-price
+    export chosen-custom-gas-price
     export default-button-style
     export round5edit
     export round5

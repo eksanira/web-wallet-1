@@ -28,7 +28,8 @@ create-send =->
     amount-buffer:
         val: "0"
         usdVal: "0"
-        address: ""    
+        address: ""
+        gas-price: "0"    
     amount-send: \0
     amount-charged: \0
     amount-charged-usd: \0
@@ -39,7 +40,10 @@ create-send =->
     amount-obtain: \0
     data: ""
     gas: null
-    gas-price: null  
+    gas-price: null    
+    gas-price-auto: \0
+    gas-price-custom-amount: \0 
+    gas-price-type: \auto  
     typing-amount-time-ms: 0
     TYPING_THRESHOLD_MS: 500   
     gasEstimate: \0    

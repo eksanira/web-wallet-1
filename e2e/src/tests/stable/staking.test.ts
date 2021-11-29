@@ -14,7 +14,7 @@ let walletsScreen: WalletsScreen;
 let stakingScreen: StakingScreen;
 
 // TODO: validators loading takes too much time
-test.describe('Staking >', () => {
+test.describe('Staking', () => {
   test.beforeEach(async ({ page }) => {
     setupPage(page);
     auth = new Auth(page);
@@ -31,6 +31,7 @@ test.describe('Staking >', () => {
     const stakingAmount = 5;
 
     test('Previous run cleanup', async () => {
+      await stakingScreen.waitForLoaded();
       await stakingScreen.stakingCleanup.stakesToUndelegate();
       await stakingScreen.stakingCleanup.stakesToWithdraw();
       await stakingScreen.stakingCleanup.stakesNotDelegated();
@@ -85,7 +86,7 @@ test.describe('Staking >', () => {
       await stakingScreen.clickDelegate();
       assert.isFalse(await page.isVisible('#choosen-pull'));
       await page.click('.staking-content.delegate button');
-      await page.click('#choosen-pull button span:text(" Apply")');
+      await page.click('#confirmation-confirm');
       const alertText = await (await page.waitForSelector('.confirmation .text', { timeout: 10000 })).textContent();
       assert.include(alertText, 'Funds delegated to');
       await page.click('" Ok"');

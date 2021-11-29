@@ -3,28 +3,33 @@ import { ElementHandle, Page } from '../types';
 import { BaseScreen } from './base';
 
 export type Currency =
-  'token-vlx_native' |
-  'token-vlx_evm' |
-  'token-vlx2' |
-  'token-vlx_usdc' |
-  'token-vlx_usdt' |
-  'token-vlx_eth' |
-  'token-vlx_evm_legacy' |
-  'token-vlx_busd' |
-  'token-btc' | 'token-eth' |
-  'token-vlx_erc20' |
-  'token-usdc' |
-  'token-usdt_erc20' |
-  'token-eth_legacy' |
-  'token-usdt_erc20_legacy' |
-  'token-ltc' |
-  'token-vlx_huobi' |
-  'token-huobi' |
-  'token-bnb' |
-  'token-busd' |
-  'token-bsc_vlx';
+  | 'token-vlx_native'
+  | 'token-vlx_evm'
+  | 'token-vlx2'
+  | 'token-vlx_usdc'
+  | 'token-vlx_usdt'
+  | 'token-vlx_eth'
+  | 'token-vlx_evm_legacy'
+  | 'token-vlx_busd'
+  | 'token-btc'
+  | 'token-eth'
+  | 'token-vlx_erc20'
+  | 'token-usdc'
+  | 'token-usdt_erc20'
+  | 'token-eth_legacy'
+  | 'token-usdt_erc20_legacy'
+  | 'token-ltc'
+  | 'token-vlx_huobi'
+  | 'token-huobi'
+  | 'token-bnb'
+  | 'token-busd'
+  | 'token-bsc_vlx';
+import { Network } from '../types';
 
 export type Balances = Record<Currency, string | null>;
+
+type CustomTokenNetwork = 'Velas' | 'Ethereum' | 'Heco' | 'BSC';
+type NetworkType = Exclude<Network, 'devnet'>;
 
 export class WalletsScreen extends BaseScreen {
   constructor(public page: Page) {
@@ -37,18 +42,29 @@ export class WalletsScreen extends BaseScreen {
 
   async getWalletAddress(): Promise<string> {
     await this.page.waitForSelector('div.wallet-detailed a[data-original]');
-    return (await this.page.getAttribute('div.wallet-detailed a[data-original]', 'data-original'))?.trim() || '';
+    return (
+      (
+        await this.page.getAttribute(
+          'div.wallet-detailed a[data-original]',
+          'data-original'
+        )
+      )?.trim() || ''
+    );
   }
 
   async selectWallet(tokenName: Currency): Promise<void> {
     await this.waitForWalletsDataLoaded();
     const tokenSelector = `div.big.wallet-item#${tokenName}`;
     // some time is required to load wallets and switch between them; so custom waiter is implemented
-    let requiredCurrencyIsALreadySelected = await this.page.isVisible(tokenSelector);
+    let requiredCurrencyIsALreadySelected = await this.page.isVisible(
+      tokenSelector
+    );
     while (!requiredCurrencyIsALreadySelected) {
       await this.page.click(`#${tokenName}`);
       await this.page.waitForTimeout(1000);
-      requiredCurrencyIsALreadySelected = await this.page.isVisible(tokenSelector);
+      requiredCurrencyIsALreadySelected = await this.page.isVisible(
+        tokenSelector
+      );
     }
     log.debug(`${tokenName} was selected`);
     await this.waitForWalletsDataLoaded();
@@ -78,17 +94,20 @@ export class WalletsScreen extends BaseScreen {
       'token-huobi': null,
       'token-bnb': null,
       'token-busd': null,
-      'token-bsc_vlx': null
+      'token-bsc_vlx': null,
     };
 
     for (let i = 0; i < walletElements.length; i++) {
       const walletElement = walletElements[i];
-      const tokenId: Currency = await this.getTokenIdOfWalletItemElement(walletElement) as Currency;
+      const tokenId: Currency = (await this.getTokenIdOfWalletItemElement(
+        walletElement
+      )) as Currency;
 
       // skip if wallet is not in the wallets list
-      if (!await this.isWalletInWalletsList(tokenId)) continue;
+      if (!(await this.isWalletInWalletsList(tokenId))) continue;
 
-      const amountOfTokens = await this.getAmountOfTokensFromOfWalletItemElement(walletElement);
+      const amountOfTokens =
+        await this.getAmountOfTokensFromOfWalletItemElement(walletElement);
       if (amountOfTokens === '..') continue;
       balances[tokenId] = amountOfTokens;
     }
@@ -100,19 +119,29 @@ export class WalletsScreen extends BaseScreen {
     return this.page.isVisible(`#${tokenName}`);
   }
 
-  private async getAmountOfTokensFromOfWalletItemElement(walletElement: ElementHandle<SVGElement | HTMLElement>): Promise<string> {
-    const amountOfTokens = await (await walletElement.$('.info .token.price'))?.getAttribute('title');
+  async getAmountOfTokensFromOfWalletItemElement(
+    walletElement: ElementHandle<SVGElement | HTMLElement>
+  ): Promise<string> {
+    const amountOfTokens = await (
+      await walletElement.$('.info .token.price')
+    )?.getAttribute('title');
     if (!amountOfTokens) throw new Error('Cannot get amount of tokens');
     return amountOfTokens;
   }
 
-  private async getTokenNameOfWalletItemElement(walletElement: ElementHandle<SVGElement | HTMLElement>): Promise<string> {
-    const tokenName = (await (await walletElement.$('.balance.title'))?.textContent())?.trim();
+  private async getTokenNameOfWalletItemElement(
+    walletElement: ElementHandle<SVGElement | HTMLElement>
+  ): Promise<string> {
+    const tokenName = (
+      await (await walletElement.$('.balance.title'))?.textContent()
+    )?.trim();
     if (!tokenName) throw new Error('Cannot get token name');
     return tokenName;
   }
 
-  private async getTokenIdOfWalletItemElement(walletElement: ElementHandle<SVGElement | HTMLElement>): Promise<string> {
+  private async getTokenIdOfWalletItemElement(
+    walletElement: ElementHandle<SVGElement | HTMLElement>
+  ): Promise<string> {
     const tokenId = await walletElement.getAttribute('id');
     if (!tokenId) throw new Error('Cannot get token id');
     return tokenId;
@@ -130,7 +159,10 @@ export class WalletsScreen extends BaseScreen {
   }
 
   async waitForWalletsDataLoaded(): Promise<void> {
-    await this.page.waitForSelector('.wallet-item .top-left [class=" img"]', { state: 'visible', timeout: 31000 });
+    await this.page.waitForSelector('.wallet-item .top-left [class=" img"]', {
+      state: 'visible',
+      timeout: 31000,
+    });
     await this.page.waitForTimeout(100);
   }
 
@@ -140,23 +172,38 @@ export class WalletsScreen extends BaseScreen {
     },
     add: async (tokenName: Currency) => {
       await this.page.click(`#add-${tokenName} button`);
-    }
-  }
+    },
+  };
 
-  async swapTokens(fromToken: Currency, toToken: Currency, transactionAmount: number): Promise<void> {
+  async swapTokens(
+    fromToken: Currency,
+    toToken: Currency,
+    transactionAmount: number | 'use max',
+    params?: { customAddress?: string }
+  ): Promise<void> {
     if (fromToken === toToken) {
-      throw TypeError('You can\'t swap to the same token you are swapping from');
+      throw TypeError("You can't swap to the same token you are swapping from");
     }
 
     await this.addToken(fromToken);
     await this.addToken(toToken);
     await this.selectWallet(fromToken);
     await this.swap.click();
-    await this.swap.fill(String(transactionAmount));
     await this.swap.chooseDestinationNetwork(toToken);
+
+    if (params?.customAddress) {
+      await this.page.fill('#send-recipient', params.customAddress);
+    }
+
+    if (transactionAmount === 'use max') {
+      await this.page.click('#send-max');
+    } else {
+      await this.swap.fill(String(transactionAmount));
+    }
+
     await this.swap.confirm();
   }
-
+  
   private async clickSwapButton(): Promise<void> {
     await this.page.waitForSelector('.with-swap #wallet-swap');
     for (let i = 0; i < 5; i++) {
@@ -164,7 +211,9 @@ export class WalletsScreen extends BaseScreen {
         await this.page.click('.with-swap #wallet-swap');
         return;
       } catch {
-        log.warn(`There was attempt to click the Swap button but it's inactive. Retry in 1 sec...`);
+        log.debug(
+          `There was attempt to click the Swap button but it's inactive. Retry in 1 sec...`
+        );
         await this.page.waitForTimeout(1000);
       }
     }
@@ -176,7 +225,10 @@ export class WalletsScreen extends BaseScreen {
       await this.page.waitForSelector('.network-slider');
     },
     fill: async (transactionAmount: string) => {
-      await this.page.fill('div.amount-field .input-area input[label="Send"]', transactionAmount);
+      await this.page.fill(
+        'div.amount-field .input-area input[label="Send"]',
+        transactionAmount
+      );
     },
     destinationNetwork: async (swapToToken: Currency): Promise<string> => {
       switch (swapToToken) {
@@ -192,30 +244,51 @@ export class WalletsScreen extends BaseScreen {
           return 'Huobi ECO Chain';
         case 'token-vlx_erc20':
           return 'Ethereum';
-        default: return 'default'
+        default:
+          return 'default';
       }
     },
     chooseDestinationNetwork: async (swapToToken: Currency) => {
       if (await this.page.isVisible('.inactive.navigation-button')) {
         return;
       }
-      const destinationNetwork = await this.swap.destinationNetwork(swapToToken);
+      const destinationNetwork = await this.swap.destinationNetwork(
+        swapToToken
+      );
 
-      let chosenNetwork = await this.page.getAttribute('.change-network', 'value');
+      let chosenNetwork = await this.page.getAttribute(
+        '.change-network',
+        'value'
+      );
       if (chosenNetwork !== destinationNetwork) {
         await this.page.click('.network-slider .right');
-        chosenNetwork = await this.page.getAttribute('.change-network', 'value');
+        chosenNetwork = await this.page.getAttribute(
+          '.change-network',
+          'value'
+        );
         const destinationNetowkSelector = `.switch-menu div:text-matches("${destinationNetwork}", "i")`;
         await this.page.click(destinationNetowkSelector);
-        await this.waitForSelectorDisappears('.switch-menu', { timeout: 5000 });
+        await this.waitForSelectorDisappears('.switch-menu');
       }
     },
     confirm: async () => {
-      await this.page.click('#send-confirm');
-      await this.page.click('#confirmation-confirm', { timeout: 10000 });
+      await this.page.waitForSelector('#send-confirm:not([disabled])', { timeout: 5000 });
+
+      let confirmationAlert = await this.page.$('#confirmation-confirm');
+      let counter = 0;
+      while (!confirmationAlert && counter < 3) {
+        try {
+          await this.page.click('#confirmation-confirm', {timeout: 5000});
+          return;
+        } catch {
+          counter++;
+          await this.page.click('#send-confirm');
+          log.debug(`There was attempt to click the Send button but no confirmation alert, retry and wait for confirmation...`)
+        }
+      }
       await this.page.waitForSelector('div.sent');
     },
-  }
+  };
 
   async confirmTxFromEvmExplorer(): Promise<void> {
     const [txPage] = await Promise.all([
@@ -231,11 +304,19 @@ export class WalletsScreen extends BaseScreen {
 
     await txPage.waitForLoadState();
 
-    let counter = 0;
-    while (await txPage.isVisible('.error-title') && counter < 100) {
-      counter++;
+    const startTime = new Date().getTime();
+    let timePassedInSeconds = 0;
+    const secondsToWait = 180;
+    while (await txPage.isVisible('.error-title')) {
+      timePassedInSeconds = (new Date().getTime() - startTime) / 100;
+      if (timePassedInSeconds > secondsToWait)
+        throw new Error(`Tx hash not been found on explorer during ${secondsToWait} seconds
+      ${txPage.url()}`);
+
       await txPage.waitForLoadState();
-      log.debug(`Tx hash not been found on explorer, refreshing...\n${txPage.url()}`);
+      log.debug(
+        `Tx hash not been found on explorer, refreshing...\n${txPage.url()}`
+      );
       await txPage.waitForTimeout(1000);
       await txPage.reload();
     }
@@ -273,41 +354,74 @@ export class WalletsScreen extends BaseScreen {
 
   private foreignExplorer = {
     waitForTxFound: async (page: Page) => {
-      let counter = 0;
-      while (await page.isVisible('.normalMode[alt="Search Not Found"]') && counter < 50) {
-        counter++;
+      const startTime = new Date().getTime();
+      let timePassedInSeconds = 0;
+      const secondsToWait = 180;
+      while (await page.isVisible('.normalMode[alt="Search Not Found"]')) {
+        timePassedInSeconds = (new Date().getTime() - startTime) / 100;
+        if (timePassedInSeconds > secondsToWait)
+          throw new Error(`Tx hash not been found on explorer during ${secondsToWait} seconds
+        ${page.url()}`);
+
         await page.waitForLoadState();
-        log.debug(`Tx hash not been found on explorer, refreshing...\n${this.page.url()}`);
+        log.debug(
+          `Tx hash not been found on explorer, refreshing...\n${page.url()}`
+        );
         await page.waitForTimeout(1000);
         await page.reload();
       }
     },
     waitForTxPending: async (page: Page) => {
-      let counter = 0;
-      while (await page.isVisible('span.rounded:has-text("Pending")') && counter < 50) {
-        counter++;
+      const startTime = new Date().getTime();
+      let timePassedInSeconds = 0;
+      const secondsToWait = 180;
+      while (await page.isVisible('span.rounded:has-text("Pending")')) {
+        timePassedInSeconds = (new Date().getTime() - startTime) / 100;
+        if (timePassedInSeconds > secondsToWait)
+          throw new Error(`Tx hash not been found on explorer during ${secondsToWait} seconds
+        ${page.url()}`);
+
         await page.waitForLoadState();
-        log.debug(`Tx is pending, refreshing...\n${this.page.url()}`);
+        log.debug(`Tx is pending, refreshing...\n${page.url()}`);
         await page.waitForTimeout(1000);
         await page.reload();
       }
     },
     waitForTxIndexing: async (page: Page) => {
-      let counter = 0;
-      while (await page.isVisible('span.rounded:has-text("Indexing")') && counter < 50) {
-        log.debug(`Tx is indexing, refreshing...\n${this.page.url()}`);
+      const startTime = new Date().getTime();
+      let timePassedInSeconds = 0;
+      const secondsToWait = 180;
+      while (await page.isVisible('span.rounded:has-text("Indexing")')) {
+        timePassedInSeconds = (new Date().getTime() - startTime) / 100;
+        if (timePassedInSeconds > secondsToWait)
+          throw new Error(`Tx hash not been found on explorer during ${secondsToWait} seconds
+        ${page.url()}`);
+
+        await page.waitForLoadState();
+        log.debug(`Tx is indexing, refreshing...\n${page.url()}`);
         await page.waitForTimeout(1000);
         await page.reload();
       }
-    }
-  }
+    },
+  };
 
   async getLastTxSignatureInHistory(): Promise<string> {
-    await this.page.click('[datatesting="transaction"] div.more', { timeout: 15000 });
+    await this.page.click('[datatesting="transaction"] div.more', {
+      timeout: 15000,
+    });
 
-    const lastTxSignatureElementSelector = '[datatesting="transaction"] .tx-middle .txhash a[data-original]';
-    const lastTxSignature = (await this.page.getAttribute(lastTxSignatureElementSelector, 'data-original'))?.trim();
-    if (!lastTxSignature) throw new Error(`Cannot get transaction signature from element with selector ${lastTxSignatureElementSelector}`)
+    const lastTxSignatureElementSelector =
+      '[datatesting="transaction"] .tx-middle .txhash a[data-original]';
+    const lastTxSignature = (
+      await this.page.getAttribute(
+        lastTxSignatureElementSelector,
+        'data-original'
+      )
+    )?.trim();
+    if (!lastTxSignature)
+      throw new Error(
+        `Cannot get transaction signature from element with selector ${lastTxSignatureElementSelector}`
+      );
     await this.page.click('[datatesting="transaction"] div.more');
     return lastTxSignature;
   }
@@ -315,7 +429,7 @@ export class WalletsScreen extends BaseScreen {
   async waitForTxHistoryUpdated(previousTxSignature: string): Promise<void> {
     let currentTxSignature = await this.getLastTxSignatureInHistory();
     while (currentTxSignature === previousTxSignature) {
-      log.warn('History hasn\'t been updated. Wait and refresh the history...');
+      log.warn("History hasn't been updated. Wait and refresh the history...");
       await this.page.waitForTimeout(2000);
       await this.refresh();
       currentTxSignature = await this.getLastTxSignatureInHistory();
@@ -324,11 +438,51 @@ export class WalletsScreen extends BaseScreen {
 
   async addToken(currency: Currency): Promise<void> {
     await this.waitForWalletsDataLoaded();
-    if (!await this.isWalletInWalletsList(currency)) {
+    if (!(await this.isWalletInWalletsList(currency))) {
       await this.addWalletsPopup.open();
       await this.addWalletsPopup.add(currency);
     } else {
-      log.info(`You tried to add token "${currency}" but it's already in the list.`)
+      log.info(
+        `You tried to add token "${currency}" but it's already in the list.`
+      );
     }
+  }
+
+  async addCustomToken(
+    contract: string,
+    customTokenNetwork: CustomTokenNetwork,
+    networkType: NetworkType
+  ): Promise<void> {
+    await this.addWalletsPopup.open();
+    await this.page.click('#add-custom-token');
+    await this.page.click('.default-network-input .button');
+    await this.page.click(
+      `.network-item-title:has-text('${customTokenNetwork}') + .networks .${networkType}-network`
+    );
+    await this.waitForSelectorDisappears('.switch-menu');
+    await this.page.fill('#contract-address', `${contract}`);
+    await this.page.waitForSelector('#send-confirm:not([disabled])');
+    await this.page.click('#send-confirm');
+
+    const pageLoaderSelector = '.loading-pulse';
+    while (await this.page.isVisible(pageLoaderSelector)) {
+      await this.page.waitForTimeout(500);
+    }
+
+    await this.waitForSelectorDisappears('#add-custom-token');
+  }
+
+  async getTxHashFromTxlink(): Promise<string> {
+    const txSignatureLink = await this.page.getAttribute(
+      '.sent .text a',
+      'href'
+    );
+    if (!txSignatureLink) throw new Error('No txSignatureLink');
+    let txSignature = txSignatureLink.replace(/^.*tx\//, '');
+    txSignature = txSignature.replace(/\/.*/, '');
+    if (!txSignature)
+      throw new Error('Cannot get transaction signature from tx link');
+    log.debug(`Obtained tx signature: ${txSignature}`);
+    return txSignature;
   }
 }

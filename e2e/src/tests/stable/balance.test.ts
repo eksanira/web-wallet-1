@@ -13,7 +13,7 @@ import { log } from '../../tools/logger';
 let auth: Auth;
 let walletsScreen: WalletsScreen;
 
-test.describe('Balance >', () => {
+test.describe('Balance', () => {
   test.beforeEach(async ({ page }) => {
     setupPage(page);
     auth = new Auth(page);

@@ -1,4 +1,5 @@
 import Axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { infura } from './explorers-api';
 
 export class BalancesAPI {
   axios: AxiosInstance;
@@ -63,18 +64,8 @@ export class BalancesAPI {
     if (!explorerTestnetVelasResponse.data) throw new Error(`Invalid response from: ${explorerTestnetVelasURL}\nResponse data:\n${explorerTestnetVelasResponse.data}`);
   }
 
-  async infura() {
-    const infuraURL = 'https://ropsten.infura.io/v3/a0c2399264f646c687fffa45bf8a14c1';
-    const infuraResponse = await this.axios.post(infuraURL, {
-      jsonrpc: "2.0",
-      id: 1,
-      method: "eth_getBalance",
-      params: [
-        "0x9c525b0dbab6cef23ff3caf639e41e2d6cee857d",
-        "latest"
-      ]
-    });
-    if (!infuraResponse.data) throw new Error(`Invalid response from: ${infuraURL}\nResponse data:\n${infuraResponse.data}`);
+  async ethBalance() {
+    await infura.getaddressBalance('0x9c525b0dbab6cef23ff3caf639e41e2d6cee857d');
   }
 }
 
