@@ -872,14 +872,7 @@ module.exports = (store, web3t)->
         value
             
     amount-change = (event)->                   
-        value = get-value event
-        /* Prevent call onChange twice */
-        if (value ? "0").toString() is (amount-buffer.val).toString() and amount-buffer.address is store.current.send.to  then 
-            return store.current.send.amount-send = value  
-        
-        if send.gas-price-type is \auto then    
-            if (amount-buffer.gas-price ? "").toString() is (send.gasPriceAuto ? "").toString() 
-                return store.current.send.amount-send = value     
+        value = get-value event    
         # if empty string return zero!    
         value = "0" if not value? or isNaN(value)   
         <- change-amount store, value, no
