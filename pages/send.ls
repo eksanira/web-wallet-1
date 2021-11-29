@@ -664,7 +664,7 @@ send = ({ store, web3t })->
                     form-group \contract-data, 'Data', icon-style, ->
                         .pug.smart-contract(style=input-style) #{show-data!}
                 if down(wallet.network?group) in <[ bitcoin ]>
-                or wallet.coin.token in <[ vlx_native ]>
+                or wallet.coin.token in <[ vlx_native ltc ]>
                     trx-fee { store, web3t, wallet, fee-token }
                 else
                     trx-custom-gas-price { store, web3t, wallet, fee-token }
