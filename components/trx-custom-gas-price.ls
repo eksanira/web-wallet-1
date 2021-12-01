@@ -58,6 +58,7 @@ require! {
   
         .warn-label-text
             background: #191919 
+            border: 1px solid #cc932c
             top: 30px
             z-index: 3;
             padding: 10px;
