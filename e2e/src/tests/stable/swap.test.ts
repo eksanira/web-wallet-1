@@ -6,10 +6,7 @@ import { data } from '../../test-data';
 import { log } from '../../tools/logger';
 import { velasNative } from '@velas/velas-chain-test-wrapper';
 import { walletURL } from '../../config';
-import { evmchain, infura } from "../../api/explorers-api";
-import { hecochain } from "../../api/explorers-api";
-import { bscchain } from "../../api/explorers-api";
-
+import { evmchain, infura, hecochain, bscchain } from "../../api/explorers-api";
 
 let auth: Auth;
 let walletsScreen: WalletsScreen;
@@ -159,10 +156,9 @@ test.describe('Swap: ', () => {
       await infura.waitForConfirmedTx(txHash, 180000);
     });
     
-    // TODO: decrease minimum amount on contract
     // TODO: fix VLWA-904 (bsc network issue)
     test.skip('BUSD > BUSD Velas', async () => {
-      await walletsScreen.swapTokens('token-busd', 'token-vlx_busd', 1);
+      await walletsScreen.swapTokens('token-busd', 'token-vlx_busd', 0.01);
       const txHash = await walletsScreen.getTxHashFromTxlink();
       await bscchain.waitForConfirmedTx(txHash, 180000);
     });
