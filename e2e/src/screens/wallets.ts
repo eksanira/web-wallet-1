@@ -485,4 +485,14 @@ export class WalletsScreen extends BaseScreen {
     log.debug(`Obtained tx signature: ${txSignature}`);
     return txSignature;
   }
+
+  async sendTx(fromToken: Currency, toAddress: string, transactionAmount: number): Promise<void> {
+    await this.selectWallet(fromToken);
+    await this.page.click('#wallets-send', { timeout: 10000 });
+    await this.page.fill('#send-recipient', toAddress);
+    await this.page.fill('div.amount-field input[label="Send"]', String(transactionAmount));
+    await this.page.click('#send-confirm:not([disabled])');
+    await this.page.waitForSelector('#confirmation-confirm', { timeout: 30000 });
+    await this.page.click('#confirmation-confirm');
+  }
 }
