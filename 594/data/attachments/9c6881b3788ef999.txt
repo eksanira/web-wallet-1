@@ -1,0 +1,8 @@
+14:16:21.07 <debug> (staking.ts:217) This is expected error. Please ignore: Error: failed to get Stake Activation 5V2ACHWQPVX8K36C9USxrSV97se5SVio1kxvVd9vUokJ: Invalid param: account not found
+    at Connection.getStakeActivation (/home/runner/work/JsWallet/JsWallet/e2e/node_modules/@velas/solana-web3/src/connection.ts:2125:13)
+    at runMicrotasks (<anonymous>)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at VelasNative.getStakeAccount (/home/runner/work/JsWallet/JsWallet/e2e/node_modules/@velas/velas-chain-test-wrapper/src/velas-native.ts:72:12)
+    at StakingScreen.makeSureStakingAccountDoesNotExist (/home/runner/work/JsWallet/JsWallet/e2e/src/screens/staking.ts:215:7)
+    at /home/runner/work/JsWallet/JsWallet/e2e/src/tests/stable/staking.test.ts:168:7
+    at WorkerRunner._runTestWithBeforeHooks (/home/runner/work/JsWallet/JsWallet/e2e/node_modules/@playwright/test/lib/workerRunner.js:478:7)
