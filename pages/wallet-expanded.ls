@@ -208,6 +208,8 @@ module.exports = (store, web3t, wallets, wallet)-->
     swap-click = swap(store, wallet)
     token = (wallet?coin?token ? "").to-upper-case!
     tokenDisplay = (wallet?coin?nickname ? "").to-upper-case!
+    locationWallet = if window.location.host is "wallet.testnet.velas.com" then 'wallet_testnet' else 'wallet_mainnet'
+    uri = "https://fiat-payments.testnet.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
     style = get-primary-info store
     color1 =
         color: style.app.text
@@ -281,6 +283,14 @@ module.exports = (store, web3t, wallets, wallet)-->
                         button { store, on-click=receive-click, text: \receive , icon: \get  , type : \primary, id: "wallets-receive", makeDisabled=no }
                     .with-swap.pug
                         button { store, on-click=swap-click, text: \swap , icon: \swap  , id: "wallet-swap", classes="wallet-swap", makeDisabled=send-swap-disabled  }                       
+                        if wallet?coin?token is "vlx_native"
+                            if (store.current.network is "mainnet") then
+                                null
+                            else
+                                a.pug(href=uri target='_blank')
+                                    button { store, text: \buy , icon: \buy  , type: \velas, id: "wallet-buy" }   
+                            
+
             else
                 .buttons.pug
                     .with-swap.pug
