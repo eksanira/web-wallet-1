@@ -286,7 +286,7 @@ export class WalletsScreen extends BaseScreen {
           log.debug(`There was attempt to click the Send button but no confirmation alert, retry and wait for confirmation...`)
         }
       }
-      await this.page.waitForSelector('div.sent');
+      await this.page.waitForSelector('.sent .text a:not([href=""])', {timeout: 30000});
     },
   };
 
