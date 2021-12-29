@@ -9,7 +9,7 @@ jobs:
   docker-build-push:
     # Name the Job
     name: Build and push (testnet)
-    runs-on: ubuntu-latest
+    runs-on: build
     outputs:
       repository: ${{ steps.build.outputs.repository }}
       image_tag: ${{ steps.build.outputs.image_tag }}
