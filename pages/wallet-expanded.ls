@@ -209,7 +209,11 @@ module.exports = (store, web3t, wallets, wallet)-->
     token = (wallet?coin?token ? "").to-upper-case!
     tokenDisplay = (wallet?coin?nickname ? "").to-upper-case!
     locationWallet = if window.location.host is "wallet.testnet.velas.com" then 'wallet_testnet' else 'wallet_mainnet'
-    uri = "https://fiat-payments.testnet.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
+    uri-prod = "https://buy.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
+    uri-test = "https://fiat-payments.testnet.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
+    uri_simplex =
+      | store.current.network is \testnet => uri-test
+      | _ => uri-prod
     style = get-primary-info store
     color1 =
         color: style.app.text
@@ -284,12 +288,9 @@ module.exports = (store, web3t, wallets, wallet)-->
                     .with-swap.pug
                         button { store, on-click=swap-click, text: \swap , icon: \swap  , id: "wallet-swap", classes="wallet-swap", makeDisabled=send-swap-disabled  }                       
                         if wallet?coin?token is "vlx_native"
-                            if (store.current.network is "mainnet") then
-                                null
-                            else
-                                a.pug(href=uri target='_blank')
-                                    button { store, text: \buy , icon: \buy  , type: \velas, id: "wallet-buy" }   
-                            
+                             a.pug(href=uri_simplex target='_blank')
+                                button { store, text: \buy , icon: \buy, type: \velas, id: "wallet-buy" }
+
 
             else
                 .buttons.pug
