@@ -276,6 +276,8 @@ export class WalletsScreen extends BaseScreen {
 
       let confirmationAlert = await this.page.$('#confirmation-confirm');
       let counter = 0;
+
+      // TODO: rewrite; click should not be retried
       while (!confirmationAlert && counter < 3) {
         try {
           await this.page.click('#confirmation-confirm', {timeout: 5000});
