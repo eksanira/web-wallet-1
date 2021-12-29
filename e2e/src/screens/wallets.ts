@@ -171,7 +171,9 @@ export class WalletsScreen extends BaseScreen {
       await this.page.click('.header .button.lock.mt-5');
     },
     add: async (tokenName: Currency) => {
-      await this.page.click(`#add-${tokenName} button`);
+      const addTokenButton = await this.page.$(`#add-${tokenName} button`);
+      await addTokenButton?.scrollIntoViewIfNeeded();
+      await addTokenButton?.click();
     },
   };
 
@@ -201,9 +203,11 @@ export class WalletsScreen extends BaseScreen {
       await this.swap.fill(String(transactionAmount));
     }
 
+    // wait for amount error disappears
+    await this.page.waitForTimeout(300);
     await this.swap.confirm();
   }
-  
+
   private async clickSwapButton(): Promise<void> {
     await this.page.waitForSelector('.with-swap #wallet-swap');
     for (let i = 0; i < 5; i++) {
@@ -280,7 +284,7 @@ export class WalletsScreen extends BaseScreen {
       // TODO: rewrite; click should not be retried
       while (!confirmationAlert && counter < 3) {
         try {
-          await this.page.click('#confirmation-confirm', {timeout: 5000});
+          await this.page.click('#confirmation-confirm', { timeout: 5000 });
           return;
         } catch {
           counter++;
@@ -288,7 +292,7 @@ export class WalletsScreen extends BaseScreen {
           log.debug(`There was attempt to click the Send button but no confirmation alert, retry and wait for confirmation...`)
         }
       }
-      await this.page.waitForSelector('.sent .text a:not([href=""])', {timeout: 30000});
+      await this.page.waitForSelector('.sent .text a:not([href=""])', { timeout: 30000 });
     },
   };
 
