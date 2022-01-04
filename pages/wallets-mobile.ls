@@ -239,7 +239,13 @@ require! {
                         top: 2px
                     @media screen and (max-width: 800px)
                         width: 40px
-                        line-height: 30px
+                        padding: 0px;
+                a
+                    button
+                        width: 34px
+                        @media screen and (max-width: 480px)
+                            width: auto
+
     .your-account
         position: relative
         display: block

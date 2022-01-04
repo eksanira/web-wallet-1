@@ -50,7 +50,7 @@ require! {
                 width: calc((130px * 2) + 10px)
                 .btn
                     margin: 0
-                    width: 130px
+                    width: 132.5px
                     &:last-child
                         margin-left: 10px
                         margin: 0 0 5px !important
@@ -289,7 +289,7 @@ module.exports = (store, web3t, wallets, wallet)-->
                         button { store, on-click=swap-click, text: \swap , icon: \swap  , id: "wallet-swap", classes="wallet-swap", makeDisabled=send-swap-disabled  }                       
                         if wallet?coin?token is "vlx_native"
                              a.pug(href=uri_simplex target='_blank')
-                                button { store, text: \buy , icon: \buy, type: \velas, id: "wallet-buy" }
+                                button { store, text: 'buy vlx' , icon: \buy, type: \velas, id: "wallet-buy" }
 
 
             else
