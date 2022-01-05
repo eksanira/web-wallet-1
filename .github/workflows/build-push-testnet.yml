@@ -54,7 +54,7 @@ jobs:
         uses: actions/checkout@master
         with:
           repository: velas/velas-infra
-          ssh-key: ${{ secrets.INFRA_SSH_KEY }}
+          token: ${{ secrets.INFRA_PULL_TOKEN }}
       - uses: azure/k8s-set-context@v2
         with:
           method: kubeconfig
