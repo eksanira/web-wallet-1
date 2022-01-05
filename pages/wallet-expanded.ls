@@ -39,6 +39,8 @@ require! {
                     margin-left: 0 !important
             .wallet-swap img
                 filter: invert(1)
+            .wallet-buy img
+                filter: invert(1)
         &.left
             text-align: center
         &.left
@@ -50,7 +52,7 @@ require! {
                 width: calc((130px * 2) + 10px)
                 .btn
                     margin: 0
-                    width: 132.5px
+                    width: 130px
                     &:last-child
                         margin-left: 10px
                         margin: 0 0 5px !important
@@ -214,6 +216,8 @@ module.exports = (store, web3t, wallets, wallet)-->
     uri_simplex =
       | store.current.network is \testnet => uri-test
       | _ => uri-prod
+    buy = ->
+        window.open(uri_simplex)
     style = get-primary-info store
     color1 =
         color: style.app.text
@@ -286,10 +290,9 @@ module.exports = (store, web3t, wallets, wallet)-->
                         button { store, on-click=send-click, text: \send , icon: \send , type: \secondary, id: "wallets-send", makeDisabled=send-swap-disabled }
                         button { store, on-click=receive-click, text: \receive , icon: \get  , type : \primary, id: "wallets-receive", makeDisabled=no }
                     .with-swap.pug
-                        button { store, on-click=swap-click, text: \swap , icon: \swap  , id: "wallet-swap", classes="wallet-swap", makeDisabled=send-swap-disabled  }                       
                         if wallet?coin?token is "vlx_native"
-                             a.pug(href=uri_simplex target='_blank')
-                                button { store, text: 'buy vlx' , icon: \buy, type: \velas, id: "wallet-buy" }
+                            button { store, on-click=buy, text: \buy , icon: \buy  , id: "wallet-buy", classes="wallet-swap" }
+                        button { store, on-click=swap-click, text: \swap , icon: \swap  , id: "wallet-swap", classes="wallet-swap", makeDisabled=send-swap-disabled  }                       
 
 
             else
