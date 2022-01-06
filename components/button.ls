@@ -73,8 +73,8 @@ get-button-style = (store, type)->
         background-color: style.app.primary2-spare
     button-velas-style=
         border: "0"
-        color: style.app.text4
-        background: '#0bffbf'
+        color: '#ffffff'
+        background: '#ebab28'
     button-style =
         | type is \primary => button-primary1-style
         | type is \secondary => button-primary2-style
@@ -91,9 +91,11 @@ button-active = ({ store, classes, text, loading, on-click, icon, type, mstyle, 
         filter: style.app.filter
     dark=
         filter: 'invert(1)'
+    icon-scale=
+        transform: 'scale(1.2)'
     icon-style=
         | type is \primary => filter
-        | type is \velas => dark
+        | type is \velas => icon-scale
     disabled = (makeDisabled? and makeDisabled) or (error? and typeof! error is \String and error.length > 0)
     custom-style = mstyle ? {}
     button.pug.btn(class="#{classes}" on-click=on-click style=button-style id=id disabled=disabled)
