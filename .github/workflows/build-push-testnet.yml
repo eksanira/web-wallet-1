@@ -71,8 +71,7 @@ jobs:
           ECR_REGION: ${{ secrets.AWS_REGION }}
           NAMESPACE: testnet
         run: |
-          helm plugin install https://github.com/databus23/helm-diff
-          if [ ${GITHUB_REF##*/} = 'master' ]; then NAMESPACE=default; fi
+          helm plugin install https://github.com/databus23/helm-diff || true
           cd deploy
           account_id=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r .accountId)
           ECR_REGISTRY=${account_id}.dkr.ecr.${ECR_REGION}.amazonaws.com
