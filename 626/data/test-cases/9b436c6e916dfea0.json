@@ -1,0 +1,806 @@
+{
+  "uid" : "9b436c6e916dfea0",
+  "name" : "BUSD Velas > BUSD",
+  "fullName" : "BUSD Velas > BUSD",
+  "historyId" : "Chrome Stable src/tests/stable/swap.test.ts Swap:  From Velas network:  BUSD Velas > BUSD",
+  "time" : {
+    "start" : 1641482097927,
+    "stop" : 1641482129541,
+    "duration" : 31614
+  },
+  "status" : "failed",
+  "statusMessage" : "elementHandle.click: Timeout 8000ms exceeded.\n=========================== logs ===========================\nattempting click action\n  waiting for element to be visible, enabled and stable\n  element is visible, enabled and stable\n  scrolling into view if needed\n  done scrolling\n  checking that element receives pointer events at (1190,615.98)\n  element does receive pointer events\n  performing click action\n============================================================",
+  "statusTrace" : "elementHandle.click: Timeout 8000ms exceeded.\n=========================== logs ===========================\nattempting click action\n  waiting for element to be visible, enabled and stable\n  element is visible, enabled and stable\n  scrolling into view if needed\n  done scrolling\n  checking that element receives pointer events at (1190,615.98)\n  element does receive pointer events\n  performing click action\n============================================================\n    at Object.add (/home/runner/work/JsWallet/JsWallet/e2e/src/screens/wallets.ts:181:29)\n    at WalletsScreen.addToken (/home/runner/work/JsWallet/JsWallet/e2e/src/screens/wallets.ts:435:7)\n    at WalletsScreen.swapTokens (/home/runner/work/JsWallet/JsWallet/e2e/src/screens/wallets.ts:200:5)\n    at /home/runner/work/JsWallet/JsWallet/e2e/src/tests/stable/swap.test.ts:114:7\n    at WorkerRunner._runTestWithBeforeHooks (/home/runner/work/JsWallet/JsWallet/e2e/node_modules/@playwright/test/lib/workerRunner.js:478:7)",
+  "flaky" : true,
+  "newFailed" : true,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "failed",
+    "statusMessage" : "elementHandle.click: Timeout 8000ms exceeded.\n=========================== logs ===========================\nattempting click action\n  waiting for element to be visible, enabled and stable\n  element is visible, enabled and stable\n  scrolling into view if needed\n  done scrolling\n  checking that element receives pointer events at (1190,615.98)\n  element does receive pointer events\n  performing click action\n============================================================",
+    "statusTrace" : "elementHandle.click: Timeout 8000ms exceeded.\n=========================== logs ===========================\nattempting click action\n  waiting for element to be visible, enabled and stable\n  element is visible, enabled and stable\n  scrolling into view if needed\n  done scrolling\n  checking that element receives pointer events at (1190,615.98)\n  element does receive pointer events\n  performing click action\n============================================================\n    at Object.add (/home/runner/work/JsWallet/JsWallet/e2e/src/screens/wallets.ts:181:29)\n    at WalletsScreen.addToken (/home/runner/work/JsWallet/JsWallet/e2e/src/screens/wallets.ts:435:7)\n    at WalletsScreen.swapTokens (/home/runner/work/JsWallet/JsWallet/e2e/src/screens/wallets.ts:200:5)\n    at /home/runner/work/JsWallet/JsWallet/e2e/src/tests/stable/swap.test.ts:114:7\n    at WorkerRunner._runTestWithBeforeHooks (/home/runner/work/JsWallet/JsWallet/e2e/node_modules/@playwright/test/lib/workerRunner.js:478:7)",
+    "steps" : [ {
+      "name" : "Before Hooks",
+      "time" : {
+        "start" : 1641482097927,
+        "stop" : 1641482106388,
+        "duration" : 8461
+      },
+      "status" : "passed",
+      "steps" : [ {
+        "name" : "browserContext.newPage",
+        "time" : {
+          "start" : 1641482097934,
+          "stop" : 1641482098012,
+          "duration" : 78
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.goto(127.0.0.1:8080/main-index.html?network=testnet)",
+        "time" : {
+          "start" : 1641482098014,
+          "stop" : 1641482101736,
+          "duration" : 3722
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.balance)",
+        "time" : {
+          "start" : 1641482101737,
+          "stop" : 1641482102250,
+          "duration" : 513
+        },
+        "status" : "failed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.isVisible([placeholder=\"Password or PIN\"])",
+        "time" : {
+          "start" : 1641482102253,
+          "stop" : 1641482102257,
+          "duration" : 4
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#lang-en)",
+        "time" : {
+          "start" : 1641482102258,
+          "stop" : 1641482102569,
+          "duration" : 311
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#btn-restore)",
+        "time" : {
+          "start" : 1641482102569,
+          "stop" : 1641482102850,
+          "duration" : 281
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#restore-custom)",
+        "time" : {
+          "start" : 1641482102850,
+          "stop" : 1641482103162,
+          "duration" : 312
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.fill([type=\"password\"])",
+        "time" : {
+          "start" : 1641482103163,
+          "stop" : 1641482103452,
+          "duration" : 289
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(button.setup)",
+        "time" : {
+          "start" : 1641482103452,
+          "stop" : 1641482103817,
+          "duration" : 365
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.fill(#seedphrase-custom)",
+        "time" : {
+          "start" : 1641482103818,
+          "stop" : 1641482104108,
+          "duration" : 290
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#seed-phrase-next)",
+        "time" : {
+          "start" : 1641482104108,
+          "stop" : 1641482105143,
+          "duration" : 1035
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.menu-item)",
+        "time" : {
+          "start" : 1641482105143,
+          "stop" : 1641482105191,
+          "duration" : 48
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.balance)",
+        "time" : {
+          "start" : 1641482105191,
+          "stop" : 1641482105216,
+          "duration" : 25
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.wallet-item .top-left [class=\" img\"])",
+        "time" : {
+          "start" : 1641482105218,
+          "stop" : 1641482106282,
+          "duration" : 1064
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForTimeout",
+        "time" : {
+          "start" : 1641482106282,
+          "stop" : 1641482106387,
+          "duration" : 105
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      } ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 15,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "page.waitForSelector(.wallet-item .top-left [class=\" img\"])",
+      "time" : {
+        "start" : 1641482106388,
+        "stop" : 1641482106423,
+        "duration" : 35
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1641482106424,
+        "stop" : 1641482106552,
+        "duration" : 128
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.isVisible(#token-vlx_busd)",
+      "time" : {
+        "start" : 1641482106552,
+        "stop" : 1641482106565,
+        "duration" : 13
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.click(.header .button.lock.mt-5)",
+      "time" : {
+        "start" : 1641482106566,
+        "stop" : 1641482107094,
+        "duration" : 528
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1641482107094,
+        "stop" : 1641482107400,
+        "duration" : 306
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForSelector(#add-token-vlx_busd button)",
+      "time" : {
+        "start" : 1641482107401,
+        "stop" : 1641482107420,
+        "duration" : 19
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.$(#add-token-vlx_busd button)",
+      "time" : {
+        "start" : 1641482107421,
+        "stop" : 1641482107428,
+        "duration" : 7
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "elementHandle.scrollIntoViewIfNeeded",
+      "time" : {
+        "start" : 1641482107429,
+        "stop" : 1641482107701,
+        "duration" : 272
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1641482107701,
+        "stop" : 1641482108308,
+        "duration" : 607
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "elementHandle.click",
+      "time" : {
+        "start" : 1641482108308,
+        "stop" : 1641482109698,
+        "duration" : 1390
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.$(#add-token-vlx_busd button)",
+      "time" : {
+        "start" : 1641482109698,
+        "stop" : 1641482109710,
+        "duration" : 12
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForSelector(.wallet-item .top-left [class=\" img\"])",
+      "time" : {
+        "start" : 1641482109710,
+        "stop" : 1641482111011,
+        "duration" : 1301
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1641482111012,
+        "stop" : 1641482111122,
+        "duration" : 110
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.isVisible(#token-busd)",
+      "time" : {
+        "start" : 1641482111122,
+        "stop" : 1641482111130,
+        "duration" : 8
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.click(.header .button.lock.mt-5)",
+      "time" : {
+        "start" : 1641482111131,
+        "stop" : 1641482112149,
+        "duration" : 1018
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1641482112150,
+        "stop" : 1641482112464,
+        "duration" : 314
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForSelector(#add-token-busd button)",
+      "time" : {
+        "start" : 1641482112465,
+        "stop" : 1641482112475,
+        "duration" : 10
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.$(#add-token-busd button)",
+      "time" : {
+        "start" : 1641482112476,
+        "stop" : 1641482112497,
+        "duration" : 21
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "elementHandle.scrollIntoViewIfNeeded",
+      "time" : {
+        "start" : 1641482112497,
+        "stop" : 1641482112584,
+        "duration" : 87
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1641482112585,
+        "stop" : 1641482113190,
+        "duration" : 605
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "elementHandle.click",
+      "time" : {
+        "start" : 1641482113190,
+        "stop" : 1641482121679,
+        "duration" : 8489
+      },
+      "status" : "failed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "After Hooks",
+      "time" : {
+        "start" : 1641482121679,
+        "stop" : 1641482129540,
+        "duration" : 7861
+      },
+      "status" : "passed",
+      "steps" : [ {
+        "name" : "browserContext.close",
+        "time" : {
+          "start" : 1641482123419,
+          "stop" : 1641482129536,
+          "duration" : 6117
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      } ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 1,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ {
+      "uid" : "615c696145363b82",
+      "name" : "video",
+      "source" : "615c696145363b82.webm",
+      "type" : "video/webm",
+      "size" : 1658351
+    }, {
+      "uid" : "aa1228a89f531f83",
+      "name" : "trace",
+      "source" : "aa1228a89f531f83.ZIP",
+      "type" : "application/zip",
+      "size" : 7787475
+    }, {
+      "uid" : "1848e9f26eb268bd",
+      "name" : "screenshot",
+      "source" : "1848e9f26eb268bd.png",
+      "type" : "image/png",
+      "size" : 69848
+    }, {
+      "uid" : "ab8bc1e188e445cd",
+      "name" : "stdout",
+      "source" : "ab8bc1e188e445cd.txt",
+      "type" : "text/plain",
+      "size" : 54
+    }, {
+      "uid" : "f8e7606d8a7801fd",
+      "name" : "stdout",
+      "source" : "f8e7606d8a7801fd.txt",
+      "type" : "text/plain",
+      "size" : 205
+    }, {
+      "uid" : "ed9b285e88b5f52f",
+      "name" : "stdout",
+      "source" : "ed9b285e88b5f52f.txt",
+      "type" : "text/plain",
+      "size" : 222
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 39,
+    "attachmentsCount" : 6,
+    "shouldDisplayMessage" : true,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "language",
+    "value" : "JavaScript"
+  }, {
+    "name" : "framework",
+    "value" : "Playwright"
+  }, {
+    "name" : "parentSuite",
+    "value" : "Chrome Stable"
+  }, {
+    "name" : "suite",
+    "value" : "src/tests/stable/swap.test.ts"
+  }, {
+    "name" : "subSuite",
+    "value" : "Swap:  > From Velas network: "
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ {
+      "uid" : "47141e5912f0fd8",
+      "status" : "failed",
+      "statusDetails" : "elementHandle.click: Timeout 8000ms exceeded.\n=========================== logs ===========================\nattempting click action\n  waiting for element to be visible, enabled and stable\n  element is visible, enabled and stable\n  scrolling into view if needed\n  done scrolling\n  checking that element receives pointer events at (1190,615.98)\n  element does receive pointer events\n  performing click action\n============================================================",
+      "time" : {
+        "start" : 1641482044969,
+        "stop" : 1641482081909,
+        "duration" : 36940
+      }
+    } ],
+    "categories" : [ {
+      "name" : "Product defects",
+      "matchedStatuses" : [ ],
+      "flaky" : false
+    } ],
+    "history" : {
+      "statistic" : {
+        "failed" : 2,
+        "broken" : 0,
+        "skipped" : 3,
+        "passed" : 7,
+        "unknown" : 0,
+        "total" : 12
+      },
+      "items" : [ {
+        "uid" : "eac93878d43cd0af",
+        "reportUrl" : "https://velas.github.io/JsWallet/625//#testresult/eac93878d43cd0af",
+        "status" : "passed",
+        "time" : {
+          "start" : 1641476938284,
+          "stop" : 1641477025105,
+          "duration" : 86821
+        }
+      }, {
+        "uid" : "2fbdd04cb0dee349",
+        "reportUrl" : "https://velas.github.io/JsWallet/624//#testresult/2fbdd04cb0dee349",
+        "status" : "passed",
+        "time" : {
+          "start" : 1641475067017,
+          "stop" : 1641475108829,
+          "duration" : 41812
+        }
+      }, {
+        "uid" : "755d24c04735910",
+        "reportUrl" : "https://velas.github.io/JsWallet/622//#testresult/755d24c04735910",
+        "status" : "failed",
+        "statusDetails" : "elementHandle.click: Timeout 7000ms exceeded.\n=========================== logs ===========================\nattempting click action\n  waiting for element to be visible, enabled and stable\n  element is visible, enabled and stable\n  scrolling into view if needed\n  done scrolling\n  checking that element receives pointer events at (1190,615.98)\n  element does receive pointer events\n  performing click action\n============================================================",
+        "time" : {
+          "start" : 1641468479060,
+          "stop" : 1641468521380,
+          "duration" : 42320
+        }
+      }, {
+        "uid" : "d2222134fed36192",
+        "reportUrl" : "https://velas.github.io/JsWallet/621//#testresult/d2222134fed36192",
+        "status" : "skipped",
+        "time" : {
+          "start" : 1641463158159,
+          "stop" : 1641463158159,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "1b49e84a141e2f52",
+        "reportUrl" : "https://velas.github.io/JsWallet/620//#testresult/1b49e84a141e2f52",
+        "status" : "passed",
+        "time" : {
+          "start" : 1641403243897,
+          "stop" : 1641403293690,
+          "duration" : 49793
+        }
+      }, {
+        "uid" : "1aae2bc787042de5",
+        "reportUrl" : "https://velas.github.io/JsWallet/618//#testresult/1aae2bc787042de5",
+        "status" : "passed",
+        "time" : {
+          "start" : 1641402150715,
+          "stop" : 1641402231300,
+          "duration" : 80585
+        }
+      }, {
+        "uid" : "a850996fadfc7ee3",
+        "reportUrl" : "https://velas.github.io/JsWallet/616//#testresult/a850996fadfc7ee3",
+        "status" : "passed",
+        "time" : {
+          "start" : 1641400123360,
+          "stop" : 1641400206105,
+          "duration" : 82745
+        }
+      }, {
+        "uid" : "ef9173cb8c6b9c49",
+        "reportUrl" : "https://velas.github.io/JsWallet/615//#testresult/ef9173cb8c6b9c49",
+        "status" : "passed",
+        "time" : {
+          "start" : 1641396731433,
+          "stop" : 1641396797262,
+          "duration" : 65829
+        }
+      }, {
+        "uid" : "d451ad94c05a2597",
+        "reportUrl" : "https://velas.github.io/JsWallet/614//#testresult/d451ad94c05a2597",
+        "status" : "passed",
+        "time" : {
+          "start" : 1641389757395,
+          "stop" : 1641389806056,
+          "duration" : 48661
+        }
+      }, {
+        "uid" : "91684b5b68807a5f",
+        "reportUrl" : "https://velas.github.io/JsWallet/613//#testresult/91684b5b68807a5f",
+        "status" : "skipped",
+        "time" : {
+          "start" : 1641387332736,
+          "stop" : 1641387332736,
+          "duration" : 0
+        }
+      }, {
+        "uid" : "d86ab58b46fe6439",
+        "reportUrl" : "https://velas.github.io/JsWallet/613//#testresult/d86ab58b46fe6439",
+        "status" : "skipped",
+        "time" : {
+          "start" : 1641386562315,
+          "stop" : 1641386562315,
+          "duration" : 0
+        }
+      } ]
+    },
+    "tags" : [ ]
+  },
+  "source" : "9b436c6e916dfea0.json",
+  "parameterValues" : [ ]
+}
