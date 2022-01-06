@@ -285,10 +285,10 @@ export class StakingScreen extends BaseScreen {
 
   async makeSureUiBalanceEqualsChainBalance(address: string): Promise<void> {
     const initialWalletBalance = helpers.toFixed((await velasNative.getBalance(address)).VLX);
-    let uiBalance = await (await this.page.innerText('.section .description span')).replace('VLX', '').trim();
+    let uiBalance = (await this.page.innerText('.section .description span')).replace('VLX', '').trim();
     while (initialWalletBalance !== helpers.toFixed(Number(uiBalance))) {
       await this.refresh();
-      uiBalance = await (await this.page.innerText('.section .description span')).replace('VLX', '').trim();
+      uiBalance = (await this.page.innerText('.section .description span')).replace('VLX', '').trim();
       log.debug('Balance on UI is not the same as on blockchain, refreshing...');
     }
   }

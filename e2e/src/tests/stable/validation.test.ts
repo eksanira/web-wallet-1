@@ -20,7 +20,7 @@ test.describe.parallel('Validation', () => {
   });
 
   test('VLX Native: Show Invalid Address error', async ({ page }) => {
-    await page.click('#wallets-send');
+    await walletsScreen.clickSendButton();
     await page.type('#send-recipient', 'invalid');
     await page.waitForSelector('text=/(?=.*not)(?=.*valid)(?=.*address)/i');
 
@@ -31,7 +31,7 @@ test.describe.parallel('Validation', () => {
 
   test('VLX Native: Show Not Enough Funds error', async ({ page }) => {
     await walletsScreen.selectWallet('token-vlx_native')
-    await page.click('#wallets-send');
+    await walletsScreen.clickSendButton();
     await page.fill('#send-recipient', 'BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW');
     await page.fill('div.amount-field .textfield[label="Send"]', '99999999');
 

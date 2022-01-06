@@ -30,7 +30,7 @@ export default class ExplorersAPI {
     return response.data.result;
   }
 
-  async waitForConfirmedTx(txHash: string, milliseconds: number = 60000): Promise<void> {
+  async waitForConfirmedTx(txHash: string, milliseconds: number = 180000): Promise<void> {
     const startTime = Date.now();
     let tx;
     while (!tx && (Date.now() - startTime) < milliseconds) {

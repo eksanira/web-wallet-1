@@ -8,7 +8,7 @@ const config: PlaywrightTestConfig = {
   // globalTeardown: '',
   maxFailures: globalConfig.CI ? 10 : 2,
   retries: globalConfig.CI ? 1 : 0,
-  timeout: 240000,
+  timeout: 220000,
   workers: 2,
   reportSlowTests: { threshold: 120000, max: 0 },
   // reporter: 'list',
