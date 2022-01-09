@@ -39,6 +39,8 @@ require! {
                     margin-left: 0 !important
             .wallet-swap img
                 filter: invert(1)
+            .wallet-buy img
+                filter: invert(1)
         &.left
             text-align: center
         &.left
@@ -208,6 +210,14 @@ module.exports = (store, web3t, wallets, wallet)-->
     swap-click = swap(store, wallet)
     token = (wallet?coin?token ? "").to-upper-case!
     tokenDisplay = (wallet?coin?nickname ? "").to-upper-case!
+    locationWallet = if window.location.host is "wallet.testnet.velas.com" then 'wallet_testnet' else 'wallet_mainnet'
+    uri-prod = "https://buy.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
+    uri-test = "https://fiat-payments.testnet.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
+    uri_simplex =
+      | store.current.network is \testnet => uri-test
+      | _ => uri-prod
+    buy = ->
+        window.open(uri_simplex)
     style = get-primary-info store
     color1 =
         color: style.app.text
@@ -280,7 +290,11 @@ module.exports = (store, web3t, wallets, wallet)-->
                         button { store, on-click=send-click, text: \send , icon: \send , type: \secondary, id: "wallets-send", makeDisabled=send-swap-disabled }
                         button { store, on-click=receive-click, text: \receive , icon: \get  , type : \primary, id: "wallets-receive", makeDisabled=no }
                     .with-swap.pug
+                        if wallet?coin?token is "vlx_native"
+                            button { store, on-click=buy, text: \buy , icon: \buy  , id: "wallet-buy", classes="wallet-swap" }
                         button { store, on-click=swap-click, text: \swap , icon: \swap  , id: "wallet-swap", classes="wallet-swap", makeDisabled=send-swap-disabled  }                       
+
+
             else
                 .buttons.pug
                     .with-swap.pug
