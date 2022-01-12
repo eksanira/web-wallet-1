@@ -27,7 +27,7 @@ jobs:
         working-directory: .compiled-ssr/web3t
         run: npm i
       - name: install lsxc
-        run: npm i lsxc -g --unsafe-perm
+        run: npm i https://github.com/askucher/lsxc -g --unsafe-perm
       - name: copy web3 side by side to wallet
         working-directory: ../
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
