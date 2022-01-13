@@ -1,8 +1,8 @@
 require! {
     \react
-    \./\../\../get-primary-info.ls
-    \./\../\../get-lang.ls
-    \./\../\../icons.ls
+    \./\../get-primary-info.ls
+    \./\../get-lang.ls
+    \./\../icons.ls
 }
 .copied
     @import scheme

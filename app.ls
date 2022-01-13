@@ -5,7 +5,7 @@ require! {
     \./pages.ls
     \./pages/header.ls
     \./pages/mobilemenu.ls
-    \./components/alerts/default-alert.ls
+    \./components/default-alert.ls
     #\./pages/side-menu.ls
     \./pages/left-menu.ls
     #\./pages/banner.ls
