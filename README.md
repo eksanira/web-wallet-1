@@ -12,7 +12,7 @@
 4. npm i 
 5. cd ../wallet
 6. npm i 
-7. npm i https://github.com/askucher/lsxc -g
+7. npm i lsxc -g
 7. npm run wallet-start
 8. open http://127.0.0.1:8080
 
@@ -21,7 +21,7 @@ Tested with `node --version` v11.10.1
 
 ### Install and run wallet locally
 (Works on node 14.16)
-1. `npm i https://github.com/askucher/lsxc -g`
+1. `npm i lsxc -g`
 2. `git clone https://github.com/velas/JsWallet`
 #### Prepare web3t
 2. `git clone http://github.com/velas/web3t`
