@@ -7,7 +7,8 @@
     "allure:generate": "npx allure generate ./allure-results --clean",
     "allure:open": "npx allure open ./allure-report",
     "allure:serve": "npx allure serve",
-    "test": "npx playwright test tests/stable",
+    "test": "npx playwright test tests/stable/",
+    "test:swap": "npx playwright test tests/unstable/swap",
     "blockchain-health-check": "ts-node src/tests/blockchain-health-check.ts",
     "balances-api-health-check": "ts-node src/tests/balances-api-healcheck.ts",
     "prod-monitoring-test": "NETWORK=mainnet ENVIRONMENT=prod npx playwright test monitoring"

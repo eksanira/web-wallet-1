@@ -239,7 +239,13 @@ require! {
                         top: 2px
                     @media screen and (max-width: 800px)
                         width: 40px
-                        line-height: 30px
+                        padding: 0px;
+                a
+                    button
+                        width: 34px
+                        @media screen and (max-width: 480px)
+                            width: auto
+
     .your-account
         position: relative
         display: block
@@ -632,6 +638,16 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
                         button { store, on-click=receive-click, text: \receive , icon: \get, type : \primary }
                         if (available-networks.length > 0) then
                             button { store, on-click=swap-click, text: \swap , icon: \swap, id: "wallet-swap", makeDisabled=send-swap-disabled, classes="wallet-swap" }
+                        if wallet?coin?token is "vlx_native"
+                            locationWallet = if window.location.host is "wallet.testnet.velas.com" then 'wallet_testnet' else 'wallet_mainnet'
+                            uri-prod = "https://buy.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
+                            uri-test = "https://fiat-payments.testnet.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
+                            uri_simplex =
+                                | store.current.network is \testnet => uri-test
+                                | _ => uri-prod
+                            buy = ->
+                                window.open(uri_simplex)
+                            button { store, on-click=buy, text: \buy , icon: \buy  , id: "wallet-buy", classes="wallet-swap" }
                     .wallet-middle.pug(style=border)
                         address-holder { store, wallet, type: \bg }
                         if token not in <[ btc vlx vlx_native vlx2 eth vlx_evm vlx_evm_legacy ]>

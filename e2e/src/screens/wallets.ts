@@ -169,9 +169,20 @@ export class WalletsScreen extends BaseScreen {
   addWalletsPopup = {
     open: async () => {
       await this.page.click('.header .button.lock.mt-5');
+      await this.page.waitForTimeout(300);
     },
     add: async (tokenName: Currency) => {
-      await this.page.click(`#add-${tokenName} button`);
+      const addTokenButtonSelector = `#add-${tokenName} button`;
+
+      await this.page.waitForSelector(addTokenButtonSelector);
+      const addTokenButton = await this.page.$(addTokenButtonSelector);
+      await addTokenButton?.scrollIntoViewIfNeeded();
+      await this.page.waitForTimeout(600);
+      await addTokenButton?.click();
+
+      // TODO: investigate why click does not work and FIX
+      // repeat action if required
+      if (await this.page.$(addTokenButtonSelector)) await addTokenButton?.click();
     },
   };
 
@@ -201,27 +212,14 @@ export class WalletsScreen extends BaseScreen {
       await this.swap.fill(String(transactionAmount));
     }
 
+    // wait for amount error disappears
+    await this.page.waitForTimeout(300);
     await this.swap.confirm();
-  }
-  
-  private async clickSwapButton(): Promise<void> {
-    await this.page.waitForSelector('.with-swap #wallet-swap');
-    for (let i = 0; i < 5; i++) {
-      try {
-        await this.page.click('.with-swap #wallet-swap');
-        return;
-      } catch {
-        log.debug(
-          `There was attempt to click the Swap button but it's inactive. Retry in 1 sec...`
-        );
-        await this.page.waitForTimeout(1000);
-      }
-    }
   }
 
   private swap = {
     click: async () => {
-      await this.clickSwapButton();
+      await this.page.click('.with-swap #wallet-swap:not([disabled])');
       await this.page.waitForSelector('.network-slider');
     },
     fill: async (transactionAmount: string) => {
@@ -272,21 +270,15 @@ export class WalletsScreen extends BaseScreen {
       }
     },
     confirm: async () => {
-      await this.page.waitForSelector('#send-confirm:not([disabled])', { timeout: 5000 });
+      await this.page.waitForSelector('#send-confirm:not([disabled])');
+      await this.page.waitForTimeout(500);
+      await this.page.click('#send-confirm:not([disabled])');
 
-      let confirmationAlert = await this.page.$('#confirmation-confirm');
-      let counter = 0;
-      while (!confirmationAlert && counter < 3) {
-        try {
-          await this.page.click('#confirmation-confirm', {timeout: 5000});
-          return;
-        } catch {
-          counter++;
-          await this.page.click('#send-confirm');
-          log.debug(`There was attempt to click the Send button but no confirmation alert, retry and wait for confirmation...`)
-        }
-      }
-      await this.page.waitForSelector('.sent .text a:not([href=""])', {timeout: 30000});
+      await this.page.waitForSelector('div.confirmation-body #confirmation-confirm');
+      await this.page.waitForTimeout(500);
+      await this.page.click('div.confirmation-body #confirmation-confirm');
+
+      await this.page.waitForSelector('.sent .text a:not([href=""])', { timeout: 30000 });
     },
   };
 
@@ -486,9 +478,13 @@ export class WalletsScreen extends BaseScreen {
     return txSignature;
   }
 
+  async clickSendButton(): Promise<void> {
+    await this.page.click('button#wallets-send:not([disabled])', { timeout: 10000 });
+  }
+
   async sendTx(fromToken: Currency, toAddress: string, transactionAmount: number): Promise<void> {
     await this.selectWallet(fromToken);
-    await this.page.click('#wallets-send', { timeout: 10000 });
+    await this.clickSendButton();
     await this.page.fill('#send-recipient', toAddress);
     await this.page.fill('div.amount-field input[label="Send"]', String(transactionAmount));
     await this.page.click('#send-confirm:not([disabled])');

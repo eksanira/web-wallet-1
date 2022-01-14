@@ -97,7 +97,7 @@ module.exports = (store, web3t, wallets, wallet, wallets-groups, group-name)->
         store.current.group-index = 0
     expand = (e)->
         e.stop-propagation!
-        return send(wallet, {}) if store.current.wallet-index is index and group-index is store.current.group-index
+        # return send(wallet, {}) if store.current.wallet-index is index and group-index is store.current.group-index
         store.current.wallet-index = index
         store.current.group-index = group-index
         store.current.filter = { token: wallet.coin.token}

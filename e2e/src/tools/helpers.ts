@@ -21,10 +21,11 @@ export const helpers = {
     return diff;
   },
 
-  toFixed(number: Number, fractionDigits: Number = 0) {
-    const re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fractionDigits || -1) + '})?');
-    const fixedNumber = Number(number.toString().match(re));
-    if (!fixedNumber) throw new Error('Failed to trim decimal\'s fractional part')
+  toFixed(number: Number, fractionDigits: Number = -1) {
+    const re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fractionDigits) + '})?');
+    const match = number.toString().match(re);
+    const fixedNumber = Number(match);
+    if (!fixedNumber) throw new Error(`Failed to trim decimal\'s fractional part from number: ${number}`)
     return fixedNumber;
   },
 

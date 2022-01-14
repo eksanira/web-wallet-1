@@ -25,8 +25,8 @@ test.describe('Balance', () => {
 
   // extract "VLX Native balance update" to separate test
   test('Check VLX Legacy, VLX Native, Litecoin and Bitcoin balances', async () => {
-    await walletsScreen.addWalletsPopup.open();
-    await walletsScreen.addWalletsPopup.add('token-ltc');
+    // await walletsScreen.addWalletsPopup.open();
+    // await walletsScreen.addWalletsPopup.add('token-ltc');
 
     const balances = await walletsScreen.getWalletsBalances();
 
@@ -43,7 +43,7 @@ test.describe('Balance', () => {
 
       switch (wallets[i]) {
         case 'token-vlx2':
-          assert.equal(amountOfTokens, '0.999958');
+          assert.equal(amountOfTokens, '80.999895');
           break;
         case 'token-vlx_native':
           assert.equal(amountOfTokens, String(VLXNativeBalanceOnBlockchain));
@@ -68,7 +68,7 @@ test.describe('Balance', () => {
           }
           break;
         case 'token-vlx_evm':
-          assert.equal(amountOfTokens, '13');
+          assert.equal(amountOfTokens, '1800.999622564');
           break;
         case 'token-ltc':
           // ltc testnet is down
