@@ -61,6 +61,13 @@ export rebuild-history = (store, web3, wallet, cb)->
     { address, network, coin, private-key } = wallet
     err, data <- get-transactions { address, network, coin.token, account: { address, private-key } }
     #console.log \rebuild-history, coin.token, err, data
+    if err?
+        if (err.toString()).indexOf("Unexpected token < in JSON at position 0") then
+            store.current.send.parseError = "Please retry later or write to our support and we will figure it out"
+            <- set-timeout _, 5000
+            store.current.send.error = ""
+            store.current.send.parseError = ""
+        return cb err
     return cb err if err?
     ids =
         data |> map (.tx.to-upper-case!)
@@ -101,6 +108,6 @@ export load-all-transactions = (store, web3, cb)->
         loaders
             |> map -> [loaders.index-of(it).to-string!, it]
             |> pairs-to-obj
-    <- run [tasks] .then    
+    <- run [tasks] .then
     apply-transactions store
     cb null
