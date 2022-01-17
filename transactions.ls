@@ -65,7 +65,6 @@ export rebuild-history = (store, web3, wallet, cb)->
         if (err.toString()).indexOf("Unexpected token < in JSON at position 0") then
             store.current.send.parseError = "Please retry later or write to our support and we will figure it out"
             <- set-timeout _, 5000
-            store.current.send.error = ""
             store.current.send.parseError = ""
         return cb err
     return cb err if err?
