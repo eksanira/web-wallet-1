@@ -69,9 +69,6 @@ jobs:
       - name: run tests
         run: CI=true npm test
 
-      - name: run swap tests
-        run: CI=true npm run test:swap
-
       - name: generate allure report
         if: always()
         run: npm run allure:generate
