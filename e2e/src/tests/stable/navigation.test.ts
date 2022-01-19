@@ -59,7 +59,7 @@ test.describe.parallel('Navigation', () => {
 
         case 'send':
           await walletsScreen.openMenu('wallets');
-          await page.click('#wallets-send');
+          await walletsScreen.clickSendButton();
           await page.waitForSelector('#send-recipient');
           assert.isFalse(await page.isVisible('.network-slider'));
           break;

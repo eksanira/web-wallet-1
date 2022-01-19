@@ -7,7 +7,9 @@
     "allure:generate": "npx allure generate ./allure-results --clean",
     "allure:open": "npx allure open ./allure-report",
     "allure:serve": "npx allure serve",
-    "test": "npx playwright test tests/stable",
+    "test": "npm run test:stable && npm run test:swap",
+    "test:stable": "npx playwright test tests/stable/",
+    "test:swap": "npx playwright test tests/unstable/swap",
     "blockchain-health-check": "ts-node src/tests/blockchain-health-check.ts",
     "balances-api-health-check": "ts-node src/tests/balances-api-healcheck.ts",
     "prod-monitoring-test": "NETWORK=mainnet ENVIRONMENT=prod npx playwright test monitoring"
@@ -36,7 +38,7 @@
     "@velas/velas-chain-test-wrapper": "https://github.com/velas/velas-chain-test-wrapper.git",
     "axios": "^0.21.1",
     "chai": "^4.3.4",
-    "playwright-chromium": "^1.15.0",
+    "playwright-chromium": "^1.16.3",
     "tracer": "^1.1.4",
     "ts-node": "^10.0.0"
   }

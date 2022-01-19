@@ -1,10 +1,10 @@
 import { test } from '@playwright/test';
-import { assert } from '../../assert';
-import { walletURL } from '../../config';
-import { setupPage } from '../../pw-helpers/setup-page';
-import { WalletsScreen } from '../../screens/wallets';
-import { Auth } from '../../screens/auth';
-import { data } from '../../test-data';
+import { assert } from '../assert';
+import { walletURL } from '../config';
+import { setupPage } from '../pw-helpers/setup-page';
+import { WalletsScreen } from '../screens/wallets';
+import { Auth } from '../screens/auth';
+import { data } from '../test-data';
 
 let walletsScreen: WalletsScreen;
 let auth: Auth;
