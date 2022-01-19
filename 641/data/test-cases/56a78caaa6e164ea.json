@@ -1,0 +1,1127 @@
+{
+  "uid" : "56a78caaa6e164ea",
+  "name" : "Send ETH Legacy",
+  "fullName" : "Send ETH Legacy",
+  "historyId" : "Chrome Stable src/tests/stable/transactions.test.ts Transactions Send ETH Legacy",
+  "time" : {
+    "start" : 1642582871826,
+    "stop" : 1642583091825,
+    "duration" : 219999
+  },
+  "status" : "failed",
+  "statusMessage" : "Tx with hash 0xbe9ce198209b69730fb5fb41a227e37481b1570681e68d27948d9137f4fae8b6 exists but not confirmed. Tx data:\n{\n  \"blockHash\": null,\n  \"blockNumber\": null,\n  \"from\": \"0x9808557074812189f7e19db07bf41daf23313129\",\n  \"gas\": \"0x5208\",\n  \"gasPrice\": \"0x5d1cd95c0\",\n  \"hash\": \"0xbe9ce198209b69730fb5fb41a227e37481b1570681e68d27948d9137f4fae8b6\",\n  \"input\": \"0x\",\n  \"nonce\": \"0x14a\",\n  \"r\": \"0x3fb8b31c590dfb3bc23d5ced823024aa67e1ecc09c0a94fc9f02b7ab4b76d126\",\n  \"s\": \"0x5c215da916eb5489be2992dbc9a8d99cc5a122d4e78b5dca7516be1fb8754ac0\",\n  \"to\": \"0xb322f01cb6a191974e7291600a4dc1b46f00f752\",\n  \"transactionIndex\": null,\n  \"type\": \"0x0\",\n  \"v\": \"0x1b\",\n  \"value\": \"0x9184e72a000\"\n}",
+  "statusTrace" : "\n    at ExplorersAPI.waitForConfirmedTx (/home/runner/work/JsWallet/JsWallet/e2e/src/api/explorers-api.ts:49:31)\n    at /home/runner/work/JsWallet/JsWallet/e2e/src/tests/stable/transactions.test.ts:75:5\n    at WorkerRunner._runTestWithBeforeHooks (/home/runner/work/JsWallet/JsWallet/e2e/node_modules/@playwright/test/lib/workerRunner.js:499:7)",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "failed",
+    "statusMessage" : "Tx with hash 0xbe9ce198209b69730fb5fb41a227e37481b1570681e68d27948d9137f4fae8b6 exists but not confirmed. Tx data:\n{\n  \"blockHash\": null,\n  \"blockNumber\": null,\n  \"from\": \"0x9808557074812189f7e19db07bf41daf23313129\",\n  \"gas\": \"0x5208\",\n  \"gasPrice\": \"0x5d1cd95c0\",\n  \"hash\": \"0xbe9ce198209b69730fb5fb41a227e37481b1570681e68d27948d9137f4fae8b6\",\n  \"input\": \"0x\",\n  \"nonce\": \"0x14a\",\n  \"r\": \"0x3fb8b31c590dfb3bc23d5ced823024aa67e1ecc09c0a94fc9f02b7ab4b76d126\",\n  \"s\": \"0x5c215da916eb5489be2992dbc9a8d99cc5a122d4e78b5dca7516be1fb8754ac0\",\n  \"to\": \"0xb322f01cb6a191974e7291600a4dc1b46f00f752\",\n  \"transactionIndex\": null,\n  \"type\": \"0x0\",\n  \"v\": \"0x1b\",\n  \"value\": \"0x9184e72a000\"\n}",
+    "statusTrace" : "\n    at ExplorersAPI.waitForConfirmedTx (/home/runner/work/JsWallet/JsWallet/e2e/src/api/explorers-api.ts:49:31)\n    at /home/runner/work/JsWallet/JsWallet/e2e/src/tests/stable/transactions.test.ts:75:5\n    at WorkerRunner._runTestWithBeforeHooks (/home/runner/work/JsWallet/JsWallet/e2e/node_modules/@playwright/test/lib/workerRunner.js:499:7)",
+    "steps" : [ {
+      "name" : "Before Hooks",
+      "time" : {
+        "start" : 1642582871826,
+        "stop" : 1642582880407,
+        "duration" : 8581
+      },
+      "status" : "passed",
+      "steps" : [ {
+        "name" : "browserContext.newPage",
+        "time" : {
+          "start" : 1642582871833,
+          "stop" : 1642582871890,
+          "duration" : 57
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.goto(127.0.0.1:8080/main-index.html?network=testnet)",
+        "time" : {
+          "start" : 1642582871893,
+          "stop" : 1642582874951,
+          "duration" : 3058
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.balance)",
+        "time" : {
+          "start" : 1642582874952,
+          "stop" : 1642582875469,
+          "duration" : 517
+        },
+        "status" : "failed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.isVisible([placeholder=\"Password or PIN\"])",
+        "time" : {
+          "start" : 1642582875473,
+          "stop" : 1642582875483,
+          "duration" : 10
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#lang-en)",
+        "time" : {
+          "start" : 1642582875484,
+          "stop" : 1642582875833,
+          "duration" : 349
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#btn-restore)",
+        "time" : {
+          "start" : 1642582875834,
+          "stop" : 1642582876142,
+          "duration" : 308
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#restore-custom)",
+        "time" : {
+          "start" : 1642582876143,
+          "stop" : 1642582876461,
+          "duration" : 318
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.fill([type=\"password\"])",
+        "time" : {
+          "start" : 1642582876461,
+          "stop" : 1642582876761,
+          "duration" : 300
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(button.setup)",
+        "time" : {
+          "start" : 1642582876761,
+          "stop" : 1642582877163,
+          "duration" : 402
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.fill(#seedphrase-custom)",
+        "time" : {
+          "start" : 1642582877164,
+          "stop" : 1642582877487,
+          "duration" : 323
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#seed-phrase-next)",
+        "time" : {
+          "start" : 1642582877494,
+          "stop" : 1642582879120,
+          "duration" : 1626
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.menu-item)",
+        "time" : {
+          "start" : 1642582879121,
+          "stop" : 1642582879346,
+          "duration" : 225
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.balance)",
+        "time" : {
+          "start" : 1642582879347,
+          "stop" : 1642582879376,
+          "duration" : 29
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.wallet-item .top-left [class=\" img\"])",
+        "time" : {
+          "start" : 1642582879378,
+          "stop" : 1642582880291,
+          "duration" : 913
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForTimeout",
+        "time" : {
+          "start" : 1642582880291,
+          "stop" : 1642582880407,
+          "duration" : 116
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      } ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 15,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "page.waitForSelector(.wallet-item .top-left [class=\" img\"])",
+      "time" : {
+        "start" : 1642582880407,
+        "stop" : 1642582880498,
+        "duration" : 91
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1642582880499,
+        "stop" : 1642582880821,
+        "duration" : 322
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.isVisible(#token-eth_legacy)",
+      "time" : {
+        "start" : 1642582880821,
+        "stop" : 1642582880919,
+        "duration" : 98
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForSelector(.wallet-item .top-left [class=\" img\"])",
+      "time" : {
+        "start" : 1642582880920,
+        "stop" : 1642582880989,
+        "duration" : 69
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1642582880990,
+        "stop" : 1642582881108,
+        "duration" : 118
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.isVisible(div.big.wallet-item#token-eth_legacy)",
+      "time" : {
+        "start" : 1642582881109,
+        "stop" : 1642582881120,
+        "duration" : 11
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.click(#token-eth_legacy)",
+      "time" : {
+        "start" : 1642582881120,
+        "stop" : 1642582881926,
+        "duration" : 806
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1642582881928,
+        "stop" : 1642582882974,
+        "duration" : 1046
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.isVisible(div.big.wallet-item#token-eth_legacy)",
+      "time" : {
+        "start" : 1642582882974,
+        "stop" : 1642582883006,
+        "duration" : 32
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForSelector(.wallet-item .top-left [class=\" img\"])",
+      "time" : {
+        "start" : 1642582883006,
+        "stop" : 1642582883106,
+        "duration" : 100
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForTimeout",
+      "time" : {
+        "start" : 1642582883107,
+        "stop" : 1642582883228,
+        "duration" : 121
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.click(button#wallets-send:not([disabled]))",
+      "time" : {
+        "start" : 1642582883228,
+        "stop" : 1642582883719,
+        "duration" : 491
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.fill(#send-recipient)",
+      "time" : {
+        "start" : 1642582883719,
+        "stop" : 1642582884044,
+        "duration" : 325
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.fill(div.amount-field input[label=\"Send\"])",
+      "time" : {
+        "start" : 1642582884044,
+        "stop" : 1642582884352,
+        "duration" : 308
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.click(#send-confirm:not([disabled]))",
+      "time" : {
+        "start" : 1642582884352,
+        "stop" : 1642582884743,
+        "duration" : 391
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.waitForSelector(#confirmation-confirm)",
+      "time" : {
+        "start" : 1642582884743,
+        "stop" : 1642582884911,
+        "duration" : 168
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.click(#confirmation-confirm)",
+      "time" : {
+        "start" : 1642582884911,
+        "stop" : 1642582886302,
+        "duration" : 1391
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.getAttribute(.sent .text a)",
+      "time" : {
+        "start" : 1642582886303,
+        "stop" : 1642582886399,
+        "duration" : 96
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "After Hooks",
+      "time" : {
+        "start" : 1642583067524,
+        "stop" : 1642583067524,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ {
+        "name" : "browserContext.close",
+        "time" : {
+          "start" : 1642583071707,
+          "stop" : 1642583071707,
+          "duration" : 0
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      } ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 1,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ {
+      "uid" : "70646d00ffc77b9e",
+      "name" : "trace",
+      "source" : "70646d00ffc77b9e.ZIP",
+      "type" : "application/zip",
+      "size" : 29408408
+    }, {
+      "uid" : "fe597aa485c62784",
+      "name" : "screenshot",
+      "source" : "fe597aa485c62784.png",
+      "type" : "image/png",
+      "size" : 117365
+    }, {
+      "uid" : "a4037ce528372933",
+      "name" : "stdout",
+      "source" : "a4037ce528372933.txt",
+      "type" : "text/plain",
+      "size" : 54
+    }, {
+      "uid" : "98ae3b0181d6045f",
+      "name" : "stdout",
+      "source" : "98ae3b0181d6045f.txt",
+      "type" : "text/plain",
+      "size" : 200
+    }, {
+      "uid" : "c0a102cb2b1ccc6a",
+      "name" : "stdout",
+      "source" : "c0a102cb2b1ccc6a.txt",
+      "type" : "text/plain",
+      "size" : 217
+    }, {
+      "uid" : "8fd03a0a3fe02482",
+      "name" : "stdout",
+      "source" : "8fd03a0a3fe02482.txt",
+      "type" : "text/plain",
+      "size" : 108
+    }, {
+      "uid" : "9e29f88114e933d",
+      "name" : "stdout",
+      "source" : "9e29f88114e933d.txt",
+      "type" : "text/plain",
+      "size" : 66
+    }, {
+      "uid" : "b82c966c76006e68",
+      "name" : "stdout",
+      "source" : "b82c966c76006e68.txt",
+      "type" : "text/plain",
+      "size" : 127
+    }, {
+      "uid" : "ec5237d5e6057180",
+      "name" : "stdout",
+      "source" : "ec5237d5e6057180.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "74242e831b79665a",
+      "name" : "stdout",
+      "source" : "74242e831b79665a.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "e12ed83996729e30",
+      "name" : "stdout",
+      "source" : "e12ed83996729e30.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "32788236e2b2a4b7",
+      "name" : "stdout",
+      "source" : "32788236e2b2a4b7.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "fa1e76e0b523fab0",
+      "name" : "stdout",
+      "source" : "fa1e76e0b523fab0.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "e3e6deb53210ba45",
+      "name" : "stdout",
+      "source" : "e3e6deb53210ba45.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "192274fce387b35c",
+      "name" : "stdout",
+      "source" : "192274fce387b35c.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "a38856fc97df4c2e",
+      "name" : "stdout",
+      "source" : "a38856fc97df4c2e.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "297dd7f190c78871",
+      "name" : "stdout",
+      "source" : "297dd7f190c78871.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "fe720d67a78077e3",
+      "name" : "stdout",
+      "source" : "fe720d67a78077e3.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "e95e92dbc4fa365",
+      "name" : "stdout",
+      "source" : "e95e92dbc4fa365.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "5301868ca880470f",
+      "name" : "stdout",
+      "source" : "5301868ca880470f.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "2c74e4923710bae9",
+      "name" : "stdout",
+      "source" : "2c74e4923710bae9.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "6f9ce63cd5c6e829",
+      "name" : "stdout",
+      "source" : "6f9ce63cd5c6e829.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "970f98515462768c",
+      "name" : "stdout",
+      "source" : "970f98515462768c.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "a6b8b83c39210195",
+      "name" : "stdout",
+      "source" : "a6b8b83c39210195.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "990b8e7a7a38cdff",
+      "name" : "stdout",
+      "source" : "990b8e7a7a38cdff.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "ee069d5bba5ffca9",
+      "name" : "stdout",
+      "source" : "ee069d5bba5ffca9.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "414d499416969678",
+      "name" : "stdout",
+      "source" : "414d499416969678.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "d76a8da6cbd8a07e",
+      "name" : "stdout",
+      "source" : "d76a8da6cbd8a07e.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "1005a5a2953d55dd",
+      "name" : "stdout",
+      "source" : "1005a5a2953d55dd.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "81deb4cc43dfab8a",
+      "name" : "stdout",
+      "source" : "81deb4cc43dfab8a.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "4e17668faf064490",
+      "name" : "stdout",
+      "source" : "4e17668faf064490.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "1bce78afc01cb05d",
+      "name" : "stdout",
+      "source" : "1bce78afc01cb05d.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "4be6986b36d89dbc",
+      "name" : "stdout",
+      "source" : "4be6986b36d89dbc.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "61134090aef42662",
+      "name" : "stdout",
+      "source" : "61134090aef42662.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "db2e5257c2952b32",
+      "name" : "stdout",
+      "source" : "db2e5257c2952b32.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "c512d9b998bd42ee",
+      "name" : "stdout",
+      "source" : "c512d9b998bd42ee.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "47977e68454b5b7b",
+      "name" : "stdout",
+      "source" : "47977e68454b5b7b.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "65762648fa427c7d",
+      "name" : "stdout",
+      "source" : "65762648fa427c7d.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "9c44535c7f0d53c7",
+      "name" : "stdout",
+      "source" : "9c44535c7f0d53c7.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "5136260f3d2c0c96",
+      "name" : "stdout",
+      "source" : "5136260f3d2c0c96.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "4cfb9026f15e60c0",
+      "name" : "stdout",
+      "source" : "4cfb9026f15e60c0.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "7e3c2d5a9c857ed8",
+      "name" : "stdout",
+      "source" : "7e3c2d5a9c857ed8.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "b8b54c70a25598a9",
+      "name" : "stdout",
+      "source" : "b8b54c70a25598a9.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "ea7e39910e34fe68",
+      "name" : "stdout",
+      "source" : "ea7e39910e34fe68.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "c3e53d5dc6847da4",
+      "name" : "stdout",
+      "source" : "c3e53d5dc6847da4.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "b47fb8d9f05e2190",
+      "name" : "stdout",
+      "source" : "b47fb8d9f05e2190.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "eb3641651d6779f4",
+      "name" : "stdout",
+      "source" : "eb3641651d6779f4.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "e1af76aa58e13d62",
+      "name" : "stdout",
+      "source" : "e1af76aa58e13d62.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "1242eab615ebd7d6",
+      "name" : "stdout",
+      "source" : "1242eab615ebd7d6.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "e7582c60501bfa84",
+      "name" : "stdout",
+      "source" : "e7582c60501bfa84.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "4caf4d06f160e7c",
+      "name" : "stdout",
+      "source" : "4caf4d06f160e7c.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "61d43ef15894131f",
+      "name" : "stdout",
+      "source" : "61d43ef15894131f.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "cb33f79d8c2f1196",
+      "name" : "stdout",
+      "source" : "cb33f79d8c2f1196.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "8758b66cdead55db",
+      "name" : "stdout",
+      "source" : "8758b66cdead55db.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "3895684b89d40e96",
+      "name" : "stdout",
+      "source" : "3895684b89d40e96.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "1b708ee79c917ee1",
+      "name" : "stdout",
+      "source" : "1b708ee79c917ee1.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "4e8c153e905607e3",
+      "name" : "stdout",
+      "source" : "4e8c153e905607e3.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "cf636e882a6d009a",
+      "name" : "stdout",
+      "source" : "cf636e882a6d009a.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "7caa22dcf7da8433",
+      "name" : "stdout",
+      "source" : "7caa22dcf7da8433.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "660ec541be32bfad",
+      "name" : "stdout",
+      "source" : "660ec541be32bfad.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "3701df45933fcf71",
+      "name" : "stdout",
+      "source" : "3701df45933fcf71.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "bbf67e4f93ce4c18",
+      "name" : "stdout",
+      "source" : "bbf67e4f93ce4c18.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "a10197ed8835d78d",
+      "name" : "stdout",
+      "source" : "a10197ed8835d78d.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "3d735e493d3fe38f",
+      "name" : "stdout",
+      "source" : "3d735e493d3fe38f.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "4a3b35d434a1c660",
+      "name" : "stdout",
+      "source" : "4a3b35d434a1c660.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "f20645bbd3a6275d",
+      "name" : "stdout",
+      "source" : "f20645bbd3a6275d.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "ecce18f6fad94f21",
+      "name" : "stdout",
+      "source" : "ecce18f6fad94f21.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "817e5a55f8ab2a80",
+      "name" : "stdout",
+      "source" : "817e5a55f8ab2a80.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "a8109be4f07a1387",
+      "name" : "stdout",
+      "source" : "a8109be4f07a1387.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "9b8805119fe87f65",
+      "name" : "stdout",
+      "source" : "9b8805119fe87f65.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "49d3a2f111ec2f25",
+      "name" : "stdout",
+      "source" : "49d3a2f111ec2f25.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "73e00127d25b9ac0",
+      "name" : "stdout",
+      "source" : "73e00127d25b9ac0.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "bff07ffcd71dd1a",
+      "name" : "stdout",
+      "source" : "bff07ffcd71dd1a.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "143532d3651a3785",
+      "name" : "stdout",
+      "source" : "143532d3651a3785.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "5c05e99120e6404d",
+      "name" : "stdout",
+      "source" : "5c05e99120e6404d.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "fda1405842a46a19",
+      "name" : "stdout",
+      "source" : "fda1405842a46a19.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "7f8d0f0b24fdaeaa",
+      "name" : "stdout",
+      "source" : "7f8d0f0b24fdaeaa.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "8099f96a575c6f66",
+      "name" : "stdout",
+      "source" : "8099f96a575c6f66.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "670feae653d6ec33",
+      "name" : "stdout",
+      "source" : "670feae653d6ec33.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "4c33d9c6a3ce43af",
+      "name" : "stdout",
+      "source" : "4c33d9c6a3ce43af.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "99a2a0b0babe0758",
+      "name" : "stdout",
+      "source" : "99a2a0b0babe0758.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "cda5e53bcdf0d237",
+      "name" : "stdout",
+      "source" : "cda5e53bcdf0d237.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "8abe6c437fa307a1",
+      "name" : "stdout",
+      "source" : "8abe6c437fa307a1.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "68389d22a45e09e9",
+      "name" : "stdout",
+      "source" : "68389d22a45e09e9.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "3cb3587f4d4fabf3",
+      "name" : "stdout",
+      "source" : "3cb3587f4d4fabf3.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "46166339788630a1",
+      "name" : "stdout",
+      "source" : "46166339788630a1.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "8f4d8202539aad98",
+      "name" : "stdout",
+      "source" : "8f4d8202539aad98.txt",
+      "type" : "text/plain",
+      "size" : 63
+    }, {
+      "uid" : "b8ddb5522f3887bc",
+      "name" : "stdout",
+      "source" : "b8ddb5522f3887bc.txt",
+      "type" : "text/plain",
+      "size" : 63
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 36,
+    "attachmentsCount" : 88,
+    "shouldDisplayMessage" : true,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "language",
+    "value" : "JavaScript"
+  }, {
+    "name" : "framework",
+    "value" : "Playwright"
+  }, {
+    "name" : "parentSuite",
+    "value" : "Chrome Stable"
+  }, {
+    "name" : "suite",
+    "value" : "src/tests/stable/transactions.test.ts"
+  }, {
+    "name" : "subSuite",
+    "value" : "Transactions"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : true,
+  "retry" : true,
+  "extra" : {
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "56a78caaa6e164ea.json",
+  "parameterValues" : [ ]
+}
