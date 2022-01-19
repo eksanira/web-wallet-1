@@ -30,7 +30,7 @@ export default class ExplorersAPI {
     return response.data.result;
   }
 
-  async waitForConfirmedTx(txHash: string, milliseconds: number = 150000): Promise<void> {
+  async waitForTx(txHash: string, waitForConfirmation = true, milliseconds: number = 180000): Promise<void> {
     const startTime = Date.now();
     let tx;
     while (!tx && (Date.now() - startTime) < milliseconds) {
@@ -38,6 +38,8 @@ export default class ExplorersAPI {
       await helpers.sleep(2000);
     }
     if (!tx) throw new Error(`No tx found with hash ${txHash}`);
+
+    if (!waitForConfirmation) return;
 
     let isTxConfirmed = false;
     while (!isTxConfirmed && (Date.now() - startTime) < milliseconds) {

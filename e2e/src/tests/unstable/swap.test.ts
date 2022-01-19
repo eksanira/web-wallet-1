@@ -36,7 +36,7 @@ test.describe('Swap: ', () => {
     test('EVM > VLX Native', async () => {
       await walletsScreen.swapTokens('token-vlx_evm', 'token-vlx_native', 0.0001);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await evmchain.waitForConfirmedTx(txHash);
+      await evmchain.waitForTx(txHash);
     });
 
     // Legacy is irrelevant
@@ -54,21 +54,21 @@ test.describe('Swap: ', () => {
     test.skip('VLX Legacy > VLX Native', async () => {
       await walletsScreen.swapTokens('token-vlx2', 'token-vlx_native', 0.0001);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await evmchain.waitForConfirmedTx(txHash);
+      await evmchain.waitForTx(txHash);
     });
 
     // Legacy is irrelevant
     test.skip('VLX Legacy > EVM', async () => {
       await walletsScreen.swapTokens('token-vlx2', 'token-vlx_evm', 0.0001);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await evmchain.waitForConfirmedTx(txHash);
+      await evmchain.waitForTx(txHash);
     });
 
     // Legacy is irrelevant
     test.skip('EVM > VLX Legacy', async () => {
       await walletsScreen.swapTokens('token-vlx_evm', 'token-vlx2', 0.0001);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await evmchain.waitForConfirmedTx(txHash);
+      await evmchain.waitForTx(txHash);
     });
   });
 
@@ -76,44 +76,44 @@ test.describe('Swap: ', () => {
     test('EVM > HRC-20', async () => {
       await walletsScreen.swapTokens('token-vlx_evm', 'token-vlx_huobi', 0.0001);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await evmchain.waitForConfirmedTx(txHash);
+      await evmchain.waitForTx(txHash);
     });
 
     test('EVM > VLX ERC-20', async () => {
       await walletsScreen.swapTokens('token-vlx_evm', 'token-vlx_erc20', 0.01);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await evmchain.waitForConfirmedTx(txHash);
+      await evmchain.waitForTx(txHash);
     });
 
     test('EVM > BEP-20', async () => {
       await walletsScreen.swapTokens('token-vlx_evm', 'token-bsc_vlx', 1);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await evmchain.waitForConfirmedTx(txHash);
+      await evmchain.waitForTx(txHash);
     });
 
     // TODO: fix ETH > ETH velas bridge
     test.skip('ETH Velas > ETH', async () => {
       await walletsScreen.swapTokens('token-vlx_eth', 'token-eth', 0.1);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await evmchain.waitForConfirmedTx(txHash);
+      await evmchain.waitForTx(txHash);
     });
 
     test('USDT Velas > USDT', async () => {
       await walletsScreen.swapTokens('token-vlx_usdt', 'token-usdt_erc20', 0.001);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await evmchain.waitForConfirmedTx(txHash);
+      await evmchain.waitForTx(txHash);
     });
 
-    test('USDC Velas > USDC', async () => {
+    test.skip('USDC Velas > USDC', async () => {
       await walletsScreen.swapTokens('token-vlx_usdc', 'token-usdc', 0.001);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await evmchain.waitForConfirmedTx(txHash);
+      await evmchain.waitForTx(txHash);
     });
 
     test('BUSD Velas > BUSD', async () => {
       await walletsScreen.swapTokens('token-vlx_busd', 'token-busd', 0.01);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await evmchain.waitForConfirmedTx(txHash);
+      await evmchain.waitForTx(txHash);
     });
   });
 
@@ -121,46 +121,46 @@ test.describe('Swap: ', () => {
     test('HRC-20 > EVM', async () => {
       await walletsScreen.swapTokens('token-vlx_huobi', 'token-vlx_evm', 0.0001);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await hecochain.waitForConfirmedTx(txHash, 180000);
+      await hecochain.waitForTx(txHash);
     });
 
     test('ERC-20 > EVM', async () => {
       await walletsScreen.swapTokens('token-vlx_erc20', 'token-vlx_evm', 0.01);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await infura.waitForConfirmedTx(txHash, 180000);
+      await infura.waitForTx(txHash);
     });
 
     // TODO: fix VLWA-904 (bsc network issue)
     test.skip('BEP-20 > EVM', async () => {
       await walletsScreen.swapTokens('token-bsc_vlx', 'token-vlx_evm', 1);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await bscchain.waitForConfirmedTx(txHash, 180000);
+      await bscchain.waitForTx(txHash);
     });
 
     // TODO: fix ETH > ETH velas bridge
     test.skip('ETH > ETH Velas', async () => {
       await walletsScreen.swapTokens('token-eth', 'token-vlx_eth', 0.1);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await infura.waitForConfirmedTx(txHash, 180000);
+      await infura.waitForTx(txHash);
     });
 
     test('USDT > USDT Velas', async () => {
       await walletsScreen.swapTokens('token-usdt_erc20', 'token-vlx_usdt', 0.001);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await infura.waitForConfirmedTx(txHash, 180000);
+      await infura.waitForTx(txHash, );
     });
 
-    test('USDC > USDC Velas', async () => {
+    test.skip('USDC > USDC Velas', async () => {
       await walletsScreen.swapTokens('token-usdc', 'token-vlx_usdc', 0.001);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await infura.waitForConfirmedTx(txHash, 180000);
+      await infura.waitForTx(txHash);
     });
 
     // TODO: fix VLWA-904 (bsc network issue)
     test.skip('BUSD > BUSD Velas', async () => {
       await walletsScreen.swapTokens('token-busd', 'token-vlx_busd', 0.01);
       const txHash = await walletsScreen.getTxHashFromTxlink();
-      await bscchain.waitForConfirmedTx(txHash, 180000);
+      await bscchain.waitForTx(txHash);
     });
   });
 });
