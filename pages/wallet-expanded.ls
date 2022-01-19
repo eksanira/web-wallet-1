@@ -292,6 +292,8 @@ module.exports = (store, web3t, wallets, wallet)-->
                     .with-swap.pug
                         if wallet?coin?token is "vlx_native"
                             button { store, on-click=buy, text: \buy , icon: \buy  , id: "wallet-buy", classes="wallet-swap" }
+                        if wallet?coin?token is "vlx_evm"
+                            button { store, on-click=buy, text: \buy , icon: \buy  , id: "wallet-buy", classes="wallet-swap" }
                         button { store, on-click=swap-click, text: \swap , icon: \swap  , id: "wallet-swap", classes="wallet-swap", makeDisabled=send-swap-disabled  }                       
 
 

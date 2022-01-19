@@ -602,6 +602,14 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
                     |> obj-to-pairs
                     |> map (-> it.1 )
                     |> filter (-> it.disabled isnt yes and it.referTo in installed-networks)
+            locationWallet = if window.location.host is "wallet.testnet.velas.com" then 'wallet_testnet' else 'wallet_mainnet'
+            uri-prod = "https://buy.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
+            uri-test = "https://fiat-payments.testnet.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
+            uri_simplex =
+                | store.current.network is \testnet => uri-test
+                | _ => uri-prod
+            buy = ->
+                window.open(uri_simplex)
 
             /* Render */
             .wallet.wallet-mobile.pug.wallet-item(class="#{big} #{disabled-class}" key="#{token}" style=border-style)
@@ -639,14 +647,8 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
                         if (available-networks.length > 0) then
                             button { store, on-click=swap-click, text: \swap , icon: \swap, id: "wallet-swap", makeDisabled=send-swap-disabled, classes="wallet-swap" }
                         if wallet?coin?token is "vlx_native"
-                            locationWallet = if window.location.host is "wallet.testnet.velas.com" then 'wallet_testnet' else 'wallet_mainnet'
-                            uri-prod = "https://buy.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
-                            uri-test = "https://fiat-payments.testnet.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
-                            uri_simplex =
-                                | store.current.network is \testnet => uri-test
-                                | _ => uri-prod
-                            buy = ->
-                                window.open(uri_simplex)
+                            button { store, on-click=buy, text: \buy , icon: \buy  , id: "wallet-buy", classes="wallet-swap" }
+                        if wallet?coin?token is "vlx_evm"
                             button { store, on-click=buy, text: \buy , icon: \buy  , id: "wallet-buy", classes="wallet-swap" }
                     .wallet-middle.pug(style=border)
                         address-holder { store, wallet, type: \bg }
