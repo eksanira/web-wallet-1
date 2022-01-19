@@ -60,7 +60,7 @@ jobs:
 
   docker-build-push:
     # Name the Job
-    name: Build and push (testnet)
+    name: Build and push
     runs-on: ubuntu-latest
     needs: [e2e-tests-local]
     outputs:
@@ -85,7 +85,7 @@ jobs:
           ECR_REPOSITORY: velas-wallet
           IMAGE_TAG: ${{github.sha}}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --no-cache -f Dockerfile.testnet .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --no-cache -f Dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=repository::$ECR_REPOSITORY"
           echo "::set-output name=image_tag::$IMAGE_TAG"
