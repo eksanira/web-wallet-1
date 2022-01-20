@@ -179,6 +179,10 @@ store =
             add-validator-stake: ""
             add-validator-topup: ""
     staking:
+        REWARDS_PER_PAGE: 10
+        rewards_page: 1
+        rewards-index: 0
+        fetchAccounts: yes
         accounts: []
         myStakeMaxPart: null
         reward-info: []

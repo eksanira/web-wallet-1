@@ -870,6 +870,11 @@ stringify = (value) ->
 validators.init = ({ store, web3t }, cb)!->
     err <- calc-certain-wallet(store, "vlx_native")
     #return cb null if store.staking.pools-are-loading is yes
+
+    if store.staking.fetchAccounts is no then
+        store.staking.fetchAccounts = yes
+        return cb null
+
     store.staking.max-withdraw = 0
     random = ->
         Math.random!
