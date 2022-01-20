@@ -29,6 +29,10 @@ class VelasStaking {
         return new PublicKey(this.authorization.publicKey)
     };
 
+    setAccounts(accs) {
+      this.accounts = accs;
+    }
+
     setAccountPublicKey(publicKey) {
         this.authorization.publicKey = publicKey;
     }
@@ -111,6 +115,12 @@ class VelasStaking {
         }
         return this.sendTransaction(transaction);
     }
+
+    async getAccountInfo(publicKey) {
+        const pubkey = new PublicKey(publicKey);
+        const info = await this.connection.getParsedAccountInfo(pubkey);
+        return info;
+    };
 
     async getVoteAccounts() {
         const voteAccounts = await this.connection.getVoteAccounts();
@@ -215,7 +225,9 @@ class VelasStaking {
                 StakeProgram.programId,
             );
 
-            if (this.accounts.filter(item => { return item.address === stakeAccountWithSeed.toBase58()}).length === 0) {
+            if (this.accounts.filter(item => {
+                return item.address.toLowerCase() === stakeAccountWithSeed.toBase58().toLowerCase()}
+            ).length === 0) {
                 return i.toString();
             };
         };
@@ -294,19 +306,15 @@ class VelasStaking {
                 i.toString(),
                 StakeProgram.programId,
             );
-            if (stakeAccountWithSeed.toBase58() === base58PublicKey) return `stake:${i}`;
+            if (stakeAccountWithSeed.toBase58().toLowerCase() === base58PublicKey.toLowerCase()) return `stake:${i}`;
         };
         return base58PublicKey.slice(0,6);
     };
 
     async getOwnStakingAccounts(accounts) {
-        var ref$, ref1$, ref2$, ref3$, ref4$, ref5$;
         let owner = this.getAccountPublicKey();
         accounts = accounts.filter(item => {
-            if (deepEq$(typeof item != 'undefined' && item !== null ? (ref$ = item.account) != null ? (ref1$ = ref$.data) != null ? (ref2$ = ref1$.parsed) != null ? (ref3$ = ref2$.info) != null ? (ref4$ = ref3$.meta) != null ? (ref5$ = ref4$.authorized) != null ? ref5$.staker : void 8 : void 8 : void 8 : void 8 : void 8 : void 8 : void 8, owner.toBase58(), '===')) {
-                return true;
-            }
-            return false;
+            return item.staker === owner.toBase58();
         });
         return accounts;
     }
@@ -337,7 +345,7 @@ class VelasStaking {
         let owner = this.getAccountPublicKey();
 
         accounts = accounts.filter(item => {
-            if (deepEq$(typeof item != 'undefined' && item !== null ? (ref$ = item.account) != null ? (ref1$ = ref$.data) != null ? (ref2$ = ref1$.parsed) != null ? (ref3$ = ref2$.info) != null ? (ref4$ = ref3$.meta) != null ? (ref5$ = ref4$.authorized) != null ? ref5$.staker : void 8 : void 8 : void 8 : void 8 : void 8 : void 8 : void 8, owner.toBase58(), '===')) {
+            if (deepEq$(item.staker, owner.toBase58(), '===')) {
                 return true;
             }
             return false;
@@ -345,23 +353,21 @@ class VelasStaking {
 
         for (var i in accounts) {
             var rent, ref$, ref1$, ref2$, ref3$, ref4$;
-            rent = (ref$ = accounts[i].account) != null ? (ref1$ = ref$.data) != null ? (ref2$ = ref1$.parsed) != null ? (ref3$ = ref2$.info) != null ? (ref4$ = ref3$.meta) != null ? ref4$.rentExemptReserve : void 8 : void 8 : void 8 : void 8 : void 8;
-            accounts[i].seed    = await this.checkSeed(accounts[i].pubkey.toBase58());
-            accounts[i].address = accounts[i].pubkey.toBase58();
-            accounts[i].key     = accounts[i].address;
-            accounts[i].balance = rent ? `${(Math.round((accounts[i].account.lamports - rent) / this.sol) * 100) / 100 } VLX` : `-`;
+            rent = accounts[i].rent;
+            accounts[i].seed    = await this.checkSeed(accounts[i].pubkey);
+            accounts[i].address = accounts[i].pubkey;
+            accounts[i].key     = accounts[i].pubkey;
+            accounts[i].balance = rent ? `${(Math.round((accounts[i].lamports - rent) / this.sol) * 100) / 100 } VLX` : `-`;
             accounts[i].rent    = rent ? `${ Math.round((rent / this.sol) * 100) / 100 } VLX` : `-`;
             accounts[i].status  = `inactive`;
             accounts[i].validator = `-`;
 
-            if ((ref$ = accounts[i].account) != null && ((ref1$ = ref$.data) != null && ((ref2$ = ref1$.parsed) != null && ((ref3$ = ref2$.info) != null && ref3$.stake)))) {
-                const activationEpoch = Number((ref$ = accounts[i].account) != null ? (ref1$ = ref$.data) != null ? (ref2$ = ref1$.parsed) != null ? (ref3$ = ref2$.info) != null ? ref3$.stake.delegation.activationEpoch : void 8 : void 8 : void 8 : void 8);
-                const deactivationEpoch = Number((ref$ = accounts[i].account) != null ? (ref1$ = ref$.data) != null ? (ref2$ = ref1$.parsed) != null ? (ref3$ = ref2$.info) != null ? ref3$.stake.delegation.deactivationEpoch : void 8 : void 8 : void 8 : void 8);
-
-                if (deactivationEpoch > activationEpoch || activationEpoch === this.max_epoch) {
+            const { activationEpoch, deactivationEpoch, voter } = accounts[i];
+            if (activationEpoch && deactivationEpoch) {
+                if (+deactivationEpoch > +activationEpoch || activationEpoch === this.max_epoch) {
                     accounts[i].status    = `loading`;
-                    if((ref4$ = ref3$.delegation) != null) {
-                        accounts[i].validator = ref4$.voter;
+                    if(voter != null) {
+                        accounts[i].validator = voter;
                     }
                 };
             };

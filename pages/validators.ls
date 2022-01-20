@@ -901,12 +901,7 @@ validators.init = ({ store, web3t }, cb)!->
     console.error err if err?
     { epoch, blockHeight, slotIndex, slotsInEpoch, transactionCount } = epochInfo
     store.staking.current-epoch = epochInfo.epoch
-    #<- web3t.refresh
-    #err, voteAccounts <- as-callback web3t.velas.NativeStaking.getVoteAccounts()
-    #console.log "Vote accounts" err, voteAccounts
-    #voteAccounts = [] if err?
-    #store.staking.totalValidators = voteAccounts.length
-    #console.log "acc length must be more then 0" voteAccounts.length
+
     store.staking.pools = []
     err, rent <- as-callback web3t.velas.NativeStaking.connection.getMinimumBalanceForRentExemption(200)
     rent = 2282880 if err?
@@ -916,22 +911,23 @@ validators.init = ({ store, web3t }, cb)!->
     return cb null if not wallet?
     web3t.velas.NativeStaking.setAccountPublicKey(wallet.publicKey)
     web3t.velas.NativeStaking.setAccountSecretKey(wallet.secretKey)
-    #err, parsedProgramAccounts <- as-callback web3t.velas.NativeStaking.getParsedProgramAccounts()
-    #parsedProgramAccounts = [] if err?
-    #store.staking.parsedProgramAccounts = parsedProgramAccounts
-    # get validators array
+
     on-progress = ->
-        store.staking.accounts = convert-accounts-to-view-model [...it]
+        #store.staking.accounts = convert-accounts-to-view-model [...it]
     err, result <- query-accounts store, web3t, on-progress
-    return cb err if err?
-    store.staking.accounts = convert-accounts-to-view-model result
+    if err? then
+        console.error "[query-accounts] err", err
+        result = [] if err?
+    #store.staking.accounts = convert-accounts-to-view-model(result)
+    store.staking.accounts = result
+
     # Normalize currrent page for accounts in pagination
     type = "accounts"
     page = store.staking["current_#{type}_page"] ? 1
     per-page = store.staking["#{type}_per_page"]
     if +(page `times` per-page) >= store.staking.accounts.length
         store.staking["current_#{type}_page"] = 1 
-    #<- set-timeout _, 4000
+
     on-progress = ->
         store.staking.pools = convert-pools-to-view-model [...it]
     err, pools <- query-pools {store, web3t, on-progress}
