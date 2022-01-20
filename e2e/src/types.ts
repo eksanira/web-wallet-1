@@ -1,6 +1,6 @@
 export {
   Browser, BrowserContext, ElementHandle, Page,
-} from 'playwright-chromium';
+} from 'playwright-core';
 export { assert } from './assert';
 export type Environment = 'devnet' | 'testnet' | 'prod' | 'local';
 export type Network = 'devnet' | 'testnet' | 'mainnet';

@@ -72,6 +72,6 @@ test.describe.parallel('Transactions', () => {
 
     await walletsScreen.sendTx('token-eth_legacy', '0xb322f01cb6a191974e7291600a4dc1b46f00f752', 0.00001);
     const txSignature = await walletsScreen.getTxHashFromTxlink();
-    await infura.waitForConfirmedTx(txSignature, 180000);
+    await infura.waitForTx(txSignature);
   });
 });
