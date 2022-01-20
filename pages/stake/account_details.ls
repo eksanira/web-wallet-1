@@ -871,7 +871,7 @@ staking-content = (store, web3t)->
     withdraw = ->
         agree <- confirm store, lang.areYouSureToWithdraw
         return if agree is no
-        amount = lamports `plus` rent
+        amount = account.lamports `plus` account.rent
         err, result <- as-callback web3t.velas.NativeStaking.withdraw(address, amount)
         err-message = get-error-message(err, result)
         return alert store, err-message if err-message?
