@@ -30,7 +30,7 @@ export default class ExplorersAPI {
     return response.data.result;
   }
 
-  async waitForConfirmedTx(txHash: string, milliseconds: number = 180000): Promise<void> {
+  async waitForTx(txHash: string, waitForConfirmation = true, milliseconds: number = 180000): Promise<void> {
     const startTime = Date.now();
     let tx;
     while (!tx && (Date.now() - startTime) < milliseconds) {
@@ -39,6 +39,8 @@ export default class ExplorersAPI {
     }
     if (!tx) throw new Error(`No tx found with hash ${txHash}`);
 
+    if (!waitForConfirmation) return;
+
     let isTxConfirmed = false;
     while (!isTxConfirmed && (Date.now() - startTime) < milliseconds) {
       let txReceipt = await this.getTransactionReceipt(txHash);
@@ -46,7 +48,7 @@ export default class ExplorersAPI {
       log.debug(`Tx status: ${txReceipt.result?.status}`);
       await helpers.sleep(2000);
     }
-    if (!isTxConfirmed) throw new Error(`Tx with hash ${txHash} but not confirmed. Tx data:\n${helpers.stringify(tx)}`);
+    if (!isTxConfirmed) throw new Error(`Tx with hash ${txHash} exists but not confirmed. Tx data:\n${helpers.stringify(tx)}`);
   }
 
   async getTransactionReceipt(txHash: string): Promise<{ result: { status: string } }> {
