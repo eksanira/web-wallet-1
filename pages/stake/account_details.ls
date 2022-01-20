@@ -285,6 +285,7 @@ require! {
                         text-align: left
                         @media(max-width:800px)
                             text-align: center
+                            flex-wrap: wrap
                     span
                         @media (max-width: 800px)
                             font-size: 14px
@@ -430,7 +431,7 @@ require! {
                     .btn
                         margin: 10px 20px 10px 0
                         @media (max-width: 800px)
-                            margin: 10px auto 0
+                            margin: 10px 15px 0 0
                     .step-content
                         .btn
                             margin: 10px auto 0
@@ -665,7 +666,7 @@ Rewards = (props)->
     lang = get-lang store
     style = get-primary-info store
     account = store.staking.chosenAccount
-    activationEpoch = account.account?data?parsed?info?stake?delegation?activationEpoch
+    activationEpoch = account.activationEpoch
     [rewards, setRewards] = react.useState([])
     [isLoading, setLoading] = react.useState(true)
     build-rewards = (item)->
@@ -1146,6 +1147,7 @@ account-details = ({ store, web3t })->
     show-class =
         if store.current.open-menu then \hide else \ ""
     just-go-back = ->
+        store.staking.fetchAccounts = no
         store.staking.chosenAccount.stopLoadingRewards = yes
         store.staking.getAccountsFromCashe = yes
         go-back!    
@@ -1165,6 +1167,7 @@ account-details.init = ({ store, web3t }, cb)!->
     return null if not account?
     store.staking.chosenAccount.stopLoadingRewards = no
     store.staking.chosenAccount.rewards = []
+    store.staking.rewards-index = 0
     stake-accounts = store.staking.parsedProgramAccounts
     err, epochInfo <- as-callback web3t.velas.NativeStaking.getCurrentEpochInfo()
     console.error err if err?
@@ -1202,7 +1205,8 @@ prev-epoch-data = {epoch_start_time: null, rewards: null, first_confirmed_block:
 # 
 query-rewards-loop = (address, activationEpoch, firstNormalSlot, slotsPerEpoch, slotsInEpoch, firstAvailableBlock, firstNormalEpoch, epoch, cb)->
     return cb null, [] if epoch < (activationEpoch) or epoch < 0
-    return cb null, [] if store.staking.chosenAccount.stopLoadingRewards is yes    
+    return cb null, [] if store.staking.chosenAccount.stopLoadingRewards is yes
+    return cb null, [] if store.staking.rewards-index >= store.staking.REWARDS_PER_PAGE
     # Get not skipped slot here!  
     err, firstSlotInEpoch <- get_first_slot_in_epoch(firstNormalSlot, slotsPerEpoch, slotsInEpoch, firstNormalEpoch, epoch)
     # Get first comfirmed block/slot in epoch
@@ -1245,6 +1249,8 @@ query-rewards-loop = (address, activationEpoch, firstNormalSlot, slotsPerEpoch, 
                     apr: apr + "%"
                     disabled: not first_confirmed_block?  
                 }
+    if rewards.length > 0
+        store.staking.rewards-index++
     #if not prev-epoch-data.first_confirmed_block?
         #rewards = [
             #{
