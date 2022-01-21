@@ -178,6 +178,9 @@ store =
             move-stake: 0
             add-validator-stake: ""
             add-validator-topup: ""
+    errors:
+        fetchValidators: null
+        fetchAccounts: null
     staking:
         REWARDS_PER_PAGE: 10
         rewards_page: 1

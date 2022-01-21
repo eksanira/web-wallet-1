@@ -177,6 +177,8 @@ staking-accounts-content = (store, web3t)->
         store.staking-accounts.add.add-validator-stake = Math.max (balance `minus` 0.1), 0
     isSpinned = if ((store.staking.all-accounts-loaded is no or !store.staking.all-accounts-loaded?) and store.staking.accounts-are-loading is yes) then "spin disabled" else ""
     refresh = ->
+        store.errors.fetchAccounts = null
+        store.errors.fetchValidators = null
         return if store.staking.all-accounts-loaded isnt yes
         store.staking.getAccountsFromCashe = no
         navigate store, web3t, "validators"
@@ -348,6 +350,15 @@ staking-accounts-content = (store, web3t)->
     perPage =  store.staking.accounts_per_page
     page = store.staking.current_accounts_page
     pagination-disabled = store.staking.accounts-are-loading is yes
+    fetch-error-occurred =
+        | store.errors.fetchAccounts? and store.staking.accounts-are-loading is no => yes
+        | _ => no
+    svg-icon =
+        svg.pug(width='15px' height='15px' viewBox='0 0 15 15' version='1.1' xmlns='http://www.w3.org/2000/svg')
+            g.pug(xmlns="http://www.w3.org/2000/svg" transform="matrix(0.026385223 0 0 0.026385223 -0 0.029023906)")
+                g.pug(xmlns="http://www.w3.org/2000/svg" transform="matrix(0.1 0 -0 -0.1 0 340)")
+                    path.pug(xmlns="http://www.w3.org/2000/svg" d="M1796 2907C 1749 2827 1701 2743 1515 2420C 1407 2230 1275 2001 1222 1910C 1170 1819 1110 1716 1090 1680C 950 1438 891 1334 845 1255C 816 1206 747 1084 690 985C 633 886 554 749 514 680L514 680L441 555L1130 552C 1510 551 2130 551 2508 552L2508 552L3197 555L3102 720C 3050 811 2991 914 2970 950C 2950 986 2856 1150 2761 1315C 2665 1480 2510 1750 2415 1915C 1758 3060 1827 2940 1820 2940C 1817 2940 1806 2925 1796 2907z" stroke="none" fill="rgb(255 215 0)" fill-rule="nonzero")
+
     .pug.staking-accounts-content
         .pug
             .form-group.pug(id="create-staking-account")
@@ -370,32 +381,46 @@ staking-accounts-content = (store, web3t)->
                         .pug
                             .loader.pug(on-click=refresh style=icon-style title="refresh" class="#{isSpinned}")
                                 icon \Sync, 25
+                        if fetch-error-occurred
+                            .pug.pointer-container
+                                svg-icon
+                                .shadow-icon.pug
+
+
                     .description.pug
-                        if store.staking.accounts-are-loading is no then
-                            .pug.table-scroll
-                                table.pug
-                                    thead.pug
-                                        tr.pug
-                                            td.pug(width="3%" style=stats) #
-                                            td.pug(width="40%" style=staker-pool-style title="Your Staking Account") #{lang.account} (?)
-                                            td.pug(width="10%" style=stats title="Your Deposited Balance") #{lang.balance} (?)
-                                            td.pug(width="30%" style=stats title="Where you staked") #{lang.validator} (?)
-                                            td.pug(width="7%" style=stats title="The ID of your stake. This is made to simplify the search of your stake in validator list") #{lang.seed} (?)
-                                            if no
-                                                td.pug(width="10%" style=stats title="Current staking status. Please notice that you cannot stake / unstake immediately. You need to go through the waiting period. This is made to reduce attacks by staking and unstaking spam.") #{lang.status} (?)
-                                            td.pug(width="10%" style=stats) #{(lang.action ? "Action")}
-                                    tbody.pug
-                                        paginate( (store.staking.accounts |> sort-by (.seed-index)), perPage, page)
-                                            |> map build store, web3t
+                        if store.errors.fetchAccounts?
+                            .pug.error
+                                span.pug.warning-icon ⚠️
+                                .pug.message An error occurred during fetching stake accounts. Please try one more time...
                         else
-                            .pug.table-scroll
-                                span.pug.entities-loader
-                                    span.pug.inner-section
-                                        h3.pug.item.blink Loading...
-                                            span.pug.item  #{loadingAccountIndex}
-                                            span.pug.item of
-                                            span.pug.item  #{totalOwnStakingAccounts}
-                        pagination {store, type: \accounts, disabled: pagination-disabled, config: {array: store.staking.accounts }}
+                            .pug.cont
+                                if store.staking.accounts-are-loading is no then
+                                    .pug.table-scroll
+                                        table.pug
+                                            thead.pug
+                                                tr.pug
+                                                    td.pug(width="3%" style=stats) #
+                                                    td.pug(width="40%" style=staker-pool-style title="Your Staking Account") #{lang.account} (?)
+                                                    td.pug(width="10%" style=stats title="Your Deposited Balance") #{lang.balance} (?)
+                                                    td.pug(width="30%" style=stats title="Where you staked") #{lang.validator} (?)
+                                                    td.pug(width="7%" style=stats title="The ID of your stake. This is made to simplify the search of your stake in validator list") #{lang.seed} (?)
+                                                    if no
+                                                        td.pug(width="10%" style=stats title="Current staking status. Please notice that you cannot stake / unstake immediately. You need to go through the waiting period. This is made to reduce attacks by staking and unstaking spam.") #{lang.status} (?)
+                                                    td.pug(width="10%" style=stats) #{(lang.action ? "Action")}
+                                            tbody.pug
+                                                paginate( (store.staking.accounts |> sort-by (.seed-index)), perPage, page)
+                                                    |> map build store, web3t
+                                if store.staking.accounts-are-loading is no then
+                                    pagination {store, type: \accounts, disabled: pagination-disabled, config: {array: store.staking.accounts }}
+
+                                else
+                                    .pug.table-scroll
+                                        span.pug.entities-loader
+                                            span.pug.inner-section
+                                                h3.pug.item.blink Loading...
+                                                    span.pug.item  #{loadingAccountIndex}
+                                                    span.pug.item of
+                                                    span.pug.item  #{totalOwnStakingAccounts}
 staking-accounts = ({ store, web3t })->
     .pug.staking-accounts-content
         staking-accounts-content store, web3t
