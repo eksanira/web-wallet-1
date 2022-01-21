@@ -2,7 +2,10 @@ require! {
     \prelude-ls : { map, split, filter, find, foldl, drop, take, sum, unique, pairs-to-obj }
     \./math.ls : { div, times, plus, minus }
     \./round-human.ls
+    '../web3t/providers/superagent.js' : { get }
 }
+down = (it)->
+  (it ? "").toLowerCase!
 SIMULATION_COUNT = 14600
 EPOCHS_PER_YEAR = 1460
 VALIDATOR_COUNT = 19
@@ -13,12 +16,10 @@ as-callback = (p, cb)->
 get-stakes-from-stakes-accounts = (store, item)->
     found = store.staking.accounts
         |> filter (it)->
-            stake-data = it?account?data?parsed?info?stake?delegation
-            return no if not stake-data?
-            +stake-data.activationEpoch < +stake-data.deactivationEpoch and stake-data?voter is item.key
+            +it.activationEpoch < +it.deactivationEpoch and it?voter is item.key
     stakes =
         | found.length > 0 =>
-            found |> map (-> {seed: it.seed, item: it, stake: it.account?data?parsed?info?stake?delegation?stake})
+            found |> map (-> {seed: it.seed, item: it, stake: it.stake})
         | _ => []
     return stakes
 fill-pools = ({ store, web3t, on-progress}, on-finish, [item, ...rest]) ->
@@ -43,7 +44,7 @@ fill-pools = ({ store, web3t, on-progress}, on-finish, [item, ...rest]) ->
             |> map (it)->
                 it[1]
             |> foldl plus, 0
-    item.delegators = store.staking.delegators[item.votePubkey] ? 0
+    item.delegators = store.staking.delegators[down(item.votePubkey)] ? 0
     stakes = get-stakes-from-stakes-accounts(store, item)
     item.stakes = stakes
     on-progress [item, ...rest] if on-progress?
@@ -89,11 +90,9 @@ fill-delegators = (store, web3t)->
 
 fill-delegator = (store, web3t, acc)-->
     return if not acc?
-    voter             =        acc.account?data?parsed?info?stake?delegation?voter
-    activationEpoch   = Number(acc.account?data?parsed?info?stake?delegation?activationEpoch  ? 0)
-    deactivationEpoch = Number(acc.account?data?parsed?info?stake?delegation?deactivationEpoch ? 0)
-    if (voter and (deactivationEpoch > activationEpoch or activationEpoch is web3t.velas.NativeStaking.max_epoch))  
-        store.staking.delegators[voter] = if store.staking.delegators[voter]? then (store.staking.delegators[voter] + 1) else 1
+    { voter, activationEpoch, deactivationEpoch } = acc
+    if (voter and (Number(deactivationEpoch) > Number(activationEpoch) or activationEpoch is web3t.velas.NativeStaking.max_epoch))
+        store.staking.delegators[down(voter)] = if store.staking.delegators[down(voter)]? then (store.staking.delegators[down(voter)] + 1) else 1
 
 # Accounts
 query-accounts = (store, web3t, on-progress, on-finish) ->
@@ -111,16 +110,20 @@ query-accounts = (store, web3t, on-progress, on-finish) ->
     store.staking.accountsCached[accountIndex] = accounts
     store.staking.cachedAccountsNetwork = network
     on-finish err, accounts
-query-accounts-web3t = (store, web3t, on-progress, on-finish) -> 
-    #owner-wallet = store.current.account.wallets |> find(-> it.coin.token is "vlx_native")
-    #owner = 
-        #| owner-wallet? => owner-wallet.address
-        #| _ => null    
-    err, parsedProgramAccounts <- as-callback web3t.velas.NativeStaking.getParsedProgramAccounts(null)
-    parsedProgramAccounts = [] if err?
+query-accounts-web3t = (store, web3t, on-progress, on-finish) ->
+    native-wallet = store.current.account.wallets |> find(-> it.coin.token is "vlx_native")
+    validatorsBackend = native-wallet.network.api.validatorsBackend + \/v1/staking-accounts
+
+    err, data <- get validatorsBackend .end
+    nativeAccountsFromBackendResult = data?body?stakingAccounts ? []
+    console.error "[query-accounts-web3t] get parsedProgramAccounts err:", err if err?
+    parsedProgramAccounts = nativeAccountsFromBackendResult ? []
+
     store.staking.parsedProgramAccounts = parsedProgramAccounts
-    err, accs <- as-callback web3t.velas.NativeStaking.getOwnStakingAccounts(parsedProgramAccounts) 
+    err, accs <- as-callback web3t.velas.NativeStaking.getOwnStakingAccounts(parsedProgramAccounts)
     accs = [] if err?
+    web3t.velas.NativeStaking.setAccounts(accs);
+
     store.staking.totalOwnStakingAccounts = accs.length
     return on-finish err if err?
     store.staking.accounts-are-loading = yes
@@ -135,32 +138,27 @@ fill-accounts = ({ store, web3t, on-progress, on-finish }, [item, ...rest]) ->
         store.staking.accounts-are-loading = no
         return on-finish null, []
     store.staking.loadingAccountIndex += 1
-    rent = item.account?data?parsed?info?meta?rentExemptReserve
-    err, seed <- as-callback web3t.velas.NativeStaking.checkSeed(item.pubkey.toBase58())
-    item.seed    = seed ? ".."
+    rent = item?rentExemptReserve
+    #TODO: in future change seed with address and do not display this field
+    err, seed <- as-callback web3t.velas.NativeStaking.checkSeed(item.pubkey)
+    item.seed    = seed
     item.seed-index  = +((item.seed + "").split(":").1 )
-    item.address = item.pubkey.toBase58()
-    item.key     = item.address
+    item.address = item.pubkey
+    item.key     = item.pubkey
     item.rentRaw = rent
-    item.balanceRaw = if rent? then (item.account.lamports `minus` rent) else '-'
-    item.balance = if rent? then (Math.round((item.account.lamports `minus` rent) `div` (10^9)) `times` 100) `div` 100  else "-"
+    item.balanceRaw = if rent? then (item.lamports `minus` rent) else '-'
+    item.balance = if rent? then (Math.round((item.lamports `minus` rent) `div` (10^9)) `times` 100) `div` 100  else "-"
     item.rent    = if rent? then (rent `div` (10^9)) else "-"
-    item.credits_observed = item.account?data?parsed?info?stake?creditsObserved ? 0
+    item.credits_observed = item.creditsObserved ? 0
     item.status  = "inactive"
     item.validator = null
-    item.account = item.account
-    if (item.account?data?parsed?info?stake) then
-        activationEpoch   = Number(item.account?data?parsed?info?stake.delegation.activationEpoch)
-        deactivationEpoch = Number(item.account?data?parsed?info?stake.delegation.deactivationEpoch)
-        if (deactivationEpoch > activationEpoch or activationEpoch is web3t.velas.NativeStaking.max_epoch) then
+    item.account = {...item}
+    { activationEpoch, deactivationEpoch, voter } = item
+    if (activationEpoch and deactivationEpoch) then
+        if (Number(deactivationEpoch) > Number(activationEpoch) or Number(activationEpoch) is web3t.velas.NativeStaking.max_epoch) then
             item.status    = "loading"
-            item.validator = item.account?data?parsed?info?stake?delegation?voter
-    #err, stakeActivation <- as-callback web3t.velas.NativeStaking.getStakeActivation(item.address)
-    #if not err? and stakeActivation?
-        #item.status = stakeActivation.state
-        #item.active_stake = stakeActivation.active
-        #item.inactive_stake = stakeActivation.inactive
-    #return alert store, err, cb if err?
+            item.validator = voter
+
     on-progress [item, ...rest] if on-progress?
     on-finish-local = (err, pools) ->
         on-finish err, [item, ...pools]
@@ -169,23 +167,28 @@ fill-accounts = ({ store, web3t, on-progress, on-finish }, [item, ...rest]) ->
     fill-accounts { store, web3t, on-progress: on-progress-local, on-finish: on-finish-local }, rest
 ###################    
 convert-accounts-to-view-model = (accounts) ->
-    accounts
-        |> map -> {
-            account: it.account
-            address: it.key ? '..'
-            key: it.key
-            balanceRaw: it.balanceRaw ? 0
-            balance: if it.balance? then round-human(it.balance) else '..'
-            rent: if it.rent? then it.rent else "-"
-            lastVote: it.lastVote ? '..'
-            seed: it.seed ? '..'
-            validator:  it?validator ? ""
-            status: it.status ? "inactive"
-            active_stake = it?active_stake ? 0
-            inactive_stake = it?inactive_stake ? 0
-            seed-index =  it.seed-index
-            credits_observed : it.credits_observed
-        }
+    res =
+        accounts
+            |> map -> {
+                #account: it.account
+                address: it.key ? '..'
+                activationEpoch: it.activationEpoch,
+                deactivationEpoch: it.deactivationEpoch,
+                key: it.key
+                balanceRaw: it.balanceRaw ? 0
+                balance: if it.balance? then round-human(it.balance) else '..'
+                rent: if it.rent? then it.rent else "-"
+                lastVote: it.lastVote ? '..'
+                seed: it.seed ? '..'
+                validator:  it?validator ? ""
+                status: it.status ? "inactive"
+                active_stake: it?active_stake ? 0
+                inactive_stake: it?inactive_stake ? 0
+                seed-index:  it.seed-index
+                credits_observed: it.credits_observed
+                voter: it.voter
+            }
+    res
 ##################
 convert-pools-to-view-model = (pools) ->
     pools

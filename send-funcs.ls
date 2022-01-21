@@ -61,14 +61,18 @@ module.exports = (store, web3t)->
         background: color
     default-button-style = { color }
     amount-buffer = send.amount-buffer
+    current-network = store.current.network
+
+
     send-tx = ({ to, wallet, network, amount-send, amount-send-fee, data, coin, tx-type, gas, swap }, cb)->
         { token } = send.coin
         return cb "Fee amount must be more than 0" if +amount-send-fee is 0
-        current-network = store.current.network
-        chosen-network = store.current.send.chosen-network
         receiver = store.current.send.contract-address ? to
+        chosen-network = store.current.send.chosen-network
+        referTo = chosen-network?referTo
         recipient =
-            | receiver.starts-with \V => to-eth-address(receiver)
+            | (referTo? and referTo isnt \vlx_native) and (receiver.starts-with \V) => to-eth-address(receiver)
+            | (coin.token isnt \vlx_native and receiver.starts-with \V)  => to-eth-address(receiver)
             | _ => receiver
         $gas-price =
             | send.gas-price-type is \custom => send.gas-price-custom-amount `times` (10^9)
@@ -825,10 +829,11 @@ module.exports = (store, web3t)->
         /* DONE */
         /* Swap into native */
         if chosen-network.id is \vlx_native then
+            referTo = chosen-network?referTo
             $recipient = ""
             try
                 recipient =
-                    | send.to.starts-with \V => to-eth-address(send.to)
+                    | (referTo isnt \vlx_native) and send.to.starts-with \V => to-eth-address(send.to)
                     | _ => send.to
                 $recipient = bs58.decode recipient
                 hex = $recipient.toString('hex')

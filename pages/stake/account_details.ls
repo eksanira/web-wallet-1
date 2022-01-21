@@ -285,6 +285,7 @@ require! {
                         text-align: left
                         @media(max-width:800px)
                             text-align: center
+                            flex-wrap: wrap
                     span
                         @media (max-width: 800px)
                             font-size: 14px
@@ -430,7 +431,7 @@ require! {
                     .btn
                         margin: 10px 20px 10px 0
                         @media (max-width: 800px)
-                            margin: 10px auto 0
+                            margin: 10px 15px 0 0
                     .step-content
                         .btn
                             margin: 10px auto 0
@@ -665,7 +666,7 @@ Rewards = (props)->
     lang = get-lang store
     style = get-primary-info store
     account = store.staking.chosenAccount
-    activationEpoch = account.account?data?parsed?info?stake?delegation?activationEpoch
+    activationEpoch = account.activationEpoch
     [rewards, setRewards] = react.useState([])
     [isLoading, setLoading] = react.useState(true)
     build-rewards = (item)->
@@ -732,10 +733,34 @@ Rewards = (props)->
                     tbody.pug
                         rewards |> map build-rewards 
         RewardsStats.pug(rewards=rewards)
+
+
 staking-content = (store, web3t)->
     { go-back } = history-funcs store, web3t
     style = get-primary-info store
     lang = get-lang store
+
+    account = store.staking.chosenAccount
+    {
+        address,
+        activationEpoch,
+        deactivationEpoch,
+        balanceRaw,
+        checked,
+        stake,
+        stake-initial,
+        commission,
+        lastVote,
+        lockup,
+        stakers,
+        is-validator,
+        rent,
+        status,
+        myStake,
+        credits_observed,
+        validator
+    } = account
+
     button-primary3-style=
         border: "1px solid #{style.app.primary3}"
         color: style.app.text2
@@ -751,25 +776,18 @@ staking-content = (store, web3t)->
         opacity: ".3"
     pairs = store.staking.keystore
     i-stake-choosen-pool = ->
-        account = store.staking.chosenAccount
-        myStake = +account.myStake
+        myStake = +myStake
         myStake >= 10000
     wallet =
         store.current.account.wallets
             |> find -> it.coin.token is \vlx_native
     delegate = ->
         return null if not wallet?
-        #err, options <- get-options
-        #return alert store, err, cb if err?
-        #err <- can-make-staking store, web3t
-        #return alert store, err, cb if err?
         return alert store, "please choose the account", cb if not store.staking.chosenAccount?
-        account = store.staking.chosenAccount
         #
-        pay-account = store.staking.accounts |> find (-> it.address is account.address)
+        pay-account = store.staking.accounts |> find (-> it.address is address)
         return cb null if not pay-account
-        console.log ""
-        err, result <- as-callback web3t.velas.NativeStaking.delegate(pay-account.address, account.address)
+        err, result <- as-callback web3t.velas.NativeStaking.delegate(pay-account.address, address)
         console.error "Result sending:" err if err?
         err-message = get-error-message(err, result)
         return alert store, err-message if err-message?
@@ -853,8 +871,7 @@ staking-content = (store, web3t)->
     withdraw = ->
         agree <- confirm store, lang.areYouSureToWithdraw
         return if agree is no
-        { balanceRaw, rent, address, account } = store.staking.chosenAccount
-        amount = account.lamports `plus` rent
+        amount = account.lamports `plus` account.rent
         err, result <- as-callback web3t.velas.NativeStaking.withdraw(address, amount)
         err-message = get-error-message(err, result)
         return alert store, err-message if err-message?
@@ -917,20 +934,18 @@ staking-content = (store, web3t)->
         background: style.app.stats
     stats=
         background: style.app.stats
-    has-validator = store.staking.chosenAccount.validator.toString!.trim! isnt ""
-    credits_observed = store.staking.chosenAccount?credits_observed ? 0
+
+    has-validator = validator? and validator.toString!.trim! isnt ""
     active_stake = store.staking.chosenAccount.active_stake `div` (10^9)
     inactive_stake = store.staking.chosenAccount.inactive_stake `div` (10^9)
     delegated_stake = active_stake `plus` inactive_stake 
     usd-rate = wallet?usdRate ? 0
     usd-balance = round-number(your-balance `times` usd-rate, {decimals:2})
-    usd-rent = round-number(store.staking.chosenAccount.rent `times` usd-rate,{decimals:2})
+    usd-rent = round-number(rent `times` usd-rate,{decimals:2})
     usd-active_stake = round-number(active_stake `times` usd-rate, {decimals:2})
     usd-inactive_stake = round-number(inactive_stake `times` usd-rate, {decimals:2})
     usd-delegated_stake = round-number(delegated_stake `times` usd-rate, {decimals:2})
-    $validator = if store.staking.chosenAccount.validator is "" then "---" else store.staking.chosenAccount.validator
-    activationEpoch = account?data?parsed?info?stake?delegation?activationEpoch
-    deactivationEpoch = account?data?parsed?info?stake?delegation?deactivationEpoch
+    $validator = if has-validator then validator else "---"
     activeBalanceIsZero =  +store.staking.chosenAccount.active_stake is 0
     max-epoch = web3t.velas.NativeStaking.max_epoch
     myStakeMaxPart = 
@@ -947,8 +962,9 @@ staking-content = (store, web3t)->
     inactiveStakeLabel =
         | store.staking.chosenAccount.status is "activating" => lang.warminUp
         | _ => lang.inactiveStake 
-    is-locked = store.staking.chosenAccount.account?data?parsed?info?meta?lockup? and store.staking.chosenAccount.account?data?parsed?info?meta?lockup.unixTimestamp > moment!.unix!    
-    { unixTimestamp, epoch, custodian } = store.staking.chosenAccount.account?data?parsed?info?meta?lockup 
+    { unixTimestamp, epoch, lockup } = store.staking.chosenAccount
+    is-locked = lockup? and lockup.unixTimestamp > moment!.unix!
+
     date-expires =
         | is-locked is yes => moment.unix(unixTimestamp).format("MMMM D, YYYY"); 
         | _ => ""
@@ -1024,7 +1040,7 @@ staking-content = (store, web3t)->
                 .description.pug
                     span.pug.chosen-account
                         | #{$validator}
-                        if store.staking.chosenAccount.validator isnt ""
+                        if has-validator
                             img.pug.check(src="#{icons.img-check}")
             .pug.section
                 .title.pug
@@ -1097,7 +1113,9 @@ staking-content = (store, web3t)->
                         else if store.staking.chosenAccount.status isnt \deactivating then
                             button { store, on-click: undelegate , type: \secondary , text: lang.to_undelegate, icon : \arrowLeft, classes: "action-undelegate" }
                         button { store, on-click: split-account , type: \secondary , text: lang.to_split, classes: "action-split", no-icon: yes }
-            Rewards.pug  
+            Rewards.pug
+
+
 account-details = ({ store, web3t })->
     lang = get-lang store
     { go-back } = history-funcs store, web3t
@@ -1129,6 +1147,7 @@ account-details = ({ store, web3t })->
     show-class =
         if store.current.open-menu then \hide else \ ""
     just-go-back = ->
+        store.staking.fetchAccounts = no
         store.staking.chosenAccount.stopLoadingRewards = yes
         store.staking.getAccountsFromCashe = yes
         go-back!    
@@ -1141,11 +1160,14 @@ account-details = ({ store, web3t })->
             epoch store, web3t
             switch-account store, web3t
         staking-content store, web3t
+
+
 account-details.init = ({ store, web3t }, cb)!->
     account = store.staking.chosenAccount
     return null if not account?
     store.staking.chosenAccount.stopLoadingRewards = no
     store.staking.chosenAccount.rewards = []
+    store.staking.rewards-index = 0
     stake-accounts = store.staking.parsedProgramAccounts
     err, epochInfo <- as-callback web3t.velas.NativeStaking.getCurrentEpochInfo()
     console.error err if err?
@@ -1183,7 +1205,8 @@ prev-epoch-data = {epoch_start_time: null, rewards: null, first_confirmed_block:
 # 
 query-rewards-loop = (address, activationEpoch, firstNormalSlot, slotsPerEpoch, slotsInEpoch, firstAvailableBlock, firstNormalEpoch, epoch, cb)->
     return cb null, [] if epoch < (activationEpoch) or epoch < 0
-    return cb null, [] if store.staking.chosenAccount.stopLoadingRewards is yes    
+    return cb null, [] if store.staking.chosenAccount.stopLoadingRewards is yes
+    return cb null, [] if store.staking.rewards-index >= store.staking.REWARDS_PER_PAGE
     # Get not skipped slot here!  
     err, firstSlotInEpoch <- get_first_slot_in_epoch(firstNormalSlot, slotsPerEpoch, slotsInEpoch, firstNormalEpoch, epoch)
     # Get first comfirmed block/slot in epoch
@@ -1226,6 +1249,8 @@ query-rewards-loop = (address, activationEpoch, firstNormalSlot, slotsPerEpoch, 
                     apr: apr + "%"
                     disabled: not first_confirmed_block?  
                 }
+    if rewards.length > 0
+        store.staking.rewards-index++
     #if not prev-epoch-data.first_confirmed_block?
         #rewards = [
             #{

@@ -186,13 +186,28 @@ staking-accounts-content = (store, web3t)->
     build = (store, web3t)-> (item)->
         index = _index++
         return null if not item? or not item.key?
-        { account, address, balance, balanceRaw, key, rent, seed, status, validator, active_stake, inactive_stake } = item
-        activationEpoch = account?data?parsed?info?stake?delegation?activationEpoch
-        deactivationEpoch = account?data?parsed?info?stake?delegation?deactivationEpoch
+        {
+            account,
+            lamports,
+            address,
+            balance,
+            balanceRaw,
+            key,
+            rent,
+            seed,
+            status,
+            validator,
+            activationEpoch,
+            deactivationEpoch,
+            active_stake,
+            unixTimestamp,
+            inactive_stake
+        } = item
+
         activeBalanceIsZero =  +active_stake is 0
         max-epoch = web3t.velas.NativeStaking.max_epoch
-        is-activating = activeBalanceIsZero and validator isnt ""
-        has-validator = item.validator.toString!.trim! isnt ""
+        is-activating = activeBalanceIsZero and validator?
+        has-validator = item.validator?
         $status =
             | item.status is "inactive" and (not has-validator) => "Not Delegated"
             | item.status is "inactive" and has-validator => "Delegated (Inactive)"
@@ -229,17 +244,14 @@ staking-accounts-content = (store, web3t)->
             navigate store, web3t, \poolchoosing
             cb null
             
-        stake-data = item?account?data?parsed?info?stake
-            
+
         withdraw = ->
-            if stake-data? and stake-data?delegation?
-                {activationEpoch, deactivationEpoch} = stake-data.delegation
-                if (deactivationEpoch? and activationEpoch?) and +deactivationEpoch >= +store.staking.current-epoch
-                    return
+            if (deactivationEpoch? and activationEpoch?) and +deactivationEpoch >= +store.staking.current-epoch
+                return
             agree <- confirm store, lang.areYouSureToWithdraw
             return if agree is no
             { balanceRaw, rent, address, account } = item
-            amount = account.lamports `plus` rent
+            amount = lamports `plus` rent
             err, result <- as-callback web3t.velas.NativeStaking.withdraw(address, amount)
             err-message = get-error-message(err, result)
             return alert store, err-message if err-message?
@@ -249,23 +261,20 @@ staking-accounts-content = (store, web3t)->
             navigate store, web3t, \validators
         
         now = moment!.unix!        
-        locked-and-can-withdraw = account?data?parsed?info?meta?lockup? and account?data?parsed?info?meta?lockup.unixTimestamp <= now
-        not-locked = not account?data?parsed?info?meta?lockup?
+        locked-and-can-withdraw = unixTimestamp? and (unixTimestamp <= now)
+        not-locked = not unixTimestamp?
         
         $button =
             | item.status is \inactive =>
                 button { store, text: lang.to_delegate, on-click: choose, type: \secondary , icon : \arrowRight }
             | (not-locked or locked-and-can-withdraw) and (+deactivationEpoch isnt +max-epoch) and (+store.staking.current-epoch >= +deactivationEpoch) =>
-                if stake-data? and stake-data?delegation?
-                    {activationEpoch, deactivationEpoch} = stake-data.delegation
-                disabled = 
+                disabled =
                     | (deactivationEpoch? and activationEpoch?) and +deactivationEpoch >= +store.staking.current-epoch => yes
                     | _ => no
                 button { store, text: lang.withdraw, on-click: withdraw, type: \secondary , icon : \arrowLeft, makeDisabled:disabled }
             | _ => 
                 disabled = item.status in <[ deactivating ]>
-                if stake-data? and stake-data.delegation?
-                    {activationEpoch, deactivationEpoch} = stake-data.delegation
+                if activationEpoch? and deactivationEpoch?
                     if +activationEpoch < +deactivationEpoch and +deactivationEpoch isnt +max-epoch
                         disabled = yes     
                 button { store, classes: "action-undelegate" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon : \arrowLeft, makeDisabled: disabled }
@@ -307,7 +316,7 @@ staking-accounts-content = (store, web3t)->
         display: "block"
     create-staking-account = ->
         cb = console.log 
-        err <- as-callback web3t.velas.NativeStaking.getStakingAccounts(store.staking.parsedProgramAccounts)
+        err, accs <- as-callback web3t.velas.NativeStaking.getStakingAccounts(store.staking.parsedProgramAccounts)
         console.error err if err?
         amount <- prompt2 store, lang.howMuchToDeposit
         return if not amount?
@@ -325,7 +334,10 @@ staking-accounts-content = (store, web3t)->
         console.error "Result sending:" err if err?
         if err?
             err = lang.balanceIsNotEnoughToCreateStakingAccount if ((err.toString! ? "").index-of("custom program error: 0x1")) > -1
-        return alert store, err.toString! if err?
+            return alert store, err.toString!
+        if result.error? then
+            error-msg = result.description ? "An unexpected error occurred during account creation."
+            return alert store, error-msg, cb
         store.staking.getAccountsFromCashe = no
         #checkAccountWasCreated
         <- set-timeout _, 1000
