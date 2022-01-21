@@ -72,7 +72,6 @@ load-validators-from-cache = ({store, web3t}, cb)->
     cb null, validators    
 query-pools-web3t = ({store, web3t, on-progress}, on-finish) -> 
     err, validators <- load-validators-from-cache { store, web3t }     
-    #err, validators <- as-callback web3t.velas.NativeStaking.getStakingValidators()
     return on-finish err if err?
     validators = [] if err?
     store.staking.totalValidators = validators.length
@@ -113,8 +112,8 @@ query-accounts = (store, web3t, on-progress, on-finish) ->
 query-accounts-web3t = (store, web3t, on-progress, on-finish) ->
     native-wallet = store.current.account.wallets |> find(-> it.coin.token is "vlx_native")
     validatorsBackend = native-wallet.network.api.validatorsBackend + \/v1/staking-accounts
-
     err, data <- get validatorsBackend .end
+    return on-finish err if err?
     nativeAccountsFromBackendResult = data?body?stakingAccounts ? []
     console.error "[query-accounts-web3t] get parsedProgramAccounts err:", err if err?
     parsedProgramAccounts = nativeAccountsFromBackendResult ? []

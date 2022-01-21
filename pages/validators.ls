@@ -56,9 +56,70 @@ require! {
     @-webkit-keyframes blink-animation
         50%
             opacity: 0.3
+    @keyframes MoveUpDown
+        0%, 100%
+            top: -39px
+        50%
+            top: -34px
+    @keyframes showAndHide
+        0%
+            opacity: 0
+        20%
+            opacity: 1
+        80%
+            opacity: 1
+        100%
+            opacity: 0
     .blink
         animation: 1s linear blink-animation  infinite
         -webkit-animation: 1s linear blink-animation  infinite
+    .pointer-container
+        opacity: 0
+        width: auto
+        display: inline-block
+        position: relative
+        top: -39px;
+        left: -5px;
+        transform: rotate(58deg)
+        animation: MoveUpDown 1s linear, showAndHide 3s linear
+        animation-iteration-count: 4, 1
+        animation-delay: 1s
+        .shadow-icon
+            position: absolute
+            top: 3px;
+            left: 2.4px;
+            right: 0;
+            box-shadow: 1px 2px 12px gold;
+            width: 6px
+            height: 4px
+            background: rgba(255, 215, 0, 0.13);
+    .error
+        background: rgba(255, 255, 255, 0.06)
+        text-align: center
+        .warning-icon
+            float: left;
+            margin-top: -8px
+            margin-left: -5px
+        .message
+            font-size: 12px
+            color: red
+            padding: 20px 10px
+    .helper.pointer
+        opacity: 0
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 7px 5px 0 5px;
+        border-color: #ebca00 transparent transparent transparent;
+        box-shadow: 1px 2px 12px gold;
+        position: relative;
+        left: 1px;
+        animation: MoveUpDown 1s linear, showAndHide 3s linear
+        animation-iteration-count: 4, 1
+        animation-delay: 1s
+
+
+
     .entities-loader
         display: block
         padding: 40px
@@ -797,30 +858,38 @@ staking-content = (store, web3t)->
                         h3.pug.section-title #{lang.validators} 
                             span.pug.amount (#{store.staking.pools.length})
                     .description.pug
-                        if store.staking.pools-are-loading is no then
-                            .pug.table-scroll
-                                table.pug
-                                    thead.pug
-                                        tr.pug
-                                            td.pug(width="30%" style=staker-pool-style title="Validator Staking Address. Permanent") #{lang.validator} (?)
-                                            td.pug(width="15%" style=stats title="Sum of all stakings") #{lang.total-active-stake} (?)
-                                            td.pug(width="5%" style=stats title="Validator Interest. (100% - Validator Interest = Pool Staking Reward)") #{lang.comission} (?)
-                                            td.pug(width="10%" style=stats title="Last Staking Amount") #{lang.lastVote} (?)
-                                            td.pug(width="10%" style=stats title="Find you staking by Seed") #{lang.my-stake} (?)
-                                            td.pug(width="5%" style=stats title="How many stakers in a pool") #{lang.stakers} (?)
-                                    tbody.pug
-                                        paginate(store.staking.pools, per-page, store.staking.current_validators_page) 
-                                            |> map build-staker store, web3t
+                        if store.errors.fetchValidators?
+                            .pug.error
+                                span.pug.warning-icon ⚠️
+                                .pug.message An error occurred during fetching validators. Please try one more time...
                         else
-                            .pug.table-scroll
-                                span.pug.entities-loader
-                                    span.pug.inner-section
-                                        h3.pug.item.blink Loading...
-                                            if no
-                                                span.pug.item  #{store.staking.loadingValidatorIndex}
-                                                span.pug.item of
-                                                span.pug.item  #{totalValidators}
-                        pagination {store, type: \validators, disabled: pagination-disabled, config: {array: store.staking.pools }}
+                            .pug.cont
+                                if store.staking.pools-are-loading is no then
+                                    .pug.table-scroll
+                                        table.pug
+                                            thead.pug
+                                                tr.pug
+                                                    td.pug(width="30%" style=staker-pool-style title="Validator Staking Address. Permanent") #{lang.validator} (?)
+                                                    td.pug(width="15%" style=stats title="Sum of all stakings") #{lang.total-active-stake} (?)
+                                                    td.pug(width="5%" style=stats title="Validator Interest. (100% - Validator Interest = Pool Staking Reward)") #{lang.comission} (?)
+                                                    td.pug(width="10%" style=stats title="Last Staking Amount") #{lang.lastVote} (?)
+                                                    td.pug(width="10%" style=stats title="Find you staking by Seed") #{lang.my-stake} (?)
+                                                    td.pug(width="5%" style=stats title="How many stakers in a pool") #{lang.stakers} (?)
+                                            tbody.pug
+                                                paginate(store.staking.pools, per-page, store.staking.current_validators_page)
+                                                    |> map build-staker store, web3t
+                                if store.staking.pools-are-loading is no then
+                                    pagination {store, type: \validators, disabled: pagination-disabled, config: {array: store.staking.pools }}
+                                else
+                                    .pug.table-scroll
+                                        span.pug.entities-loader
+                                            span.pug.inner-section
+                                                h3.pug.item.blink Loading...
+                                                    if no
+                                                        span.pug.item  #{store.staking.loadingValidatorIndex}
+                                                        span.pug.item of
+                                                        span.pug.item  #{totalValidators}
+
 validators = ({ store, web3t })->
     lang = get-lang store
     { go-back } = history-funcs store, web3t
@@ -921,8 +990,11 @@ validators.init = ({ store, web3t }, cb)!->
         #store.staking.accounts = convert-accounts-to-view-model [...it]
     err, result <- query-accounts store, web3t, on-progress
     if err? then
+        store.staking.all-accounts-loaded = yes
+        store.staking.accounts-are-loading = no
         console.error "[query-accounts] err", err
         result = [] if err?
+        store.errors.fetchAccounts = { message: err }
     #store.staking.accounts = convert-accounts-to-view-model(result)
     store.staking.accounts = result
 
@@ -936,7 +1008,12 @@ validators.init = ({ store, web3t }, cb)!->
     on-progress = ->
         store.staking.pools = convert-pools-to-view-model [...it]
     err, pools <- query-pools {store, web3t, on-progress}
-    return cb err if err?
+    if err? then
+        store.staking.all-pools-loaded = yes
+        store.staking.pools-are-loading = no
+        console.log "[query-pools] err", err
+        pools = [] if err?
+        store.errors.fetchValidators = { message: err }
     store.staking.pools = convert-pools-to-view-model pools
         |> sort-by (-> it.myStake.length )
     delinquent = store.staking.pools |> filter (-> it.status is "delinquent")
