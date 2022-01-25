@@ -1,0 +1,446 @@
+{
+  "uid" : "8a5115a525101c20",
+  "name" : "VLX Native: Show Invalid Address error",
+  "fullName" : "VLX Native: Show Invalid Address error",
+  "historyId" : "Chrome Stable src/tests/stable/validation.test.ts Validation VLX Native: Show Invalid Address error",
+  "time" : {
+    "start" : 1643099339583,
+    "stop" : 1643099380028,
+    "duration" : 40445
+  },
+  "status" : "failed",
+  "statusMessage" : "page.type: Timeout 8000ms exceeded.\n=========================== logs ===========================\nwaiting for selector \"#send-recipient\"\n============================================================",
+  "statusTrace" : "page.type: Timeout 8000ms exceeded.\n=========================== logs ===========================\nwaiting for selector \"#send-recipient\"\n============================================================\n    at /home/runner/work/JsWallet/JsWallet/e2e/src/tests/stable/validation.test.ts:24:16",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "failed",
+    "statusMessage" : "page.type: Timeout 8000ms exceeded.\n=========================== logs ===========================\nwaiting for selector \"#send-recipient\"\n============================================================",
+    "statusTrace" : "page.type: Timeout 8000ms exceeded.\n=========================== logs ===========================\nwaiting for selector \"#send-recipient\"\n============================================================\n    at /home/runner/work/JsWallet/JsWallet/e2e/src/tests/stable/validation.test.ts:24:16",
+    "steps" : [ {
+      "name" : "Before Hooks",
+      "time" : {
+        "start" : 1643099339584,
+        "stop" : 1643099357412,
+        "duration" : 17828
+      },
+      "status" : "passed",
+      "steps" : [ {
+        "name" : "browserContext.newPage",
+        "time" : {
+          "start" : 1643099339785,
+          "stop" : 1643099339856,
+          "duration" : 71
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.goto(127.0.0.1:8080/main-index.html?network=testnet)",
+        "time" : {
+          "start" : 1643099339859,
+          "stop" : 1643099344666,
+          "duration" : 4807
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.balance)",
+        "time" : {
+          "start" : 1643099344695,
+          "stop" : 1643099345211,
+          "duration" : 516
+        },
+        "status" : "failed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.isVisible([placeholder=\"Password or PIN\"])",
+        "time" : {
+          "start" : 1643099345216,
+          "stop" : 1643099345229,
+          "duration" : 13
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#lang-en)",
+        "time" : {
+          "start" : 1643099345230,
+          "stop" : 1643099345580,
+          "duration" : 350
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#btn-restore)",
+        "time" : {
+          "start" : 1643099345581,
+          "stop" : 1643099345890,
+          "duration" : 309
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#restore-custom)",
+        "time" : {
+          "start" : 1643099345891,
+          "stop" : 1643099346240,
+          "duration" : 349
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.fill([type=\"password\"])",
+        "time" : {
+          "start" : 1643099346241,
+          "stop" : 1643099346551,
+          "duration" : 310
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(button.setup)",
+        "time" : {
+          "start" : 1643099346552,
+          "stop" : 1643099347021,
+          "duration" : 469
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.fill(#seedphrase-custom)",
+        "time" : {
+          "start" : 1643099347023,
+          "stop" : 1643099347338,
+          "duration" : 315
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.click(#seed-phrase-next)",
+        "time" : {
+          "start" : 1643099347339,
+          "stop" : 1643099349221,
+          "duration" : 1882
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.menu-item)",
+        "time" : {
+          "start" : 1643099349222,
+          "stop" : 1643099349276,
+          "duration" : 54
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.balance)",
+        "time" : {
+          "start" : 1643099349277,
+          "stop" : 1643099349304,
+          "duration" : 27
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.wallet-item .top-left [class=\" img\"])",
+        "time" : {
+          "start" : 1643099349347,
+          "stop" : 1643099356841,
+          "duration" : 7494
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForTimeout",
+        "time" : {
+          "start" : 1643099356843,
+          "stop" : 1643099357094,
+          "duration" : 251
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.isVisible(div.big.wallet-item#token-vlx_native)",
+        "time" : {
+          "start" : 1643099357095,
+          "stop" : 1643099357265,
+          "duration" : 170
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForSelector(.wallet-item .top-left [class=\" img\"])",
+        "time" : {
+          "start" : 1643099357267,
+          "stop" : 1643099357302,
+          "duration" : 35
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      }, {
+        "name" : "page.waitForTimeout",
+        "time" : {
+          "start" : 1643099357303,
+          "stop" : 1643099357412,
+          "duration" : 109
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      } ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 18,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "page.click(button#wallets-send:not([disabled]))",
+      "time" : {
+        "start" : 1643099357413,
+        "stop" : 1643099357808,
+        "duration" : 395
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "page.type(#send-recipient, invalid)",
+      "time" : {
+        "start" : 1643099357809,
+        "stop" : 1643099365902,
+        "duration" : 8093
+      },
+      "status" : "failed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "After Hooks",
+      "time" : {
+        "start" : 1643099365903,
+        "stop" : 1643099380028,
+        "duration" : 14125
+      },
+      "status" : "passed",
+      "steps" : [ {
+        "name" : "browserContext.close",
+        "time" : {
+          "start" : 1643099367233,
+          "stop" : 1643099380019,
+          "duration" : 12786
+        },
+        "status" : "passed",
+        "steps" : [ ],
+        "attachments" : [ ],
+        "parameters" : [ ],
+        "stepsCount" : 0,
+        "attachmentsCount" : 0,
+        "shouldDisplayMessage" : false,
+        "hasContent" : false
+      } ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 1,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ {
+      "uid" : "62c06ae14c842cbd",
+      "name" : "video",
+      "source" : "62c06ae14c842cbd.webm",
+      "type" : "video/webm",
+      "size" : 931397
+    }, {
+      "uid" : "490d6aabaa1e89b9",
+      "name" : "trace",
+      "source" : "490d6aabaa1e89b9.ZIP",
+      "type" : "application/zip",
+      "size" : 6757481
+    }, {
+      "uid" : "ca30cb53ba08a519",
+      "name" : "screenshot",
+      "source" : "ca30cb53ba08a519.png",
+      "type" : "image/png",
+      "size" : 57645
+    }, {
+      "uid" : "1b0781dfcf5b923b",
+      "name" : "stdout",
+      "source" : "1b0781dfcf5b923b.txt",
+      "type" : "text/plain",
+      "size" : 54
+    }, {
+      "uid" : "597a9ab052ccf37d",
+      "name" : "stdout",
+      "source" : "597a9ab052ccf37d.txt",
+      "type" : "text/plain",
+      "size" : 200
+    }, {
+      "uid" : "2dfb7f4d99736dda",
+      "name" : "stdout",
+      "source" : "2dfb7f4d99736dda.txt",
+      "type" : "text/plain",
+      "size" : 217
+    }, {
+      "uid" : "9d21076292719d4f",
+      "name" : "stdout",
+      "source" : "9d21076292719d4f.txt",
+      "type" : "text/plain",
+      "size" : 66
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 23,
+    "attachmentsCount" : 7,
+    "shouldDisplayMessage" : true,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "language",
+    "value" : "JavaScript"
+  }, {
+    "name" : "framework",
+    "value" : "Playwright"
+  }, {
+    "name" : "parentSuite",
+    "value" : "Chrome Stable"
+  }, {
+    "name" : "suite",
+    "value" : "src/tests/stable/validation.test.ts"
+  }, {
+    "name" : "subSuite",
+    "value" : "Validation"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : true,
+  "retry" : true,
+  "extra" : {
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "8a5115a525101c20.json",
+  "parameterValues" : [ ]
+}
