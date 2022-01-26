@@ -152,5 +152,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: test-results
-          path: e2e/test-results/
+          path: |
+            e2e/test-results/
+            e2e/test-report/
+            e2e/test-results-swap/
+            e2e/test-report-swap/
           retention-days: 7

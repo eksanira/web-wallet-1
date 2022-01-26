@@ -839,7 +839,7 @@ staking-content = (store, web3t)->
     pagination-disabled = store.staking.pools-are-loading is yes
     .pug.staking-content.delegate
         .pug.main-sections
-            .form-group.pug(id="pools")
+            .form-group.pug(id="pools" class="select-validators-list")
                 alert-txn { store }
                 .pug.section
                     .title.pug

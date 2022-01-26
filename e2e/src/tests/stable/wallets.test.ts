@@ -1,48 +1,42 @@
-import { test } from '@playwright/test';
-import { assert } from '../../assert';
-import { config, walletURL } from '../../config';
-import { setupPage } from '../../pw-helpers/setup-page';
-import { Auth } from '../../screens/auth';
-import { WalletsScreen } from '../../screens/wallets';
-import { data } from '../../test-data';
+import { AuthScreen, WalletsScreen } from '../../screens';
+import { assert, config, data, test, walletURL } from '../../common-test-exports';
 
-let auth: Auth;
-let walletsScreen: WalletsScreen;
+let auth: AuthScreen;
+let wallets: WalletsScreen;
 
 test.describe.parallel('Wallets screen', () => {
   test.beforeEach(async ({ page }) => {
-    setupPage(page);
-    auth = new Auth(page);
-    walletsScreen = new WalletsScreen(page);
+    auth = new AuthScreen(page);
+    wallets = new WalletsScreen(page);
     await page.goto(walletURL, { waitUntil: 'networkidle' });
   });
 
   test.describe('Transactions', () => {
-    test('Transactions list is displayed', async ({ page }) => {
+    test('Transactions list is displayed', async () => {
       // arrange
       await auth.loginByRestoringSeed(data.wallets.fundsReceiver.seed);
 
-      await walletsScreen.selectWallet('token-vlx_native');
-      await page.waitForSelector('.history-area div[datatesting="transaction"]', { timeout: 20000 });
-      const transactions = await page.$$('.history-area div[datatesting="transaction"]');
+      await wallets.selectWallet('token-vlx_native');
+      await wallets.txHistory.txDetails.first().waitFor({ timeout: 20000 });
+      const transactions = await wallets.txHistory.txDetails.elementHandles();
       assert.isAbove(transactions.length, 10, 'Amount of transactions in the list is less than 10');
 
       const prodSenderAddress = '46LegTMYJ7ZYLftiCv3Ldzzud3dwajrV6S1oonF5wqFV';
-      const senderAddressSelector = `.history-area div[datatesting="transaction"] .address-holder a[href*="https://native.velas.com/address/${config.network === 'mainnet' ? prodSenderAddress : data.wallets.txSender.address}"]`;
-      assert.ok(await page.waitForSelector(senderAddressSelector));
+      const txDetails = await wallets.txHistory.txDetails.first().elementHandle();
+      await txDetails?.waitForSelector(`.address-holder a[href*="https://native.velas.com/address/${config.network === 'mainnet' ? prodSenderAddress : data.wallets.txSender.address}"]`);
     });
   });
 
   test.describe(' > ', () => {
     test.beforeEach(async () => {
       await auth.loginByRestoringSeed(data.wallets.login.seed);
-      await walletsScreen.waitForWalletsDataLoaded();
+      await wallets.waitForWalletsDataLoaded();
     });
 
-    test('Lock and unlock', async ({ page }) => {
-      await page.click('.menu-item.bottom');
-      assert.isTrue(await page.isVisible('input[type="password"]'));
-      assert.isFalse(await page.isVisible('.menu-item.bottom'));
+    test('Lock and unlock', async () => {
+      await wallets.lockButton.click();
+      await auth.passwordInput.isVisible();
+      assert.isFalse(await wallets.lockButton.isVisible());
 
       await auth.pinForLoggedOutAcc.typeAndConfirm('111222');
       assert.isTrue(await auth.isLoggedIn());
@@ -51,21 +45,21 @@ test.describe.parallel('Wallets screen', () => {
     test('Add and hide litecoin wallet', async () => {
       // TODO: need to scroll to launch test for mainnet
       // add litecoin
-      await walletsScreen.addWalletsPopup.open();
-      await walletsScreen.addWalletsPopup.add('token-ltc');
-      await walletsScreen.selectWallet('token-ltc');
-      assert.isTrue(await walletsScreen.isWalletInWalletsList('token-ltc'));
+      await wallets.addWalletsPopup.open();
+      await wallets.addWalletsPopup.add('token-ltc');
+      await wallets.selectWallet('token-ltc');
+      assert.isTrue(await wallets.isWalletInWalletsList('token-ltc'));
 
       // remove litecoin
-      await walletsScreen.hideWallet();
-      assert.isFalse(await walletsScreen.isWalletInWalletsList('token-ltc'));
+      await wallets.hideWallet();
+      assert.isFalse(await wallets.isWalletInWalletsList('token-ltc'));
     });
 
     test('Switch account', async ({ page }) => {
-      await walletsScreen.selectWallet('token-vlx_native');
+      await wallets.selectWallet('token-vlx_native');
       await page.click('.switch-account');
       await page.click('" Account 2"');
-      assert.equal(await walletsScreen.getWalletAddress(), 'BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW', 'Account 2 address on UI does not equal expected');
+      assert.equal(await wallets.getWalletAddress(), 'BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW', 'Account 2 address on UI does not equal expected');
     });
 
     test('Show QR', async ({ page }) => {
@@ -78,67 +72,52 @@ test.describe.parallel('Wallets screen', () => {
       // clear clipboard
       await page.evaluate(async () => await navigator.clipboard.writeText(''));
 
-      await walletsScreen.selectWallet('token-vlx_native');
+      await wallets.selectWallet('token-vlx_native');
       await page.click('#wallets-receive');
       await page.waitForSelector('.ill-qr img');
-      // qr code is displayed
-      assert.isTrue(await page.isVisible('.receive-body canvas'));
+      await wallets.qrCode.waitFor();
 
       // copy to clipboard
-      await page.click('.address-holder .copy');
+      await wallets.copyToClipboardButton.click();
       const copiedText = await page.evaluate(async () => await navigator.clipboard.readText());
       assert.equal(copiedText, 'G3N4212jLtDNCkfuWuUHsyG2aiwMWQLkeKDETZbo4KG');
 
       // back to wallets list
       await page.click('" Cancel"');
-      await walletsScreen.waitForWalletsDataLoaded();
+      await wallets.waitForWalletsDataLoaded();
     });
   });
 
   test.describe('Add custom tokens: ', () => {
     test.beforeEach(async () => {
       await auth.loginByRestoringSeed(data.wallets.withFunds.seed);
-      await walletsScreen.waitForWalletsDataLoaded();
+      await wallets.waitForWalletsDataLoaded();
     });
 
-    test('WAG on Velas', async ({ page }) => {
-      await walletsScreen.addCustomToken(data.customTokens.velas.wag, 'Velas', 'testnet')
-
-      const customTokenElement = await page.$('#token-wag_testnet_Velas__custom');
-      if (customTokenElement) {
-        const customTokenBalance = await walletsScreen.getAmountOfTokensFromOfWalletItemElement(customTokenElement);
-        assert.equal(customTokenBalance, '1');
-      }
-    });
-    
-    test('WEENUS on Ethereum', async ({ page }) => {
-      await walletsScreen.addCustomToken(data.customTokens.eth.weenus, 'Ethereum', 'testnet')
-
-      const customTokenElement = await page.$('#token-dai_testnet_BSC__custom');
-      if (customTokenElement) {
-        const customTokenBalance = await walletsScreen.getAmountOfTokensFromOfWalletItemElement(customTokenElement);
-        assert.equal(customTokenBalance, '2');
-      }
+    test('WAG on Velas', async () => {
+      await wallets.addCustomToken(data.customTokens.velas.wag, 'Velas', 'testnet');
+      const customTokenBalance = await wallets.getCustomTokenBalance('#token-wag_testnet_Velas__custom');
+      assert.equal(customTokenBalance, '1');
     });
 
-    test('DAI on BSC', async ({ page }) => {
-      await walletsScreen.addCustomToken(data.customTokens.bsc.dai, 'BSC', 'testnet')
-
-      const customTokenElement = await page.$('#token-wag_testnet_Velas__custom');
-      if (customTokenElement) {
-        const customTokenBalance = await walletsScreen.getAmountOfTokensFromOfWalletItemElement(customTokenElement);
-        assert.equal(customTokenBalance, '3');
-      }
+    test('WEENUS on Ethereum', async () => {
+      await wallets.addCustomToken(data.customTokens.eth.weenus, 'Ethereum', 'testnet');
+      const customTokenBalance = await wallets.getCustomTokenBalance('#token-weenus_testnet_Ethereum__custom');
+      assert.equal(customTokenBalance, '2');
     });
-    
-    test('DAI on Heco', async ({ page }) => {
-      await walletsScreen.addCustomToken(data.customTokens.heco.dai, 'Heco', 'testnet')
 
-      const customTokenElement = await page.$('#token-dai_testnet_Heco__custom');
-      if (customTokenElement) {
-        const customTokenBalance = await walletsScreen.getAmountOfTokensFromOfWalletItemElement(customTokenElement);
-        assert.equal(customTokenBalance, '4');
-      }
+    test('DAI on BSC', async () => {
+      await wallets.addCustomToken(data.customTokens.bsc.dai, 'BSC', 'testnet');
+
+      const customTokenBalance = await wallets.getCustomTokenBalance('#token-dai_testnet_BSC__custom');
+      assert.equal(customTokenBalance, '3');
+    });
+
+    test('DAI on Heco', async () => {
+      await wallets.addCustomToken(data.customTokens.heco.dai, 'Heco', 'testnet');
+
+      const customTokenBalance = await wallets.getCustomTokenBalance('#token-dai_testnet_Heco__custom');
+      assert.equal(customTokenBalance, '4');
     });
   });
 });

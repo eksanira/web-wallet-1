@@ -1,27 +1,21 @@
-import { test } from '@playwright/test';
-import { assert } from '../assert';
-import { walletURL } from '../config';
-import { setupPage } from '../pw-helpers/setup-page';
-import { Auth } from '../screens/auth';
-import { WalletsScreen } from '../screens/wallets';
-import { data } from '../test-data';
+import { AuthScreen, WalletsScreen } from '../screens';
+import { expect, data, test, walletURL } from '../common-test-exports';
 
-let auth: Auth;
-let walletsScreen: WalletsScreen;
+let auth: AuthScreen;
+let wallets: WalletsScreen;
 
 test.describe.parallel('Wallets screen >', () => {
   test.describe('Transactions', () => {
     test('Transactions list is displayed', async ({ page }) => {
       // arrange
-      setupPage(page);
-      auth = new Auth(page);
-      walletsScreen = new WalletsScreen(page);
+      auth = new AuthScreen(page);
+      wallets = new WalletsScreen(page);
       await page.goto(walletURL, { waitUntil: 'networkidle' });
       await auth.loginByRestoringSeed(data.wallets.login.seed);
 
       // assert
-      await walletsScreen.waitForWalletsDataLoaded();
-      assert.isFalse(await page.isVisible('div.disabled-wallet-item'));
+      await wallets.waitForWalletsDataLoaded();
+      await expect(page.locator('div.disabled-wallet-item')).not.toBeVisible();
     });
   });
 });

@@ -1,26 +1,20 @@
-import { test } from '@playwright/test';
-import { assert } from '../../assert';
-import { walletURL } from '../../config';
-import { setupPage } from '../../pw-helpers/setup-page';
-import { Auth, Language } from '../../screens/auth';
-import { WalletsScreen } from '../../screens/wallets';
-import { data } from '../../test-data';
-import { log } from '../../tools/logger';
+import { AuthScreen, Language, WalletsScreen } from '../../screens';
+import { assert, data, expect, test, walletURL } from '../../common-test-exports';
+import {log} from '../../tools/logger';
 
 test.describe.parallel('Auth', () => {
-  let auth: Auth;
-  let walletsScreen: WalletsScreen;
+  let auth: AuthScreen;
+  let wallets: WalletsScreen;
   const accountAddress24Words = 'G3N4212jLtDNCkfuWuUHsyG2aiwMWQLkeKDETZbo4KG';
 
   test.beforeEach(async ({ page }) => {
-    setupPage(page);
     await page.goto(walletURL, { waitUntil: 'networkidle' });
-    walletsScreen = new WalletsScreen(page);
-    auth = new Auth(page);
+    wallets = new WalletsScreen(page);
+    auth = new AuthScreen(page);
   });
 
-  test.describe('Sign up >', () => {
-    test('Create wallet', async ({ page }) => {
+  test.describe('Sign up', () => {
+    test('Create wallet', async () => {
       await auth.language.select('en');
       await auth.welcome.create();
       await auth.pinForNewAcc.fillAndConfirm('111222');
@@ -31,22 +25,17 @@ test.describe.parallel('Auth', () => {
       await auth.wordByWordSeedInputForm.fill(seedWords, { fast: true });
       await auth.terms.accept();
 
-      assert.isTrue(await page.isVisible('.menu-item'));
-      assert.isTrue(await page.isVisible('.balance'));
+      await expect(auth.menuItems).toBeVisible();
+      await expect(auth.balanceBlockInMenu).toBeVisible();
     });
   });
 
-  test.describe('Restore with >', () => {
-    test.afterEach(async ({ context }) => {
-      await context.close();
-    });
-
+  test.describe('Restore with', () => {
     test('custom seed phrase', async () => {
       await auth.loginByRestoringSeed(data.wallets.login.seed);
 
-      await walletsScreen.selectWallet('token-vlx_native');
-      assert.equal(await walletsScreen.getWalletAddress(), accountAddress24Words, 'Account address on UI does not equal expected');
-
+      await wallets.selectWallet('token-vlx_native');
+      assert.equal(await wallets.getWalletAddress(), accountAddress24Words, 'Account address on UI does not equal expected');
     });
 
     test('24-words seed phrase', async () => {
@@ -56,8 +45,8 @@ test.describe.parallel('Auth', () => {
       await auth.pinForNewAcc.fillAndConfirm('111222');
       await auth.wordByWordSeedInputForm.fill(data.wallets.login.seedArr, { fast: true });
 
-      await walletsScreen.selectWallet('token-vlx_native');
-      assert.equal(await walletsScreen.getWalletAddress(), accountAddress24Words, 'Account address on UI does not equal expected');
+      await wallets.selectWallet('token-vlx_native');
+      assert.equal(await wallets.getWalletAddress(), accountAddress24Words, 'Account address on UI does not equal expected');
     });
 
     test('12-words seed phrase', async () => {
@@ -71,43 +60,43 @@ test.describe.parallel('Auth', () => {
       seed12Words.length = 12;
       await auth.wordByWordSeedInputForm.fill(seed12Words);
 
-      await walletsScreen.selectWallet('token-vlx_native');
-      assert.equal(await walletsScreen.getWalletAddress(), accountAddress12Words, 'Account address on UI does not equal expected');
+      await wallets.selectWallet('token-vlx_native');
+      assert.equal(await wallets.getWalletAddress(), accountAddress12Words, 'Account address on UI does not equal expected');
     });
 
-    test('Can\'t restore with incorrect 24-word seed phrase', async ({ page }) => {
+    test('Can\'t restore with incorrect 24-word seed phrase', async () => {
       await auth.language.select('en');
       await auth.welcome.restore();
       await auth.restoreFrom.seed('24');
       await auth.pinForNewAcc.fillAndConfirm('111222');
       await auth.wordByWordSeedInputForm.fill(Array(24).fill('sad'), { fast: true });
 
-      assert.isTrue(await page.isVisible('" Seed phrase checksum not match. Please try again."'), 'No alert for incorrect seed phrase on UI');
+      assert.isTrue(await auth.seedPhraseChecksumMatchError.isVisible(), 'No alert for incorrect seed phrase on UI');
       assert.isFalse(await auth.isLoggedIn(), 'Restored with incorrect seed phrase');
     });
   });
 
-  test.describe('Log in >', () => {
+  test.describe('Log in', () => {
     test.beforeEach(async ({ page }) => {
-      walletsScreen = new WalletsScreen(page);
+      wallets = new WalletsScreen(page);
       await auth.loginByRestoringSeed(data.wallets.login.seed);
       await page.reload();
     });
 
-    test('Can\'t log in with incorrect password', async ({ page }) => {
+    test('Can\'t log in with incorrect password', async () => {
       await auth.pinForLoggedOutAcc.typeAndConfirm('111111');
-      assert.isTrue(await page.isVisible('.wrong'));
+      await expect(auth.pinForLoggedOutAcc.wrongPinError).toBeVisible();
     });
 
     test('Log in with pin', async () => {
       await auth.pinForLoggedOutAcc.typeAndConfirm('111222');
 
-      await walletsScreen.selectWallet('token-vlx_native');
-      assert.equal(await walletsScreen.getWalletAddress(), accountAddress24Words, 'Account address on UI does not equal expected');
+      await wallets.selectWallet('token-vlx_native');
+      assert.equal(await wallets.getWalletAddress(), accountAddress24Words, 'Account address on UI does not equal expected');
     });
   });
 
-  test.describe('Choose language on sign up >', () => {
+  test.describe('Choose language on sign up', () => {
     test('Change language', async ({ page }) => {
       const welcomeTexts = {
         fr: 'Bienvenu(e)!',
@@ -130,7 +119,7 @@ test.describe.parallel('Auth', () => {
         const language = languages[i];
         log.info(language);
         await auth.language.select(language);
-        const actualWelcomeText = (await page.textContent('.welcome'))?.trim();
+        const actualWelcomeText = (await auth.language.welcomeText.textContent())?.trim();
         assert.equal(actualWelcomeText, welcomeTexts[language], `${language} language on UI does not equal chosen language`);
         await page.reload();
       }
