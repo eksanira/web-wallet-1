@@ -1,8 +1,10 @@
 import { velasNative } from '@velas/velas-chain-test-wrapper';
 import balancesAPI from '../../api/balances-api';
 import { AuthScreen, Currency, WalletsScreen } from '../../screens';
-import {assert,  data, helpers, test, walletURL } from '../../common-test-exports';
-import {log} from '../../tools/logger';
+import {
+  assert, data, helpers, test, walletURL,
+} from '../../common-test-exports';
+import { log } from '../../tools/logger';
 
 test.describe('Balance', () => {
   let auth: AuthScreen;

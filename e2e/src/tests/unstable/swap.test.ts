@@ -1,6 +1,6 @@
 import { velasNative } from '@velas/velas-chain-test-wrapper';
 import {
-  bscchain, evmchain, hecochain, ropsten
+  bscchain, evmchain, hecochain, ropsten,
 } from '../../api/explorers-api';
 import { data, test, walletURL } from '../../common-test-exports';
 import { AuthScreen, WalletsScreen } from '../../screens';
@@ -9,8 +9,8 @@ import { log } from '../../tools/logger';
 let auth: AuthScreen;
 let wallets: WalletsScreen;
 
-test.describe('Swap: ', () => {
-  let transactionsInProgress: Promise<any>[] = [];
+test.describe('Swap', () => {
+  const transactionsInProgress: Promise<any>[] = [];
 
   test.beforeEach(async ({ page }) => {
     wallets = new WalletsScreen(page);
@@ -22,7 +22,7 @@ test.describe('Swap: ', () => {
 
   test.afterAll(async () => {
     await Promise.all(transactionsInProgress);
-  })
+  });
 
   test.describe('From Velas network: ', async () => {
     test('EVM > HRC-20', async () => {

@@ -1,7 +1,9 @@
 import {
   AuthScreen, SearchScreen, SettingsScreen, StakingScreen, WalletsScreen,
 } from '../../screens';
-import { assert, data, test, walletURL } from '../../common-test-exports';
+import {
+  assert, data, test, walletURL,
+} from '../../common-test-exports';
 
 let wallets: WalletsScreen;
 let auth: AuthScreen;

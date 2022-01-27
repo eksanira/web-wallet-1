@@ -36,13 +36,21 @@ export class WalletsScreen extends BaseScreen {
   }
 
   backButton = this.page.locator('.close');
+
   balanceAmount = this.page.locator('.amount:not(.placeholder)');
+
   lockButton = this.page.locator('.menu-item.bottom');
+
   manageWalletsModal = this.page.locator('.manage-account');
+
   swapButton = this.page.locator('.with-swap #wallet-swap:not([disabled])');
+
   sendButton = this.page.locator('#send-confirm:not([disabled])');
+
   testnetMenuItem = this.page.locator('#menu-testnet');
+
   walletItemInWalletsList = this.page.locator('.big.wallet');
+
   walletAddress = this.page.locator('div.wallet-detailed a[data-original]');
 
   addTokenForm = {
@@ -62,7 +70,7 @@ export class WalletsScreen extends BaseScreen {
   async getWalletAddress(): Promise<string> {
     await this.page.waitForSelector('div.wallet-detailed a[data-original]');
     const address = (await this.walletAddress.getAttribute('data-original'))?.trim();
-    if (!address) throw new Error(`Cannot get wallet address`);
+    if (!address) throw new Error('Cannot get wallet address');
     return address;
   }
 
@@ -283,7 +291,7 @@ export class WalletsScreen extends BaseScreen {
       log.debug(`Select destination network - ${destinationNetworkName}`);
       await this.page.click('.network-slider .right');
       const destinationNetowk = this.page.locator(`.switch-menu div:text("${destinationNetworkName}")`);
-      await destinationNetowk.click({ timeout: 20000 });
+      await destinationNetowk.click({ timeout: 10000 });
       await this.waitForSelectorDisappears('.switch-menu', 20000);
     },
     confirm: async () => {

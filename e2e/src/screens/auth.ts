@@ -35,9 +35,8 @@ export class AuthScreen extends BaseScreen {
   async loginByRestoringSeed(seedPhrase: string | string[]) {
     const auth = new AuthScreen(this.page);
 
-    let isLoggedIn = await this.isLoggedIn();
-    if (isLoggedIn) {
-      log.info('User is already logged in');
+    if (await this.isLoggedIn()) {
+      log.info('User is logged in');
       return;
     }
 
@@ -53,8 +52,7 @@ export class AuthScreen extends BaseScreen {
     await auth.pinForNewAcc.fillAndConfirm('111222');
     await auth.customSeedInput.fillAndConfirm(seedPhrase);
 
-    isLoggedIn = await this.isLoggedIn();
-    if (isLoggedIn) {
+    if (await this.isLoggedIn()) {
       log.info(`Successfully logged in with seed "${seedPhrase}"`);
     } else {
       throw new Error('Can\'t perform login');

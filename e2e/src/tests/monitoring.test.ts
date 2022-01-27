@@ -1,5 +1,7 @@
 import { AuthScreen, WalletsScreen } from '../screens';
-import { expect, data, test, walletURL } from '../common-test-exports';
+import {
+  expect, data, test, walletURL,
+} from '../common-test-exports';
 
 let auth: AuthScreen;
 let wallets: WalletsScreen;

@@ -35,3 +35,7 @@ Add PWDEBUG=1 before your test script, e.g.
 ### Allure
 allure generate ./allure-results --clean && allure open ./allure-report
 
+
+
+### LINTER
+npm run lint

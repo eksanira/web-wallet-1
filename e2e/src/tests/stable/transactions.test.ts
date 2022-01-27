@@ -1,5 +1,7 @@
-import { assert, data, helpers, test, walletURL } from '../../common-test-exports';
 import { velasNative } from '@velas/velas-chain-test-wrapper';
+import {
+  assert, data, helpers, test, walletURL,
+} from '../../common-test-exports';
 import { ropsten } from '../../api/explorers-api';
 import { AuthScreen, WalletsScreen } from '../../screens';
 

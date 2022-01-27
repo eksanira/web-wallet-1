@@ -1,7 +1,9 @@
 import {
   AuthScreen, Language, SettingsScreen, WalletsScreen,
 } from '../../screens';
-import { assert, data, test, walletURL } from '../../common-test-exports';
+import {
+  assert, data, test, walletURL,
+} from '../../common-test-exports';
 import { log } from '../../tools/logger';
 
 test.describe.parallel('Settings', () => {

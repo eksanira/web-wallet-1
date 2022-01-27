@@ -1,5 +1,7 @@
-import { assert, data, expect, helpers, test, walletURL } from '../../common-test-exports';
 import { velasNative } from '@velas/velas-chain-test-wrapper';
+import {
+  assert, data, expect, helpers, test, walletURL,
+} from '../../common-test-exports';
 import { AuthScreen, StakingScreen, WalletsScreen } from '../../screens';
 
 let auth: AuthScreen;
@@ -8,6 +10,22 @@ let staking: StakingScreen;
 
 // TODO: validators loading takes too much time
 test.describe('Staking', () => {
+  // cleanup
+  test.afterAll(async ({ browser }) => {
+    const page = await browser.newPage();
+    await page.goto(walletURL);
+    auth = new AuthScreen(page);
+    wallets = new WalletsScreen(page);
+    staking = new StakingScreen(page);
+    await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
+    await wallets.openMenu('staking');
+    await staking.waitForLoaded();
+
+    await staking.cleanup.stakesToUndelegate();
+    await staking.cleanup.stakesToWithdraw();
+    await staking.cleanup.stakesNotDelegated();
+  });
+
   test.beforeEach(async ({ page }) => {
     auth = new AuthScreen(page);
     wallets = new WalletsScreen(page);
@@ -17,16 +35,25 @@ test.describe('Staking', () => {
     await wallets.openMenu('staking');
   });
 
+  // cleanup
+  test.afterAll(async ({ browser }) => {
+    const page = await browser.newPage();
+    await page.goto(walletURL);
+    auth = new AuthScreen(page);
+    wallets = new WalletsScreen(page);
+    staking = new StakingScreen(page);
+    await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
+    await wallets.openMenu('staking');
+    await staking.waitForLoaded();
+
+    await staking.cleanup.stakesToUndelegate();
+    await staking.cleanup.stakesToWithdraw();
+    await staking.cleanup.stakesNotDelegated();
+  });
+
   // don't remove "serial". tests in this suite depend on each other
   test.describe.serial('Actions >', () => {
     const stakingAmount = 5;
-
-    test('Cleanup', async () => {
-      await staking.waitForLoaded();
-      await staking.cleanup.stakesToUndelegate();
-      await staking.cleanup.stakesToWithdraw();
-      await staking.cleanup.stakesNotDelegated();
-    });
 
     test('Use max', async () => {
       await staking.makeSureUiBalanceEqualsChainBalance(data.wallets.staking.staker.publicKey);

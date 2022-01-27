@@ -1,6 +1,8 @@
 import { AuthScreen, Language, WalletsScreen } from '../../screens';
-import { assert, data, expect, test, walletURL } from '../../common-test-exports';
-import {log} from '../../tools/logger';
+import {
+  assert, data, expect, test, walletURL,
+} from '../../common-test-exports';
+import { log } from '../../tools/logger';
 
 test.describe.parallel('Auth', () => {
   let auth: AuthScreen;
