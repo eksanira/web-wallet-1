@@ -1,5 +1,5 @@
 require! {
-    \prelude-ls : { map, split, filter, find, foldl, drop, take, sum, unique, pairs-to-obj, sort-by, reverse, each }
+    \prelude-ls : { map, split, filter, find, foldl, drop, take, sum, unique, pairs-to-obj, sort-by, reverse, each , findIndex}
     \./math.ls : { div, times, plus, minus }
     \./round-human.ls
     '../web3t/providers/superagent.js' : { get }
