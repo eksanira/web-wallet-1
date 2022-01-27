@@ -27,6 +27,9 @@ require! {
     \../../components/pagination.ls
     \./error-funcs.ls : { get-error-message }
     #'@solana/web3.js' : web3Solana
+    \../../staking-funcs.ls : { add-stake-account }
+    \../../api.ls : { get-transaction-info }
+    \../../components/popups/loader.ls
 }
 as-callback = (p, cb)->
     p.catch (err) -> cb err
@@ -328,10 +331,9 @@ staking-accounts-content = (store, web3t)->
     block-style = 
         display: "block"
     create-staking-account = ->
-
+        store.staking.creating-staking-account = yes
         cb = console.log 
-        err, accs <- as-callback web3t.velas.NativeStaking.getStakingAccounts(store.staking.parsedProgramAccounts)
-        console.error err if err?
+
         amount <- prompt2 store, lang.howMuchToDeposit
         return if not amount?
         return if amount+"".trim!.length is 0
@@ -345,18 +347,50 @@ staking-accounts-content = (store, web3t)->
         return alert store, lang.balanceIsNotEnoughToSpend + " #{(amount)} VLX" if +main_balance < +amount
         amount = amount * 10^9
         err, result <- as-callback web3t.velas.NativeStaking.createAccount(amount)
-        console.error "Result sending:" err if err?
         if err?
-            err = lang.balanceIsNotEnoughToCreateStakingAccount if ((err.toString! ? "").index-of("custom program error: 0x1")) > -1
-            return alert store, err.toString!
+            store.staking.creating-staking-account = no
+            if ((err.toString! ? "").index-of("custom program error: 0x1")) > -1
+                err = lang.balanceIsNotEnoughToCreateStakingAccount
+                return alert store, err.toString!
         if result.error? then
+            store.staking.creating-staking-account = no
             error-msg = result.description ? "An unexpected error occurred during account creation."
             return alert store, error-msg, cb
-        store.staking.getAccountsFromCashe = no
-        #checkAccountWasCreated
-        <- set-timeout _, 1000
-        <- notify store, lang.accountCreatedAndFundsDeposited
-        navigate store, web3t, "validators"
+        signature = result
+        commitment = 'finalized'
+        callback = (data)->
+            cb = console.log
+            if data.err? then
+                store.staking.creating-staking-account = no
+                return alert store, "An error occurred during stake account creation.", cb
+
+            store.staking.getAccountsFromCashe = no
+
+            wallet = store.current.account.wallets |> find -> it.coin.token is \vlx_native
+            if not wallet?
+                store.staking.creating-staking-account = no
+                return alert store, "Velas Native wallet not found!", cb
+
+            err, info <- get-transaction-info( {network: wallet.network, tx: signature} )
+            if err?
+                store.staking.creating-staking-account = no
+                return alert store, "An error occurred during stake account creation: " + err, cb
+            on-progress = ->
+            err <- add-stake-account(store, web3t, info, on-progress)
+            if err?
+                store.staking.creating-staking-account = no
+                return alert store, err, cb
+            store.staking.creating-staking-account = no
+            <- notify store, lang.accountCreatedAndFundsDeposited
+
+        try
+            web3t.velas.NativeStaking.connection.onSignature(signature, callback, commitment)
+        catch err
+            store.staking.creating-staking-account = no
+            console.log "Account creation error: ", err
+            return alert store, "An error occurred during stake account creation.", cb
+
+
     totalOwnStakingAccounts = store.staking.totalOwnStakingAccounts ? 0
     loadingAccountIndex = Math.min(totalOwnStakingAccounts, store.staking.loadingAccountIndex)
     perPage =  store.staking.accounts_per_page
@@ -372,6 +406,7 @@ staking-accounts-content = (store, web3t)->
                     path.pug(xmlns="http://www.w3.org/2000/svg" d="M1796 2907C 1749 2827 1701 2743 1515 2420C 1407 2230 1275 2001 1222 1910C 1170 1819 1110 1716 1090 1680C 950 1438 891 1334 845 1255C 816 1206 747 1084 690 985C 633 886 554 749 514 680L514 680L441 555L1130 552C 1510 551 2130 551 2508 552L2508 552L3197 555L3102 720C 3050 811 2991 914 2970 950C 2950 986 2856 1150 2761 1315C 2665 1480 2510 1750 2415 1915C 1758 3060 1827 2940 1820 2940C 1817 2940 1806 2925 1796 2907z" stroke="none" fill="rgb(255 215 0)" fill-rule="nonzero")
 
     .pug.staking-accounts-content
+        loader { loading: store.staking.creating-staking-account, text: "Creating staking account..." }
         .pug
             .form-group.pug(id="create-staking-account")
                 .pug.section.create-staking-account 

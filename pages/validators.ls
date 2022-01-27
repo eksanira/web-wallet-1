@@ -7,7 +7,7 @@ require! {
     \bignumber.js
     \../get-lang.ls
     \../history-funcs.ls
-    \../staking-funcs.ls : { query-pools, get-my-stakes, query-accounts, convert-pools-to-view-model, convert-accounts-to-view-model }
+    \../staking-funcs.ls : { query-pools, get-my-stakes, query-accounts, convert-pools-to-view-model, convert-accounts-to-view-model, filter-pools, subscribe-to-stake-account }
     \./icon.ls
     \prelude-ls : { map, split, filter, find, foldl, sort-by, unique, head, each, obj-to-pairs, take, reverse, findIndex }
     \../math.ls : { div, times, plus, minus }
@@ -940,15 +940,6 @@ stringify = (value) ->
     else
         '..'
 
-filter-pools = (pools)->
-    store.staking.pools = convert-pools-to-view-model pools
-        |> sort-by (-> it.myStake.length )
-    delinquent = store.staking.pools |> filter (-> it.status is "delinquent")
-    running = store.staking.pools
-        |> filter (it)->
-            delinquent.index-of(it) < 0
-        |> reverse
-    store.staking.pools = running ++ delinquent
 
 validators.init = ({ store, web3t }, cb)!->
     console.log "validators.init"
@@ -1013,32 +1004,10 @@ validators.init = ({ store, web3t }, cb)!->
     #store.staking.accounts = convert-accounts-to-view-model(result)
     store.staking.accounts = result
 
-    updateStakeAccount = ({ account, updatedAccount })->
-        { lamports, data } = updatedAccount
-        if not data?parsed?info
-            index = store.staking.accounts |> findIndex (-> it.pubkey is account.pubkey)
-            store.staking.accounts.splice(index,1)
-        else
-            { meta, stake } = data?parsed?info
-            { lockup, rentExemptReserve, authorized } = meta
-            { creditsObserved, delegation } = stake
-            { activationEpoch, deactivationEpoch, stake, voter } = delegation
-            updates = { lamports, stake, validator: voter, voter, rentExemptReserve, creditsObserved, activationEpoch, deactivationEpoch }
-            account <<<< updates
-            account.account <<<< updates
-        on-progress = ->
-            store.staking.pools = convert-pools-to-view-model [...it]
-        err, pools <- query-pools { store, web3t, on-progress }
-        filter-pools(pools)
 
     store.staking.accounts |> each (account)->
         publicKey  = account.pubKey
-        commitment = 'confirmed'
-        callback   = (updatedAccount)->
-            updateStakeAccount({ account, updatedAccount })
-
-        web3t.velas.NativeStaking.connection.onAccountChange(publicKey, callback, commitment)
-
+        subscribe-to-stake-account({store, web3t, account, publicKey})
 
     # Normalize current page for accounts in pagination
     type = "accounts"
