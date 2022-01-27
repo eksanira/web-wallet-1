@@ -419,6 +419,7 @@ locked = ({ store, web3t })->
                     span.pug
                         img.icon-download.pug(on-click=download src="#{icons[\desktop]}" )
 focus = ({ store }, cb)->
+    store.forceReload = yes
     cb null
 locked.focus = focus
 module.exports = locked

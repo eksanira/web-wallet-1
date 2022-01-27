@@ -447,6 +447,8 @@ switch-network = (store, web3t)->
     lang = get-lang store
     change-network = ->
         value = it.target.value is \true
+        store.forceReload = yes
+        store.forceReloadTxs = yes
         web3t.use networks-reverted[not value]
         store.current.wallet-index = 0
         store.current.group-index = 0

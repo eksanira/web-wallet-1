@@ -35,7 +35,7 @@ require! {
     \../seed.ls : seedmem
     \../components/burger.ls
     \./stake/accounts.ls : \stake-accounts
-    \../calc-certain-wallet.ls
+    \../calc-wallet.ls
 }
 .staking
     @import scheme
@@ -937,7 +937,7 @@ stringify = (value) ->
     else
         '..'
 validators.init = ({ store, web3t }, cb)!->
-    err <- calc-certain-wallet(store, "vlx_native")
+    err <- calc-wallet(store)
     #return cb null if store.staking.pools-are-loading is yes
 
     if store.staking.fetchAccounts is no then
@@ -1024,5 +1024,5 @@ validators.init = ({ store, web3t }, cb)!->
     store.staking.pools = running ++ delinquent
     store.staking.poolsFiltered = store.staking.pools
     store.staking.getAccountsFromCashe = no
-    err <- calc-certain-wallet(store, "vlx_native")
+    #err <- calc-certain-wallet(store, "vlx_native")
 module.exports = validators

@@ -110,6 +110,8 @@ module.exports = (store, web3t)->
                 store.current.send.parseError = ""
             return cb err
         err <- create-pending-tx { store, token, recipient, network, tx, amount-send, amount-send-fee, send.to, from: wallet.address }
+        store.forceReload = yes
+        store.forceReloadTxs = yes
         cb err, tx
 
     wallet-icon =
