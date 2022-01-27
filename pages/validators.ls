@@ -36,6 +36,7 @@ require! {
     \../components/burger.ls
     \./stake/accounts.ls : \stake-accounts
     \../calc-certain-wallet.ls
+    \../calc-wallet.ls
     \bs58 : { decode }
     "../../web3t/providers/solana/index.cjs" : \velasWeb3
 }
