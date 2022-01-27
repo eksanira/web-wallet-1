@@ -1123,7 +1123,7 @@ module.exports = (store, web3t)->
 
         store.current.send.homeDailyLimit = dailyLimit
         store.current.network-details <<<< { dailyLimit, homeFeePercent, minPerTx, maxPerTx, maxAvailablePerTx, remainingDailyLimit }
-        if token isnt \busd
+        if token not in <[ busd usdc usdt_erc20 ]>
             return cb null
 
 
@@ -1134,9 +1134,9 @@ module.exports = (store, web3t)->
         web3.eth.provider-url = wallet-to.network.api.web3Provider
 
         addr =
-            #| token is \usdt_erc20 and chosen-network.referTo is \vlx_usdt => HOME_BRIDGE
+            | token is \usdt_erc20 and chosen-network.referTo is \vlx_usdt => HOME_BRIDGE
             #| token is \vlx_eth and chosen-network.referTo is \eth => HOME_BRIDGE
-            #| token is \usdc and chosen-network.referTo is \vlx_usdc => HOME_BRIDGE
+            | token is \usdc and chosen-network.referTo is \vlx_usdc => HOME_BRIDGE
             #| token is \vlx_eth and chosen-network.referTo is \eth => HOME_BRIDGE
             #| token is \vlx_erc20 and chosen-network.referTo is \vlx_evm => HOME_BRIDGE
             #| token is \bsc_vlx and chosen-network.referTo is \vlx_evm => BSC_SWAP__HOME_BRIDGE
