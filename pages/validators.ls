@@ -37,7 +37,6 @@ require! {
     \./stake/accounts.ls : \stake-accounts
     \../calc-certain-wallet.ls
     \bs58 : { decode }
-    \../helper.js : { fromByteArray }
     "../../web3t/providers/solana/index.cjs" : \velasWeb3
 }
 .staking
