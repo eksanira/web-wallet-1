@@ -9,7 +9,7 @@ require! {
     \../../history-funcs.ls
     \../../staking-funcs.ls : { get-all-active-stake }
     \../icon.ls
-    \prelude-ls : { map, split, filter, find, foldl, sort-by, unique, head, each }
+    \prelude-ls : { map, split, filter, find, foldl, sort-by, unique, head, each, findIndex }
     \../../math.ls : { div, times, plus, minus }
     \../../velas/velas-node-template.ls
     \../../../web3t/providers/deps.js : { hdkey, bip39 }
@@ -758,7 +758,8 @@ staking-content = (store, web3t)->
         status,
         myStake,
         credits_observed,
-        validator
+        validator,
+        pubkey
     } = account
 
     button-primary3-style=
@@ -856,6 +857,11 @@ staking-content = (store, web3t)->
         err <- staking.init { store, web3t }
         return cb err if err?
         cb null, \done
+
+    remove-stake-acc = ->
+        index = store.staking.accounts |> findIndex (-> it.pubkey is pubkey)
+        store.staking.accounts.splice(index,1)
+
     withdraw = ->
         agree <- confirm store, lang.areYouSureToWithdraw
         return if agree is no
@@ -867,6 +873,7 @@ staking-content = (store, web3t)->
         <- notify store, lang.fundsWithdrawn
         store.staking.getAccountsFromCashe = yes
         #store.staking.fetchAccounts = yes
+        remove-stake-acc()
         navigate store, web3t, \validators
 
     delegate = ->
