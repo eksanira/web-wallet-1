@@ -865,8 +865,10 @@ staking-content = (store, web3t)->
         return alert store, err-message if err-message?
         <- set-timeout _, 1000
         <- notify store, lang.fundsWithdrawn
-        store.staking.getAccountsFromCashe = no
+        store.staking.getAccountsFromCashe = yes
+        #store.staking.fetchAccounts = yes
         navigate store, web3t, \validators
+
     delegate = ->
         navigate store, web3t, \poolchoosing
     undelegate = ->
@@ -1159,6 +1161,12 @@ account-details.init = ({ store, web3t }, cb)!->
     store.staking.chosenAccount.rewards = []
     store.staking.rewards-index = 0
     stake-accounts = store.staking.parsedProgramAccounts
+    err, accountInfo <- as-callback web3t.velas.NativeStaking.getAccountInfo(store.staking.chosenAccount.pubkey)
+    cb2 = (err, data)->
+        store.current.page = \validators
+    return alert store, err, cb2 if err?
+    if !accountInfo.value? then
+        return alert store, "Account not found", cb2
     err, epochInfo <- as-callback web3t.velas.NativeStaking.getCurrentEpochInfo()
     console.error err if err?
     store.staking.current-epoch = epochInfo.epoch
