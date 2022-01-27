@@ -7,7 +7,7 @@ require! {
     \../../get-lang.ls
     \../../history-funcs.ls
     \../icon.ls
-    \prelude-ls : { map, split, filter, find, foldl, sort-by, unique, head, each }
+    \prelude-ls : { map, split, filter, find, foldl, sort-by, unique, head, each, findIndex }
     \../../math.ls : { div, times, plus, minus }
     \safe-buffer : { Buffer }
     \../../../web3t/addresses.js : { ethToVlx }
@@ -26,6 +26,7 @@ require! {
     \../confirmation.ls : { prompt2, prompt-stake-account-amount, alert, confirm, notify }
     \../../components/pagination.ls
     \./error-funcs.ls : { get-error-message }
+    #'@solana/web3.js' : web3Solana
 }
 as-callback = (p, cb)->
     p.catch (err) -> cb err
@@ -209,7 +210,7 @@ staking-accounts-content = (store, web3t)->
         activeBalanceIsZero =  +active_stake is 0
         max-epoch = web3t.velas.NativeStaking.max_epoch
         is-activating = activeBalanceIsZero and validator?
-        has-validator = item.validator?
+        has-validator = (item.validator? and item.validator isnt '') and (activationEpoch? and deactivationEpoch?) and (activationEpoch isnt deactivationEpoch)
         $status =
             | item.status is "inactive" and (not has-validator) => "Not Delegated"
             | item.status is "inactive" and has-validator => "Delegated (Inactive)"
@@ -240,12 +241,17 @@ staking-accounts-content = (store, web3t)->
             return alert store, err.toString! if err?
             <- notify store, lang.fundsUndelegated
             store.staking.getAccountsFromCashe = no
-            navigate store, web3t, \validators
+            #navigate store, web3t, \validators
+            store.current.page = \validators
         choose = ->
             store.staking.chosen-account = item
             navigate store, web3t, \poolchoosing
             cb null
-            
+
+        remove-stake-acc = ->
+            index = store.staking.accounts |> findIndex (-> it.pubkey is item.key)
+            console.log "index to remove"
+
 
         withdraw = ->
             if (deactivationEpoch? and activationEpoch?) and +deactivationEpoch >= +store.staking.current-epoch
@@ -260,14 +266,19 @@ staking-accounts-content = (store, web3t)->
             <- set-timeout _, 1000
             <- notify store, lang.fundsWithdrawn
             store.staking.getAccountsFromCashe = no
-            navigate store, web3t, \validators
-        
+            store.current.page = \validators
+            remove-stake-acc()
+
         now = moment!.unix!        
         locked-and-can-withdraw = unixTimestamp? and (unixTimestamp <= now)
         not-locked = not unixTimestamp?
+
+        can-delegate =
+            | has-validator => no
+            | _ => yes
         
         $button =
-            | item.status is \inactive =>
+            | can-delegate =>
                 button { store, text: lang.to_delegate, on-click: choose, type: \secondary , icon : \arrowRight }
             | (not-locked or locked-and-can-withdraw) and (+deactivationEpoch isnt +max-epoch) and (+store.staking.current-epoch >= +deactivationEpoch) =>
                 disabled =
@@ -276,7 +287,7 @@ staking-accounts-content = (store, web3t)->
                 button { store, text: lang.withdraw, on-click: withdraw, type: \secondary , icon : \arrowLeft, makeDisabled:disabled }
             | _ => 
                 disabled = item.status in <[ deactivating ]>
-                if activationEpoch? and deactivationEpoch?
+                if activationEpoch? and deactivationEpoch? and (activationEpoch !== deactivationEpoch)
                     if +activationEpoch < +deactivationEpoch and +deactivationEpoch isnt +max-epoch
                         disabled = yes     
                 button { store, classes: "action-undelegate" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon : \arrowLeft, makeDisabled: disabled }
@@ -287,7 +298,7 @@ staking-accounts-content = (store, web3t)->
                 address-holder-popup { store, wallet, item}
             td.pug #{balance}
             td.pug(class="validator-address" title="#{validator}")
-                if validator? and validator isnt ""
+                if has-validator
                     address-holder-popup { store, wallet: wallet-validator, item }
                 else
                     "---"
@@ -317,6 +328,7 @@ staking-accounts-content = (store, web3t)->
     block-style = 
         display: "block"
     create-staking-account = ->
+
         cb = console.log 
         err, accs <- as-callback web3t.velas.NativeStaking.getStakingAccounts(store.staking.parsedProgramAccounts)
         console.error err if err?

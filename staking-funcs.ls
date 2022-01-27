@@ -3,6 +3,7 @@ require! {
     \./math.ls : { div, times, plus, minus }
     \./round-human.ls
     '../web3t/providers/superagent.js' : { get }
+    "../web3t/providers/solana/index.cjs" : \velasWeb3
 }
 down = (it)->
   (it ? "").toLowerCase!
@@ -27,7 +28,7 @@ fill-pools = ({ store, web3t, on-progress}, on-finish, [item, ...rest]) ->
         store.staking.all-pools-loaded = yes
         store.staking.pools-are-loading = no
         return on-finish null, []
-    if (([\validators, \info, \account_details, \pool_details].index-of(store.current.page)) is -1) then
+    if (([\validators, \info, \account_details, \poolchoosing, \pool_details].index-of(store.current.page)) is -1) then
         store.staking.all-pools-loaded = no
         store.staking.pools-are-loading = no
         return on-finish null, []
@@ -71,11 +72,8 @@ load-validators-from-cache = ({store, web3t}, cb)->
     store.staking.last-time = new Date().getTime()
     cb null, validators    
 query-pools-web3t = ({store, web3t, on-progress}, on-finish) -> 
-    err, validators <- load-validators-from-cache { store, web3t }     
-    return on-finish err if err?
-    validators = [] if err?
+    err, validators <- load-validators-from-cache { store, web3t }
     store.staking.totalValidators = validators.length
-    #console.log "Got validators" validators.length
     store.staking.pools-are-loading = yes
     fill-pools { store, web3t, on-progress}, on-finish, validators
 query-pools = ({store, web3t, on-progress}, on-finish) ->
@@ -143,6 +141,7 @@ fill-accounts = ({ store, web3t, on-progress, on-finish }, [item, ...rest]) ->
     item.seed    = seed
     item.seed-index  = +((item.seed + "").split(":").1 )
     item.address = item.pubkey
+    item.pubKey   = new velasWeb3.PublicKey(item.pubkey)
     item.key     = item.pubkey
     item.rentRaw = rent
     item.balanceRaw = if rent? then (item.lamports `minus` rent) else '-'
@@ -174,6 +173,7 @@ convert-accounts-to-view-model = (accounts) ->
                 activationEpoch: it.activationEpoch,
                 deactivationEpoch: it.deactivationEpoch,
                 key: it.key
+                pubKey: it.pubKey
                 balanceRaw: it.balanceRaw ? 0
                 balance: if it.balance? then round-human(it.balance) else '..'
                 rent: if it.rent? then it.rent else "-"

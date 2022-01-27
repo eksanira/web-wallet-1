@@ -781,18 +781,6 @@ staking-content = (store, web3t)->
     wallet =
         store.current.account.wallets
             |> find -> it.coin.token is \vlx_native
-    delegate = ->
-        return null if not wallet?
-        return alert store, "please choose the account", cb if not store.staking.chosenAccount?
-        #
-        pay-account = store.staking.accounts |> find (-> it.address is address)
-        return cb null if not pay-account
-        err, result <- as-callback web3t.velas.NativeStaking.delegate(pay-account.address, address)
-        console.error "Result sending:" err if err?
-        err-message = get-error-message(err, result)
-        return alert store, err-message if err-message?
-        <- notify store, "FUNDS DELEGATED"
-        navigate store, web3t, \validators
     velas-node-applied-template =
         pairs
             |> velas-node-template
@@ -891,8 +879,9 @@ staking-content = (store, web3t)->
         return alert store, err-message if err-message?
         <- set-timeout _, 1000
         <- notify store, lang.fundsUndelegated
-        store.staking.getAccountsFromCashe = no
-        navigate store, web3t, \validators
+        #store.staking.getAccountsFromCashe = no
+        store.current.page = \validators
+        #navigate store, web3t, \validators
     split-account = ->
         cb = console.log 
         err <- as-callback web3t.velas.NativeStaking.getStakingAccounts(store.staking.parsedProgramAccounts)

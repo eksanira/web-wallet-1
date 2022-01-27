@@ -644,7 +644,7 @@ staking-content = (store, web3t)->
         return alert store, err-message if err-message?
         store.staking.getAccountsFromCashe = no
         <- notify store, "Funds delegated to\n #{store.staking.chosenPool.address}" 
-        navigate store, web3t, \validators
+        store.current.page = \validators
     change-address = ->
         store.staking.add.add-validator = it.target.value
     change-stake = !->

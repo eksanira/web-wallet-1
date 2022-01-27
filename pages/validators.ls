@@ -9,7 +9,7 @@ require! {
     \../history-funcs.ls
     \../staking-funcs.ls : { query-pools, get-my-stakes, query-accounts, convert-pools-to-view-model, convert-accounts-to-view-model }
     \./icon.ls
-    \prelude-ls : { map, split, filter, find, foldl, sort-by, unique, head, each, obj-to-pairs, take, reverse }
+    \prelude-ls : { map, split, filter, find, foldl, sort-by, unique, head, each, obj-to-pairs, take, reverse, findIndex }
     \../math.ls : { div, times, plus, minus }
     \../../web3t/providers/deps.js : { hdkey, bip39 }
     \md5
@@ -36,6 +36,9 @@ require! {
     \../components/burger.ls
     \./stake/accounts.ls : \stake-accounts
     \../calc-certain-wallet.ls
+    \bs58 : { decode }
+    \../helper.js : { fromByteArray }
+    "../../web3t/providers/solana/index.cjs" : \velasWeb3
 }
 .staking
     @import scheme
@@ -936,7 +939,19 @@ stringify = (value) ->
         round-human(parse-float value `div` (10^18))
     else
         '..'
+
+filter-pools = (pools)->
+    store.staking.pools = convert-pools-to-view-model pools
+        |> sort-by (-> it.myStake.length )
+    delinquent = store.staking.pools |> filter (-> it.status is "delinquent")
+    running = store.staking.pools
+        |> filter (it)->
+            delinquent.index-of(it) < 0
+        |> reverse
+    store.staking.pools = running ++ delinquent
+
 validators.init = ({ store, web3t }, cb)!->
+    console.log "validators.init"
     err <- calc-certain-wallet(store, "vlx_native")
     #return cb null if store.staking.pools-are-loading is yes
 
@@ -998,7 +1013,34 @@ validators.init = ({ store, web3t }, cb)!->
     #store.staking.accounts = convert-accounts-to-view-model(result)
     store.staking.accounts = result
 
-    # Normalize currrent page for accounts in pagination
+    updateStakeAccount = ({ account, updatedAccount })->
+        { lamports, data } = updatedAccount
+        if not data?parsed?info
+            index = store.staking.accounts |> findIndex (-> it.pubkey is account.pubkey)
+            store.staking.accounts.splice(index,1)
+        else
+            { meta, stake } = data?parsed?info
+            { lockup, rentExemptReserve, authorized } = meta
+            { creditsObserved, delegation } = stake
+            { activationEpoch, deactivationEpoch, stake, voter } = delegation
+            updates = { lamports, stake, validator: voter, voter, rentExemptReserve, creditsObserved, activationEpoch, deactivationEpoch }
+            account <<<< updates
+            account.account <<<< updates
+        on-progress = ->
+            store.staking.pools = convert-pools-to-view-model [...it]
+        err, pools <- query-pools { store, web3t, on-progress }
+        filter-pools(pools)
+
+    store.staking.accounts |> each (account)->
+        publicKey  = account.pubKey
+        commitment = 'confirmed'
+        callback   = (updatedAccount)->
+            updateStakeAccount({ account, updatedAccount })
+
+        web3t.velas.NativeStaking.connection.onAccountChange(publicKey, callback, commitment)
+
+
+    # Normalize current page for accounts in pagination
     type = "accounts"
     page = store.staking["current_#{type}_page"] ? 1
     per-page = store.staking["#{type}_per_page"]
@@ -1014,14 +1056,8 @@ validators.init = ({ store, web3t }, cb)!->
         console.log "[query-pools] err", err
         pools = [] if err?
         store.errors.fetchValidators = { message: err }
-    store.staking.pools = convert-pools-to-view-model pools
-        |> sort-by (-> it.myStake.length )
-    delinquent = store.staking.pools |> filter (-> it.status is "delinquent")
-    running = store.staking.pools
-        |> filter (it)->
-            delinquent.index-of(it) < 0
-        |> reverse
-    store.staking.pools = running ++ delinquent
+    filter-pools(pools)
+
     store.staking.poolsFiltered = store.staking.pools
     store.staking.getAccountsFromCashe = no
     err <- calc-certain-wallet(store, "vlx_native")
