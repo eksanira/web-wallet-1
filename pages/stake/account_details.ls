@@ -1139,7 +1139,8 @@ account-details = ({ store, web3t })->
         store.staking.fetchAccounts = no
         store.staking.chosenAccount.stopLoadingRewards = yes
         store.staking.getAccountsFromCashe = yes
-        go-back!    
+        store.current.page = \validators
+
     .pug.staking
         .pug.title(style=border-style)
             .pug.header(class="#{show-class}") #{lang.delegateStake}
