@@ -38,26 +38,25 @@ export const data = {
       withActiveStake: {
         address: 'D25HT9pVmScZjz3DfNUFRb6Ci786DxSsjqyEYGA7nm1f',
         seed: 'eye still focus olive brass know echo element industry tumble gloom harvest lens allow genuine fee crash raise approve scrub cattle magic either portion',
-      }
+      },
     },
     swap: {
-     address: '22VainsYdNmnre8XS91XoUipQ2YLNd4oPyobKvvN1zsu',
-      seed: 'spin swamp chronic catalog lake retire vessel will truly assault rib few grocery able maple catalog dinner nice dance coast jelly swallow interest nothing'
-    }
+      address: '22VainsYdNmnre8XS91XoUipQ2YLNd4oPyobKvvN1zsu',
+      seed: 'spin swamp chronic catalog lake retire vessel will truly assault rib few grocery able maple catalog dinner nice dance coast jelly swallow interest nothing',
+    },
   },
   customTokens: {
     velas: {
-      wag: '0x598491bEAdf07e27B7EF0090C6A7e8e5eE0F3AB7'
+      wag: '0x598491bEAdf07e27B7EF0090C6A7e8e5eE0F3AB7',
     },
     eth: {
-      weenus: '0x101848d5c5bbca18e6b4431eedf6b95e9adf82fa'
+      weenus: '0x101848d5c5bbca18e6b4431eedf6b95e9adf82fa',
     },
     bsc: {
-      dai: '0xec5dcb5dbf4b114c9d0f65bccab49ec54f6a0867'
+      dai: '0xec5dcb5dbf4b114c9d0f65bccab49ec54f6a0867',
     },
     heco: {
-      dai: '0x60d64ef311a4f0e288120543a14e7f90e76304c6'
-    }
-  }
+      dai: '0x60d64ef311a4f0e288120543a14e7f90e76304c6',
+    },
+  },
 };
-

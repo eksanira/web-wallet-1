@@ -11,8 +11,7 @@ calc-wallet = (store, cb)->
     return cb "Store is required" if not store?
     { wallets } = store.current.account
     { rates } = store
-    state =
-        balance-usd: 0
+
     build-loader = (wallet)-> task (cb)->
         { token } = wallet.coin
         #wallet.balance = \..
@@ -60,10 +59,6 @@ calc-wallet = (store, cb)->
         balance-usd-current =
             | isNaN(wallet.balance-usd) => 0
             | _ => wallet.balance-usd
-        #convert state.balance-usd to string as bignumber can throw exception for numbers
-        state.balance-usd = state.balance-usd + ''
-        #console.log "balance of #{token} is: " balance-usd-current
-        state.balance-usd = state.balance-usd `plus` balance-usd-current
         cb!
     loaders =
         wallets |> map build-loader
@@ -72,6 +67,10 @@ calc-wallet = (store, cb)->
             |> map -> [loaders.index-of(it).to-string!, it]
             |> pairs-to-obj
     <- run [tasks] .then
-    store.current.balance-usd = state.balance-usd
+    usdBalances = store.current.account.wallets
+        |> filter (-> not isNaN(it.balanceUsd))
+        |> map (-> it.balanceUsd)
+        |> foldl plus, 0
+    store.current.balanceUsd = round5(usdBalances)
     cb null
 module.exports = calc-wallet

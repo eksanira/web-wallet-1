@@ -942,8 +942,7 @@ stringify = (value) ->
 
 
 validators.init = ({ store, web3t }, cb)!->
-    console.log "validators.init"
-    err <- calc-certain-wallet(store, "vlx_native")
+    err <- calc-wallet(store)
     #return cb null if store.staking.pools-are-loading is yes
 
     if store.staking.fetchAccounts is no then
@@ -1029,5 +1028,5 @@ validators.init = ({ store, web3t }, cb)!->
 
     store.staking.poolsFiltered = store.staking.pools
     store.staking.getAccountsFromCashe = no
-    err <- calc-certain-wallet(store, "vlx_native")
+    #err <- calc-certain-wallet(store, "vlx_native")
 module.exports = validators

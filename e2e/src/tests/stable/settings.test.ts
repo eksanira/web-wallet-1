@@ -1,20 +1,20 @@
-import { test } from '@playwright/test';
-import { assert } from '../../assert';
-import { walletURL } from '../../config';
-import { setupPage } from '../../pw-helpers/setup-page';
-import { Auth, Language } from '../../screens/auth';
-import { WalletsScreen } from '../../screens/wallets';
-import { data } from '../../test-data';
+import {
+  AuthScreen, Language, SettingsScreen, WalletsScreen,
+} from '../../screens';
+import {
+  assert, data, test, walletURL,
+} from '../../common-test-exports';
 import { log } from '../../tools/logger';
 
-let walletsScreen: WalletsScreen;
-let auth: Auth;
-
 test.describe.parallel('Settings', () => {
+  let wallets: WalletsScreen;
+  let auth: AuthScreen;
+  let settings: SettingsScreen;
+
   test.beforeEach(async ({ page }) => {
-    setupPage(page);
-    walletsScreen = new WalletsScreen(page);
-    auth = new Auth(page);
+    wallets = new WalletsScreen(page);
+    auth = new AuthScreen(page);
+    settings = new SettingsScreen(page);
     await page.goto(walletURL, { waitUntil: 'networkidle' });
     await auth.loginByRestoringSeed(data.wallets.login.seed);
   });
@@ -25,12 +25,11 @@ test.describe.parallel('Settings', () => {
     // clear clipboard
     await page.evaluate(async () => await navigator.clipboard.writeText(''));
 
-    await walletsScreen.openMenu('settings');
-    await page.click('" Copy"');
-    await page.type('[type="password"]', '111222');
-    await walletsScreen.confirmPrompt();
-    await page.click('.tokens-drop span:text(" Velas Native")');
-
+    await wallets.openMenu('settings');
+    await settings.copyPrivateKeyButton.click();
+    await auth.passwordInput.type('111222');
+    await wallets.modals.confirmPrompt();
+    await settings.selectTokenInCopyModal('Velas Native');
     await page.waitForSelector('" Copied to Clipboard!"');
 
     const copiedKey = await page.evaluate(async () => await navigator.clipboard.readText());
@@ -38,41 +37,41 @@ test.describe.parallel('Settings', () => {
     assert.equal(copiedKey, 'WnexSzUPFb258nLxGC1jiCShUZC1DbTpaRC2kizKxnpKNuvsqAhegBUCVgoULDxog19CjxfYaijS5Cpe78EFKqQ');
   });
 
-  test('Switch account index', async ({ page }) => {
-    await walletsScreen.waitForWalletsDataLoaded();
-    await walletsScreen.openMenu('settings');
-    await page.click('.button.right');
-    await page.waitForSelector('.amount:not(.placeholder)');
+  test('Switch account index', async () => {
+    await wallets.waitForWalletsDataLoaded();
+    await wallets.openMenu('settings');
+    await settings.accountIndexSwitcherRight.click();
+    await wallets.balanceAmount.waitFor();
 
-    await walletsScreen.openMenu('wallets');
-    await walletsScreen.selectWallet('token-vlx_native');
+    await wallets.openMenu('wallets');
+    await wallets.selectWallet('token-vlx_native');
 
-    assert.equal(await walletsScreen.getWalletAddress(), 'BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW', 'Account 2 address on UI does not equal expected');
+    assert.equal(await wallets.getWalletAddress(), 'BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW', 'Account 2 address on UI does not equal expected');
   });
 
-  test('Enable/Disable testnet', async ({ page }) => {
-    await walletsScreen.waitForWalletsDataLoaded();
+  test('Enable/Disable testnet', async () => {
+    await wallets.waitForWalletsDataLoaded();
 
-    await walletsScreen.openMenu('settings');
-    await page.click('.active-network');
-    assert.isFalse(await page.isVisible('#menu-testnet'));
-    
-    await walletsScreen.openMenu('wallets');
-    await walletsScreen.selectWallet('token-btc');
-    assert.equal(await walletsScreen.getWalletAddress(), '1PV8RPEL8kNBnQytq2881TE3bSZJbJazDw', 'Mainnet BTC address on UI does not equal expected');
-    
-    await walletsScreen.openMenu('settings');
-    await page.click('.active-network');
-    assert.isTrue(await page.isVisible('#menu-testnet'));
-    
-    
-    await walletsScreen.openMenu('wallets');
-    await walletsScreen.selectWallet('token-btc');
-    assert.equal(await walletsScreen.getWalletAddress(), 'n415iSKJwmoSZXTWYb6VqNSNTSA1YMwL8U', 'Testnet BTC address on UI does not equal expected');
+    await wallets.openMenu('settings');
+    await settings.networkSwitcher.click();
+    assert.isFalse(await wallets.testnetMenuItem.isVisible());
+
+    await wallets.openMenu('wallets');
+    await wallets.selectWallet('token-btc');
+    assert.equal(await wallets.getWalletAddress(), '1PV8RPEL8kNBnQytq2881TE3bSZJbJazDw', 'Mainnet BTC address on UI does not equal expected');
+
+    await wallets.openMenu('settings');
+    await settings.networkSwitcher.click();
+    assert.isTrue(await wallets.testnetMenuItem.isVisible());
+
+    await wallets.openMenu('wallets');
+    await wallets.selectWallet('token-btc');
+
+    assert.equal(await wallets.getWalletAddress(), 'n415iSKJwmoSZXTWYb6VqNSNTSA1YMwL8U', 'Testnet BTC address on UI does not equal expected');
   });
 
-  test('Change language setting', async ({ page }) => {
-    await walletsScreen.openMenu('settings');
+  test('Change language setting', async () => {
+    await wallets.openMenu('settings');
 
     const headerTexts = {
       fr: ['Gérer le Compte', 'Français'],
@@ -95,12 +94,11 @@ test.describe.parallel('Settings', () => {
     for (let i = 0; i < languages.length; i++) {
       const language = languages[i];
       log.info(language);
-      // click languages button, change after devs add missing IDs to settings page
-      await page.click('#switch-language .btn');
+      await settings.switchLanguageButon.click();
 
       const fullLanguageName = headerTexts[language][1];
-      await page.click(`.lang-item:has-text("${fullLanguageName}")`);
-      const actualHeaderText = (await page.textContent('.header'))?.trim();
+      await settings.selectLanguageFromDropdown(fullLanguageName);
+      const actualHeaderText = (await settings.header.textContent())?.trim();
       assert.equal(actualHeaderText, headerTexts[language][0], `${language} language on UI does not equal chosen language`);
     }
   });

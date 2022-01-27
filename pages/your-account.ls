@@ -202,6 +202,8 @@ module.exports = (store, web3t)->
     { open-account, open-migration, current, account-name, refresh, lock } = menu-funcs store, web3t
     create-account = ->
         return if store.current.refreshing is yes
+        store.forceReload = yes
+        store.forceReloadTxs = yes
         new-length = 1 + length
         store.current.account-index = new-length
         localStorage.set-item('Accounts', new-length)
@@ -279,6 +281,8 @@ module.exports = (store, web3t)->
             if store.current.account-index is index 
                 store.current.switch-account = no
                 return
+            store.forceReload = yes
+            store.forceReloadTxs = yes
             store.current.account-index = index
             store.current.switch-account = no
             store.staking.getAccountsFromCashe = no

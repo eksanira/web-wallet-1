@@ -1,39 +1,32 @@
-import { test } from '@playwright/test';
 import { velasNative } from '@velas/velas-chain-test-wrapper';
-import { assert } from '../../assert';
-import { walletURL } from '../../config';
-import { setupPage } from '../../pw-helpers/setup-page';
-import { Auth } from '../../screens/auth';
-import { Currency, WalletsScreen } from '../../screens/wallets';
-import { data } from '../../test-data';
-import { helpers } from '../../tools/helpers';
 import balancesAPI from '../../api/balances-api';
+import { AuthScreen, Currency, WalletsScreen } from '../../screens';
+import {
+  assert, data, helpers, test, walletURL,
+} from '../../common-test-exports';
 import { log } from '../../tools/logger';
 
-let auth: Auth;
-let walletsScreen: WalletsScreen;
-
 test.describe('Balance', () => {
+  let auth: AuthScreen;
+  let wallets: WalletsScreen;
+
   test.beforeEach(async ({ page }) => {
-    setupPage(page);
-    auth = new Auth(page);
-    walletsScreen = new WalletsScreen(page);
+    auth = new AuthScreen(page);
+    wallets = new WalletsScreen(page);
     await page.goto(walletURL);
     await auth.loginByRestoringSeed(data.wallets.withFunds.seed);
-    await walletsScreen.waitForWalletsDataLoaded();
+    await wallets.waitForWalletsDataLoaded();
   });
 
-  // extract "VLX Native balance update" to separate test
   test('Check VLX Legacy, VLX Native, Litecoin and Bitcoin balances', async () => {
-    // await walletsScreen.addWalletsPopup.open();
-    // await walletsScreen.addWalletsPopup.add('token-ltc');
+    // await wallets.addWalletsPopup.open();
+    // await wallets.addWalletsPopup.add('token-ltc');
 
-    const balances = await walletsScreen.getWalletsBalances();
+    const balances = await wallets.getWalletsBalances();
+    const walletsList = Object.keys(balances) as Currency[];
 
-    const wallets = Object.keys(balances) as Currency[];
-
-    for (let i = 0; i < wallets.length; i++) {
-      const currency = wallets[i];
+    for (let i = 0; i < walletsList.length; i++) {
+      const currency = walletsList[i];
       const VLXNativeBalanceOnBlockchain = (await velasNative.getBalance(data.wallets.withFunds.address)).VLX;
       const balanceUpdateAmount = 0.001;
       const amountOfTokens = balances[currency];
@@ -41,22 +34,21 @@ test.describe('Balance', () => {
       // if no balance – skip currency
       if (amountOfTokens === null) continue;
 
-      switch (wallets[i]) {
+      switch (walletsList[i]) {
         case 'token-vlx2':
           assert.equal(amountOfTokens, '80.999895');
           break;
         case 'token-vlx_native':
           assert.equal(amountOfTokens, String(VLXNativeBalanceOnBlockchain));
           const tx = await velasNative.transfer({
+            lamports: balanceUpdateAmount * 10 ** 9,
             payerSeed: data.wallets.payer.seed,
             toAddress: data.wallets.withFunds.address,
-            lamports: balanceUpdateAmount * 10 ** 9,
           });
           await velasNative.waitForConfirmedTransaction(tx);
-          await walletsScreen.updateBalances();
-          // const newAmountOfTokens = Number(await (await walletElement.$('.info .token.price'))?.getAttribute('title')).toFixed(6);
-          const newAmountOfTokens = helpers.toFixed(Number((await walletsScreen.getWalletsBalances())['token-vlx_native']), 6);
-          assert.equal(newAmountOfTokens, helpers.toFixed((VLXNativeBalanceOnBlockchain + balanceUpdateAmount), 6), 'Velas Native wallet balance was not updated after funding it');
+          await wallets.updateBalances();
+          const amountOfTokensAfterUpdate = helpers.toFixedNumber(Number((await wallets.getWalletsBalances())['token-vlx_native']), 6);
+          assert.equal(amountOfTokensAfterUpdate, helpers.toFixedNumber((VLXNativeBalanceOnBlockchain + balanceUpdateAmount), 6), 'Velas Native wallet balance was not updated after funding it');
           break;
         case 'token-btc':
           try {
@@ -64,16 +56,12 @@ test.describe('Balance', () => {
             assert.equal(amountOfTokens, '0.03484302');
           } catch (e) {
             log.debug(e);
-            log.warn(`Bitcoin balance check skipped because of 3rd party service is down`);
+            log.warn('Bitcoin balance check skipped because of 3rd party service is down');
           }
           break;
         case 'token-vlx_evm':
-          assert.equal(amountOfTokens, '1800.999622564');
+          assert.equal(amountOfTokens, '1801.000622564');
           break;
-        case 'token-ltc':
-          // ltc testnet is down
-          //assert.equal(amountOfTokens, '0');
-          break
       }
     }
   });

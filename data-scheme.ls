@@ -90,6 +90,10 @@ store =
             opened: no
             progress: \0
             update-progress: null
+    forceReload: yes
+    forceReloadTxs: yes
+    previous:
+        page: ''
     custom-token:
         add: no
         isLoading: no

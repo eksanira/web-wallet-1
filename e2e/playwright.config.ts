@@ -4,28 +4,26 @@ import { config as globalConfig } from './src/config';
 const windowSize = { width: 1900, height: 1080 };
 
 const config: PlaywrightTestConfig = {
+  expect: {
+    timeout: 5 * 1000,
+  },
   globalSetup: 'src/pw-helpers/before-hook.ts',
   // globalTeardown: '',
-  maxFailures: globalConfig.CI ? 10 : 2,
-  retries: globalConfig.CI ? 1 : 0,
-  timeout: 220000,
-  workers: 2,
-  reportSlowTests: { threshold: 120000, max: 0 },
-  // reporter: 'list',
-  // repeatEach: 5,
-  reporter: [['list'], ['junit', { outputFile: 'test-results/test-results.xml' }], ['allure-playwright']],
+  maxFailures: globalConfig.CI ? 10 : 1,
   projects: [
     {
       name: 'Chrome Stable',
       use: {
+        actionTimeout: 8000,
+        navigationTimeout: 30 * 1000,
         browserName: 'chromium',
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36',
         channel: 'chrome',
-        headless: globalConfig.CI,
+        headless: process.env.CI === 'true',
         launchOptions: {
           args: ['--disable-dev-shm-usage', '--disable-gpu', '--no-sandbox', `--window-size=${windowSize.width},${windowSize.height}`, '--disable-features=TranslateUI'],
           devtools: false,
-          slowMo: globalConfig.pw.slowMo,
+          slowMo: 200,
         },
         screenshot: 'only-on-failure',
         viewport: { width: 1890, height: 1080 },
@@ -40,30 +38,19 @@ const config: PlaywrightTestConfig = {
       },
       // testDir: '',
     },
-    // {
-    //   name: 'Desktop Safari',
-    //   use: {
-    //     browserName: 'webkit',
-    //     viewport: { width: 1920, height: 1080 },
-    //   }
-    // },
-    // Test against mobile viewports.
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: devices['Pixel 5'],
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: devices['iPhone 12'],
-    // },
-    // {
-    //   name: 'Desktop Firefox',
-    //   use: {
-    //     browserName: 'firefox',
-    //     viewport: { width: 1920, height: 1080 },
-    //   }
-    // },
   ],
+  reporter: [
+    ['list'],
+    ['junit', { outputFile: 'test-results/test-results.xml' }],
+    ['allure-playwright'],
+    ['html', { outputFolder: 'test-report', open: 'never' }]
+  ],
+  reportSlowTests: { threshold: 120000, max: 0 },
+  // repeatEach: 5,
+  // reporter: 'list',
+  retries: globalConfig.CI ? 1 : 0,
+  timeout: 220000,
+  workers: 2,
 };
 
 export default config;
