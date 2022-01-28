@@ -246,6 +246,7 @@ notification-modal = (store)->
         color: style.app.text
     confirmation-style2 =
         color: style.app.text
+        user-select: "text"
     button-style=
         color: style.app.text
     confirmation=
@@ -342,6 +343,7 @@ swap-confirmation-modal = (store)->
         color: style.app.text
     confirmation-style2 =
         color: style.app.text
+        user-select: "text"
     button-style=
         color: style.app.text
     confirmation=
@@ -400,6 +402,7 @@ prompt-modal = (store)->
         background: style.app.background
         background-color: style.app.bgspare
         color: style.app.text
+        user-select: "text"
     input-style =
         background: style.app.input
         color: style.app.text
@@ -458,6 +461,7 @@ prompt-modal2 = (store)->
         background: style.app.background
         background-color: style.app.bgspare
         color: style.app.text
+        user-select: "text"
     input-style =
         background: style.app.input
         color: style.app.text
@@ -536,6 +540,7 @@ prompt-modal3 = (store)->
         background: style.app.background
         background-color: style.app.bgspare
         color: style.app.text
+        user-select: "text"
     input-style =
         background: style.app.input
         color: style.app.text
