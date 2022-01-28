@@ -210,6 +210,7 @@ staking-accounts-content = (store, web3t)->
             inactive_stake
         } = item
 
+        highlight = item.highlight
         activeBalanceIsZero =  +active_stake is 0
         max-epoch = web3t.velas.NativeStaking.max_epoch
         is-activating = activeBalanceIsZero and validator?
@@ -294,7 +295,9 @@ staking-accounts-content = (store, web3t)->
                     if +activationEpoch < +deactivationEpoch and +deactivationEpoch isnt +max-epoch
                         disabled = yes     
                 button { store, classes: "action-undelegate" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon : \arrowLeft, makeDisabled: disabled }
-        tr.pug(class="#{item.status}" key="#{address}")
+        highlighted = if highlight then "highlight" else ""
+
+        tr.pug(class="#{item.status} #{highlighted}" key="#{address}")
             td.pug
                 span.pug.circle(class="#{item.status}") #{index}
             td.pug(datacolumn='Staker Address' title="#{address}")
@@ -330,6 +333,18 @@ staking-accounts-content = (store, web3t)->
         margin: "10px 20px 0"
     block-style = 
         display: "block"
+
+    search-new-account = (pubkey)->
+        index = store.staking.accounts
+            |> sort-by (.seed-index)
+            |> findIndex (-> it.pubkey is pubkey)
+        return if index < 0
+        perPage =  store.staking.accounts_per_page
+        store.staking.current_accounts_page = Math.ceil((index + 1) `div` perPage)
+        store.staking.accounts[index].highlight = yes
+        <- set-timeout _, 1500
+        store.staking.accounts[index].highlight = no
+
     create-staking-account = ->
         cb = console.log
         amount <- prompt2 store, lang.howMuchToDeposit
@@ -381,6 +396,11 @@ staking-accounts-content = (store, web3t)->
                 return alert store, err, cb
             store.staking.creating-staking-account = no
             <- notify store, lang.accountCreatedAndFundsDeposited
+
+            info-data = info?data?transaction?message?instructions?0?parsed?info
+            return if not info-data?
+            pubkey = info-data?newAccount
+            search-new-account(pubkey)
 
         try
             web3t.velas.NativeStaking.connection.onSignature(signature, callback, commitment)
