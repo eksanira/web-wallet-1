@@ -245,7 +245,7 @@ staking-accounts-content = (store, web3t)->
             <- notify store, lang.fundsUndelegated
             store.staking.getAccountsFromCashe = no
             #navigate store, web3t, \validators
-            store.current.page = \validators
+
         choose = ->
             store.staking.chosen-account = item
             navigate store, web3t, \poolchoosing
@@ -331,12 +331,11 @@ staking-accounts-content = (store, web3t)->
     block-style = 
         display: "block"
     create-staking-account = ->
-        store.staking.creating-staking-account = yes
-        cb = console.log 
-
+        cb = console.log
         amount <- prompt2 store, lang.howMuchToDeposit
         return if not amount?
         return if amount+"".trim!.length is 0
+        store.staking.creating-staking-account = yes
         min_stake = web3t.velas.NativeStaking.min_stake
         main_balance = get-balance!
         tx-fee = 5000 `div` (10^9)
