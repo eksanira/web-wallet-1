@@ -180,8 +180,14 @@ updateStakeAccount = ({ store, account, updatedAccount })->
     else
         { meta, stake } = data?parsed?info
         { lockup, rentExemptReserve, authorized } = meta
-        { creditsObserved, delegation } = stake
-        { activationEpoch, deactivationEpoch, stake, voter } = delegation
+        creditsObserved = stake?creditsObserved
+        delegation = stake?delegation
+
+        activationEpoch = delegation?activationEpoch ? 0
+        deactivationEpoch = delegation?deactivationEpoch ? 0
+        stake = delegation?stake ? 0
+        voter = delegation?voter ? null
+
         updates = { lamports, stake, validator: voter, voter, rentExemptReserve, creditsObserved, activationEpoch, deactivationEpoch }
         account <<<< updates
         account.account = {...account}
