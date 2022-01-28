@@ -27,8 +27,7 @@ require! {
     \../../components/pagination.ls
     \./error-funcs.ls : { get-error-message }
     #'@solana/web3.js' : web3Solana
-    \../../staking-funcs.ls : { add-stake-account }
-    \../../api.ls : { get-transaction-info }
+    \../../staking-funcs.ls : { creation-account-subscribe }
     \../../components/popups/loader.ls
 }
 as-callback = (p, cb)->
@@ -196,8 +195,6 @@ staking-accounts-content = (store, web3t)->
             account,
             lamports,
             address,
-            balance,
-            balanceRaw,
             key,
             rent,
             seed,
@@ -210,6 +207,8 @@ staking-accounts-content = (store, web3t)->
             inactive_stake
         } = item
 
+        balance = if rent? then (Math.round((lamports `minus` rent) `div` (10^9)) `times` 100) `div` 100  else "-"
+        balanceRaw = if rent? then lamports `minus` rent else lamports
         highlight = item.highlight
         activeBalanceIsZero =  +active_stake is 0
         max-epoch = web3t.velas.NativeStaking.max_epoch
@@ -334,16 +333,7 @@ staking-accounts-content = (store, web3t)->
     block-style = 
         display: "block"
 
-    search-new-account = (pubkey)->
-        index = store.staking.accounts
-            |> sort-by (.seed-index)
-            |> findIndex (-> it.pubkey is pubkey)
-        return if index < 0
-        perPage =  store.staking.accounts_per_page
-        store.staking.current_accounts_page = Math.ceil((index + 1) `div` perPage)
-        store.staking.accounts[index].highlight = yes
-        <- set-timeout _, 1500
-        store.staking.accounts[index].highlight = no
+
 
     create-staking-account = ->
         cb = console.log
@@ -365,50 +355,16 @@ staking-accounts-content = (store, web3t)->
             store.staking.creating-staking-account = no
             if ((err.toString! ? "").index-of("custom program error: 0x1")) > -1
                 err = lang.balanceIsNotEnoughToCreateStakingAccount
-                return alert store, err.toString!
+            return alert store, err.toString!
         if result.error? then
             store.staking.creating-staking-account = no
             error-msg = result.description ? "An unexpected error occurred during account creation."
             return alert store, error-msg, cb
         signature = result
-        commitment = 'finalized'
-        callback = (data)->
-            cb = console.log
-            if data.err? then
-                store.staking.creating-staking-account = no
-                return alert store, "An error occurred during stake account creation.", cb
-
-            store.staking.getAccountsFromCashe = no
-
-            wallet = store.current.account.wallets |> find -> it.coin.token is \vlx_native
-            if not wallet?
-                store.staking.creating-staking-account = no
-                return alert store, "Velas Native wallet not found!", cb
-
-            err, info <- get-transaction-info( {network: wallet.network, tx: signature} )
-            if err?
-                store.staking.creating-staking-account = no
-                return alert store, "An error occurred during stake account creation: " + err, cb
-            on-progress = ->
-            err <- add-stake-account(store, web3t, info, on-progress)
-            if err?
-                store.staking.creating-staking-account = no
-                return alert store, err, cb
-            store.staking.creating-staking-account = no
-            <- notify store, lang.accountCreatedAndFundsDeposited
-
-            info-data = info?data?transaction?message?instructions?0?parsed?info
-            return if not info-data?
-            pubkey = info-data?newAccount
-            search-new-account(pubkey)
-
-        try
-            web3t.velas.NativeStaking.connection.onSignature(signature, callback, commitment)
-        catch err
-            store.staking.creating-staking-account = no
-            console.log "Account creation error: ", err
-            return alert store, "An error occurred during stake account creation.", cb
-
+        err <- creation-account-subscribe({ store, web3t, signature, acc_type: "create" })
+        if err?
+            return alert store, err, cb
+        <- notify store, lang.accountCreatedAndFundsDeposited
 
     totalOwnStakingAccounts = store.staking.totalOwnStakingAccounts ? 0
     loadingAccountIndex = Math.min(totalOwnStakingAccounts, store.staking.loadingAccountIndex)
