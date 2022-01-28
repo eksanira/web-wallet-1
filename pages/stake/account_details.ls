@@ -7,7 +7,7 @@ require! {
     \bignumber.js
     \../../get-lang.ls
     \../../history-funcs.ls
-    \../../staking-funcs.ls : { get-all-active-stake }
+    \../../staking-funcs.ls : { get-all-active-stake, creation-account-subscribe }
     \../icon.ls
     \prelude-ls : { map, split, filter, find, foldl, sort-by, unique, head, each, findIndex }
     \../../math.ls : { div, times, plus, minus }
@@ -37,6 +37,7 @@ require! {
     \./error-funcs.ls : { get-error-message }
     \./rewards-stats.ls : RewardsStats
     \moment
+    \../../components/popups/loader.ls
 }
 .staking
     @import scheme
@@ -745,7 +746,7 @@ staking-content = (store, web3t)->
         address,
         activationEpoch,
         deactivationEpoch,
-        balanceRaw,
+        rentExemptReserve,
         checked,
         stake,
         stake-initial,
@@ -754,13 +755,16 @@ staking-content = (store, web3t)->
         lockup,
         stakers,
         is-validator,
-        rent,
         status,
         myStake,
         credits_observed,
         validator,
-        pubkey
+        pubkeyб
+        lamports
     } = account
+
+    rent = rentExemptReserve `div` (10^9)
+    balanceRaw = if (not isNaN(rent) and rent?) then lamports `minus` rent else lamports
 
     button-primary3-style=
         border: "1px solid #{style.app.primary3}"
@@ -842,7 +846,7 @@ staking-content = (store, web3t)->
         #err, options <- get-options
         #return alert store, err, cb if err?
         store.staking.add.add-validator-stake = Math.max (get-balance! `minus` 0.1), 0
-    your-balance = store.staking.chosenAccount.balanceRaw `div` (10^9) `plus` store.staking.chosenAccount.rent 
+    your-balance = balanceRaw `div` (10^9) `plus` rent
     isSpinned = if ((store.staking.all-pools-loaded is no or !store.staking.all-pools-loaded?) and store.staking.pools-are-loading is yes) then "spin disabled" else ""
     cancel-pool = ->
         store.staking.chosenAccount = null
@@ -858,9 +862,18 @@ staking-content = (store, web3t)->
         return cb err if err?
         cb null, \done
 
-    remove-stake-acc = ->
-        index = store.staking.accounts |> findIndex (-> it.pubkey is pubkey)
-        store.staking.accounts.splice(index,1)
+    remove-stake-acc = (public_key)->
+        down = (it)-> it.toLowerCase!
+        index = store.staking.accounts |> findIndex (-> down(it.pubkey) is down(public_key))
+        if index > -1
+            store.staking.accounts.splice(index,1)
+        console.log "index" index
+
+        accountIndex = store.current.accountIndex
+        index2 = (store.staking.accountsCached[accountIndex] ? []) |> findIndex (-> it.pubkey is pubkey)
+        console.log "index cached" index2
+        if index2 > -1
+            (store.staking.accountsCached[accountIndex] ? []).splice(index2,1)
 
     withdraw = ->
         agree <- confirm store, lang.areYouSureToWithdraw
@@ -869,11 +882,12 @@ staking-content = (store, web3t)->
         err, result <- as-callback web3t.velas.NativeStaking.withdraw(address, amount)
         err-message = get-error-message(err, result)
         return alert store, err-message if err-message?
-        <- set-timeout _, 1000
+        #<- set-timeout _, 1000
         <- notify store, lang.fundsWithdrawn
-        store.staking.getAccountsFromCashe = yes
+        store.staking.getAccountsFromCashe = no
         #store.staking.fetchAccounts = yes
-        remove-stake-acc()
+        remove-stake-acc(pubkey)
+        #store.current.page = \validators
         navigate store, web3t, \validators
 
     delegate = ->
@@ -895,34 +909,64 @@ staking-content = (store, web3t)->
         cb = console.log 
         err <- as-callback web3t.velas.NativeStaking.getStakingAccounts(store.staking.parsedProgramAccounts)
         console.error err if err?
+        store.staking.creating-staking-account = yes
         /* Get next account seed */
         err, seed <- as-callback web3t.velas.NativeStaking.getNextSeed()
         err-message = get-error-message(err, seed)
-        return alert store, err-message if err-message?
+        if err-message?
+            store.staking.creating-staking-account = no
+            return alert store, err-message
         /**/
         amount <- prompt3 store, lang.howMuchToSplit
         return if amount+"".trim!.length is 0
         min_stake = web3t.velas.NativeStaking.min_stake
-        balance = store.staking.chosenAccount.balanceRaw
-        return alert store, lang.balanceIsNotEnoughToSpend + " #{amount} VLX" if +amount > +balance
-        return alert store, lang.balanceIsNotEnoughToCreateStakingAccount + " (#{(min_stake `plus` 0.00228288)} VLX)" if +(min_stake) > +balance
-        return alert store, lang.minimalStakeMustBe + " #{min_stake} VLX" if +(min_stake) > +amount
-        #return alert store, "Balance is not enough to spend #{amount} VLX" if +main_balance < +amount
+        balance = balanceRaw `div` (10^9)
+        if +amount > +balance
+            store.staking.creating-staking-account = no
+            return alert store, lang.balanceIsNotEnoughToSpend + " #{amount} VLX"
+        if +min_stake > +balance
+            threshold-amount = min_stake `plus` 0.00228288
+            store.staking.creating-staking-account = no
+            return alert store, lang.balanceIsNotEnoughToCreateStakingAccount + " (#{threshold-amount} VLX)"
+        if +(min_stake) > +amount
+            store.staking.creating-staking-account = no
+            return alert store, lang.minimalStakeMustBe + " #{min_stake} VLX"
         amount = amount * 10^9
         /* Create new account */
         fromPubkey$ = store.staking.chosenAccount.address
         err, splitStakePubkey <- as-callback web3t.velas.NativeStaking.createNewStakeAccountWithSeed()
-        return alert store, err.toString! if err?
+        if err?
+            store.staking.creating-staking-account = no
+            return alert store, err.toString!
+        try
+            splitStakePubkeyBase58 = splitStakePubkey.toBase58()
+        catch error
+            store.staking.creating-staking-account = no
+            return alert store, error.toString!
+
         /**/
         /* Split account */
         stakeAccount = store.staking.chosenAccount.address
-        err, result <- as-callback web3t.velas.NativeStaking.splitStakeAccount(stakeAccount, splitStakePubkey, amount)
-        err-message = get-error-message(err, result)
-        return alert store, err-message if err-message?
-        <- set-timeout _, 500
-        <- notify store, lang.accountCreatedAndFundsSplitted
+        $voter = store.staking.chosenAccount.voter
+        err, signature <- as-callback web3t.velas.NativeStaking.splitStakeAccount(stakeAccount, splitStakePubkey, amount)
+        console.log "spit signature" signature
+        err-message = get-error-message(err, signature)
+        if err-message?
+            store.staking.creating-staking-account = no
+            return alert store, err-message
+
+        { activationEpoch, deactivationEpoch } = store.staking.chosenAccount
+
+        err <- creation-account-subscribe({ store, web3t, signature, timeout: 1000, acc_type: "split", deactivationEpoch, activationEpoch, voter: $voter })
+        if err?
+            store.staking.creating-staking-account = no
+            return alert store, err, cb
+
+        <- notify store, lang.accountCreatedAndFundsSplitted + ".\n\nNew stake account address: " + splitStakePubkeyBase58
         store.staking.getAccountsFromCashe = no
-        navigate store, web3t, "validators"
+        store.current.page = "validators"
+        store.staking.creating-staking-account = no
+
     icon-style =
         color: style.app.loader
         margin-top: "10px"
@@ -979,6 +1023,7 @@ staking-content = (store, web3t)->
           
     /* Render */    
     .pug.staking-content.delegate
+        loader { loading: store.staking.creating-staking-account, text: "Splitting in process" }
         .pug.single-section.form-group(id="choosen-pull")
             .pug.section
                 .title.pug
@@ -1009,7 +1054,7 @@ staking-content = (store, web3t)->
                     h3.pug #{lang.rentExemptReserve}
                 .description.pug
                     span.pug
-                        | #{store.staking.chosenAccount.rent} VLX
+                        | #{rent} VLX
                     span.pug.usd-amount
                         | $#{usd-rent}
             .pug.section
@@ -1163,14 +1208,15 @@ account-details = ({ store, web3t })->
 
 account-details.init = ({ store, web3t }, cb)!->
     account = store.staking.chosenAccount
-    return null if not account?
+    cb2 = (err, data)->
+        store.current.page = \validators
+    if not account?
+        return alert store, "Account not found", cb2
     store.staking.chosenAccount.stopLoadingRewards = no
     store.staking.chosenAccount.rewards = []
     store.staking.rewards-index = 0
     stake-accounts = store.staking.parsedProgramAccounts
     err, accountInfo <- as-callback web3t.velas.NativeStaking.getAccountInfo(store.staking.chosenAccount.pubkey)
-    cb2 = (err, data)->
-        store.current.page = \validators
     return alert store, err, cb2 if err?
     if !accountInfo.value? then
         return alert store, "Account not found", cb2
