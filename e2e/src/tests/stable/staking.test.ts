@@ -57,30 +57,32 @@ test.describe('Staking', () => {
 
     test('Use max', async () => {
       await staking.makeSureUiBalanceEqualsChainBalance(data.wallets.staking.staker.publicKey);
-      const initialWalletBalance = helpers.toFixedNumber((await velasNative.getBalance(data.wallets.staking.staker.publicKey)).VLX);
+      const finalVLXNativeBalance = helpers.toFixedNumber((await velasNative.getBalance(data.wallets.staking.staker.publicKey)).VLX);
       await staking.createStakingAccountButton.click();
       await staking.useMax();
       const maxAmountValue = await staking.createStakingAccountForm.amount.getAttribute('value');
       const maxAmount = helpers.toFixedNumber(Number(maxAmountValue?.replace(',', '')));
-      assert.equal(maxAmount, initialWalletBalance - 1);
+      assert.equal(maxAmount, finalVLXNativeBalance - 1);
     });
 
     test('Create staking account', async ({ page }) => {
+      // arrange
       const VLXNativeAddress = data.wallets.staking.staker.publicKey;
-
       await staking.waitForLoaded();
       const initialAmountOfStakingAccounts = await staking.getAmountOfStakes('Delegate');
       const stakingAccountAddresses = await staking.getStakingAccountsAddresses();
-      const initialWalletBalance = helpers.toFixedNumber((await velasNative.getBalance(VLXNativeAddress)).VLX);
+      const initialVLXNativeBalance = helpers.toFixedNumber((await velasNative.getBalance(VLXNativeAddress)).VLX);
 
+      // act
       await staking.createStakingAccountButton.click();
       await staking.createStakingAccountForm.amount.fill(String(stakingAmount));
       await staking.modals.confirmPrompt();
-      await page.waitForSelector('" Account created and funds deposited"', { timeout: 15000 });
+      await staking.waitForStakingAccountCreation();
       await staking.modals.clickOK();
       await staking.waitForLoaded();
 
-      // for some reason new stake does not appear in the list immediately
+      // assert
+      // new stake does not appear in the list immediately
       const finalAmountOfStakingAccounts = await staking.waitForStakesAmountUpdated({ initialStakesAmount: initialAmountOfStakingAccounts, stakeType: 'Delegate' });
       assert.equal(finalAmountOfStakingAccounts, initialAmountOfStakingAccounts + 1);
 
@@ -88,8 +90,8 @@ test.describe('Staking', () => {
       if (!newlyAddedStakingAccountAddress) throw new Error('No new staking account appears in the list');
 
       // assert VLXNative balance decreases on staking amount
-      const finalWalletBalance = helpers.toFixedNumber((await velasNative.getBalance(VLXNativeAddress)).VLX);
-      assert.equal(finalWalletBalance, initialWalletBalance - stakingAmount);
+      const finalVLXNativeBalance = helpers.toFixedNumber((await velasNative.getBalance(VLXNativeAddress)).VLX);
+      assert.equal(finalVLXNativeBalance, initialVLXNativeBalance - stakingAmount);
 
       // check newly created staking account on blockchain
       await staking.makeSureStakingAccIsCreatedAndNotDelegated(newlyAddedStakingAccountAddress);

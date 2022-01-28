@@ -54,9 +54,19 @@ export class StakingScreen extends BaseScreen {
 
   createStakingAccountButton = this.page.locator('#create-staking-account button span:text(" Create Account")');
 
+  creatingStakingAccountLoader =this.page.locator('" Creating staking account... "');
+
   createStakingAccountForm = {
     amount: this.page.locator('.input-area input'),
   };
+
+  async waitForStakingAccountCreation() {
+    const startTime = new Date().getTime();
+    await this.creatingStakingAccountLoader.waitFor();
+    while (await this.creatingStakingAccountLoader.isVisible()) {};
+    log.debug(`Staking account was created. It took ${((new Date().getTime() - startTime)/1000).toFixed()} seconds`);
+    await this.page.waitForSelector('" Account created and funds deposited"', { timeout: 15000 });
+  }
 
   delegateTo = {
     selectValidator: this.page.locator('.select-validators-list button.btn'),
