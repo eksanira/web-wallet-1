@@ -351,12 +351,15 @@ staking-accounts-content = (store, web3t)->
         rest = 0.1
         amount = amount `minus` (store.staking.rent `plus` tx-fee `plus` rest) if +(main_balance `minus` amount) <= 0
         if +min_stake > +main_balance
+            store.staking.creating-staking-account = no
             create-staking-account.InProcess = no
             return alert store, lang.balanceIsNotEnoughToCreateStakingAccount
         if +min_stake  > +(amount)
+            store.staking.creating-staking-account = no
             create-staking-account.InProcess = no
             return alert store, lang.minimalStakeMustBe + " #{(min_stake)} VLX"
         if +main_balance < +amount
+            store.staking.creating-staking-account = no
             create-staking-account.InProcess = no
             return alert store, lang.balanceIsNotEnoughToSpend + " #{(amount)} VLX"
         amount = amount * 10^9
@@ -376,8 +379,10 @@ staking-accounts-content = (store, web3t)->
         err <- creation-account-subscribe({ store, web3t, signature, acc_type: "create", inProcess: create-staking-account.InProcess })
         if err?
             create-staking-account.InProcess = no
+            store.staking.creating-staking-account = no
             return alert store, err, cb
         create-staking-account.InProcess = no
+        store.staking.creating-staking-account = no
         #<- notify store, lang.accountCreatedAndFundsDeposited
 
     totalOwnStakingAccounts = store.staking.totalOwnStakingAccounts ? 0

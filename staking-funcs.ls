@@ -110,19 +110,28 @@ query-accounts = (store, web3t, on-progress, on-finish) ->
     on-finish err, accounts
 
 
+update-loader-var = (store, config, value)!->
+    return if value not in <[ yes no ]>
+    return if not config?
+    return if not store?
+    if config.acc_type is \split
+        store.staking.splitting-staking-account = value
+    if  config.acc_type is \create
+        store.staking.creating-staking-account = value
+
 add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
-    return if store.staking.splitting-staking-account is yes
     console.log "[add-stake-account]"
-    store.staking.splitting-staking-account = yes
     accounts = store.staking.accounts
     acc_type = config.acc_type
     if acc_type not in <[ split create ]>
         return on-finish "Unknown type for acc_type"
 
+    update-loader-var(store, config, yes)
+
     { instructions } = tx-info?data?transaction?message
 
     if instructions[0]?parsed?type isnt "createAccountWithSeed" then
-        store.staking.splitting-staking-account = no
+        update-loader-var(store, config, no)
         return on-finish "Not expected transaction type. Expected 'createAccountWithSeed' type."
 
     seed = instructions?0?parsed?info?seed
@@ -137,7 +146,8 @@ add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
 
     /* Avoid duplicates of stake accounts on UI */
     already-exists = store.staking.parsedProgramAccounts |> find (-> it.pubkey is stakeAccount)
-    return if already-exists?
+    if already-exists?
+        return
 
     staker =
         | acc_type is \split => info?stakeAuthority
@@ -159,20 +169,23 @@ add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
         voter: config.voter
         validator: config.voter
         withdrawer: staker
+        highlight: yes
     }
 
     store.staking.parsedProgramAccounts.push(account)
     store.staking.splitting-staking-account = no
     err, accs <- as-callback web3t.velas.NativeStaking.getOwnStakingAccounts(store.staking.parsedProgramAccounts)
     if err?
-        store.staking.splitting-staking-account = no
+        update-loader-var(store, config, no)
         return on-finish err
     web3t.velas.NativeStaking.setAccounts(accs);
     store.staking.totalOwnStakingAccounts = accs.length
     store.staking.accounts-are-loading = yes
 
     cb = (err, accounts)->
-        return on-finish err if err?
+        if err?
+            update-loader-var(store, config, no)
+            return on-finish err
         store.staking.accounts = accounts
         publicKey = new velasWeb3.PublicKey(stakeAccount)
 
@@ -238,8 +251,7 @@ subscribe-to-stake-account = ({store, web3t, account, publicKey, find})->
 
 highlight = (store, AccountIndex)->
     return if not store.staking.accounts[AccountIndex]?
-    store.staking.accounts[AccountIndex].highlight = yes
-    <- set-timeout _, 1500
+    <- set-timeout _, 6500
     store.staking.accounts[AccountIndex].highlight = no
 
 query-accounts-web3t = (store, web3t, on-progress, on-finish) ->
