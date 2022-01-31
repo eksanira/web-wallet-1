@@ -136,6 +136,9 @@ as-callback = (p, cb)->
                     &.validator-address
                         text-align: center
                     border: none
+    .stake-account-item
+        &.highlight
+            box-shadow: 1px 2px 12px inset rgba(60, 213, 175, 0.35)
 cb = console.log
 show-validator = (store, web3t)-> (validator)->
     li.pug(key="validator-#{validator}") #{validator}
@@ -294,9 +297,9 @@ staking-accounts-content = (store, web3t)->
                     if +activationEpoch < +deactivationEpoch and +deactivationEpoch isnt +max-epoch
                         disabled = yes     
                 button { store, classes: "action-undelegate" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon : \arrowLeft, makeDisabled: disabled }
-        highlighted = if highlight then "highlight" else ""
+        highlighted = if highlight is yes then "highlight" else ""
 
-        tr.pug(class="#{item.status} #{highlighted}" key="#{address}")
+        tr.pug(class="stake-account-item #{item.status} #{highlighted}" key="#{address}")
             td.pug
                 span.pug.circle(class="#{item.status}") #{index}
             td.pug(datacolumn='Staker Address' title="#{address}")
@@ -375,7 +378,7 @@ staking-accounts-content = (store, web3t)->
             create-staking-account.InProcess = no
             return alert store, err, cb
         create-staking-account.InProcess = no
-        <- notify store, lang.accountCreatedAndFundsDeposited
+        #<- notify store, lang.accountCreatedAndFundsDeposited
 
     totalOwnStakingAccounts = store.staking.totalOwnStakingAccounts ? 0
     loadingAccountIndex = Math.min(totalOwnStakingAccounts, store.staking.loadingAccountIndex)
@@ -392,15 +395,18 @@ staking-accounts-content = (store, web3t)->
                     path.pug(xmlns="http://www.w3.org/2000/svg" d="M1796 2907C 1749 2827 1701 2743 1515 2420C 1407 2230 1275 2001 1222 1910C 1170 1819 1110 1716 1090 1680C 950 1438 891 1334 845 1255C 816 1206 747 1084 690 985C 633 886 554 749 514 680L514 680L441 555L1130 552C 1510 551 2130 551 2508 552L2508 552L3197 555L3102 720C 3050 811 2991 914 2970 950C 2950 986 2856 1150 2761 1315C 2665 1480 2510 1750 2415 1915C 1758 3060 1827 2940 1820 2940C 1817 2940 1806 2925 1796 2907z" stroke="none" fill="rgb(255 215 0)" fill-rule="nonzero")
 
     .pug.staking-accounts-content
-        loader { loading: store.staking.creating-staking-account, text: "Creating staking account..." }
         .pug
             .form-group.pug(id="create-staking-account")
                 .pug.section.create-staking-account 
                     .title.pug
                         h3.pug #{lang.createStakingAccount}
                     .description.pug
-                        span.pug
-                            button {store, classes: "width-auto", text: lang.createAccount, no-icon:yes, on-click: create-staking-account, style: {width: \auto, display: \block}}
+                        if store.staking.creating-staking-account is yes
+                            span.pug
+                                button {store, classes: "width-auto", text: "Creating...", no-icon:yes, on-click: create-staking-account, makeDisabled: yes, style: {width: \auto, display: \block}}
+                        else
+                            span.pug
+                                button {store, classes: "width-auto", text: lang.createAccount, no-icon:yes, on-click: create-staking-account, style: {width: \auto, display: \block}}
                         if store.staking.accounts.length is 0
                             span.pug.notification-entity(style=notification-border) Please create a staking account before you stake
                         else 

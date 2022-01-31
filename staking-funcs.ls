@@ -111,17 +111,18 @@ query-accounts = (store, web3t, on-progress, on-finish) ->
 
 
 add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
+    return if store.staking.splitting-staking-account is yes
+    console.log "[add-stake-account]"
+    store.staking.splitting-staking-account = yes
     accounts = store.staking.accounts
     acc_type = config.acc_type
-    /* Do not add account on ui if it is duplicate query */
-    #if config.inProcess? and config.inProcess is yes
-        #return cb null
     if acc_type not in <[ split create ]>
         return on-finish "Unknown type for acc_type"
 
     { instructions } = tx-info?data?transaction?message
 
     if instructions[0]?parsed?type isnt "createAccountWithSeed" then
+        store.staking.splitting-staking-account = no
         return on-finish "Not expected transaction type. Expected 'createAccountWithSeed' type."
 
     seed = instructions?0?parsed?info?seed
@@ -133,6 +134,10 @@ add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
     stakeAccount =
         | acc_type is \split => info?newSplitAccount
         | _ => info?newAccount
+
+    /* Avoid duplicates of stake accounts on UI */
+    already-exists = store.staking.parsedProgramAccounts |> find (-> it.pubkey is stakeAccount)
+    return if already-exists?
 
     staker =
         | acc_type is \split => info?stakeAuthority
@@ -157,8 +162,11 @@ add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
     }
 
     store.staking.parsedProgramAccounts.push(account)
+    store.staking.splitting-staking-account = no
     err, accs <- as-callback web3t.velas.NativeStaking.getOwnStakingAccounts(store.staking.parsedProgramAccounts)
-    return on-finish err if err?
+    if err?
+        store.staking.splitting-staking-account = no
+        return on-finish err
     web3t.velas.NativeStaking.setAccounts(accs);
     store.staking.totalOwnStakingAccounts = accs.length
     store.staking.accounts-are-loading = yes
@@ -227,6 +235,12 @@ subscribe-to-stake-account = ({store, web3t, account, publicKey, find})->
     callback   = (updatedAccount)->
         updateStakeAccount({ store, account, updatedAccount })
     web3t.velas.NativeStaking.connection.onAccountChange(publicKey, callback, commitment)
+
+highlight = (store, AccountIndex)->
+    return if not store.staking.accounts[AccountIndex]?
+    store.staking.accounts[AccountIndex].highlight = yes
+    <- set-timeout _, 1500
+    store.staking.accounts[AccountIndex].highlight = no
 
 query-accounts-web3t = (store, web3t, on-progress, on-finish) ->
     native-wallet = store.current.account.wallets |> find(-> it.coin.token is "vlx_native")
@@ -374,7 +388,7 @@ creation-account-subscribe = ({ store, web3t, signature, timeout, acc_type, acti
         info-data = info?data?transaction?message?instructions?0?parsed?info
         return cb null if not info-data?
         pubkey = info-data?newAccount
-        search-new-account(pubkey)
+        search-new-account(store, pubkey)
 
         return cb null if acc_type isnt \split
 
@@ -392,7 +406,7 @@ creation-account-subscribe = ({ store, web3t, signature, timeout, acc_type, acti
         console.log "Account creation error: ", err
         return cb "An error occurred during stake account creation."
 
-search-new-account = (pubkey)->
+search-new-account = (store, pubkey)->
     index = store.staking.accounts
         |> sort-by (.seed-index)
         |> findIndex (-> it.pubkey is pubkey)
@@ -400,10 +414,7 @@ search-new-account = (pubkey)->
     return if not store.staking.accounts[index]?
     perPage =  store.staking.accounts_per_page
     store.staking.current_accounts_page = Math.ceil((index + 1) `div` perPage)
-    store.staking.accounts[index].highlight = yes
-    <- set-timeout _, 1500
-    store.staking.accounts[index].highlight = no
-
+    highlight(store, index)
 
 
 module.exports = { creation-account-subscribe, add-stake-account, filter-pools, subscribe-to-stake-account, query-pools, query-accounts, convert-accounts-to-view-model, convert-pools-to-view-model }

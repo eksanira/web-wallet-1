@@ -912,41 +912,41 @@ staking-content = (store, web3t)->
         cb = console.log 
         err <- as-callback web3t.velas.NativeStaking.getStakingAccounts(store.staking.parsedProgramAccounts)
         console.error err if err?
-        store.staking.creating-staking-account = yes
+        store.staking.splitting-staking-account = yes
         /* Get next account seed */
         err, seed <- as-callback web3t.velas.NativeStaking.getNextSeed()
         err-message = get-error-message(err, seed)
         if err-message?
-            store.staking.creating-staking-account = no
+            store.staking.splitting-staking-account = no
             return alert store, err-message
         /**/
         amount <- prompt3 store, lang.howMuchToSplit
         if amount+"".trim!.length is 0
-            store.staking.creating-staking-account = no
+            store.staking.splitting-staking-account = no
             return
         min_stake = web3t.velas.NativeStaking.min_stake
         balance = balanceRaw `div` (10^9)
         if +amount > +balance
-            store.staking.creating-staking-account = no
+            store.staking.splitting-staking-account = no
             return alert store, lang.balanceIsNotEnoughToSpend + " #{amount} VLX"
         if +min_stake > +balance
             threshold-amount = min_stake `plus` 0.00228288
-            store.staking.creating-staking-account = no
+            store.staking.splitting-staking-account = no
             return alert store, lang.balanceIsNotEnoughToCreateStakingAccount + " (#{threshold-amount} VLX)"
         if +(min_stake) > +amount
-            store.staking.creating-staking-account = no
+            store.staking.splitting-staking-account = no
             return alert store, lang.minimalStakeMustBe + " #{min_stake} VLX"
         amount = amount * 10^9
         /* Create new account */
         fromPubkey$ = store.staking.chosenAccount.address
         err, splitStakePubkey <- as-callback web3t.velas.NativeStaking.createNewStakeAccountWithSeed()
         if err?
-            store.staking.creating-staking-account = no
+            store.staking.splitting-staking-account = no
             return alert store, err.toString!
         try
             splitStakePubkeyBase58 = splitStakePubkey.toBase58()
         catch error
-            store.staking.creating-staking-account = no
+            store.staking.splitting-staking-account = no
             return alert store, error.toString!
 
         /* Split account */
@@ -956,14 +956,14 @@ staking-content = (store, web3t)->
         console.log "spit signature" signature
         err-message = get-error-message(err, signature)
         if err-message?
-            store.staking.creating-staking-account = no
+            store.staking.splitting-staking-account = no
             return alert store, err-message
 
         { activationEpoch, deactivationEpoch } = store.staking.chosenAccount
 
         err <- creation-account-subscribe({ store, web3t, signature, timeout: 1000, acc_type: "split", deactivationEpoch, activationEpoch, voter: $voter })
         if err?
-            store.staking.creating-staking-account = no
+            store.staking.splitting-staking-account = no
             return alert store, err, cb
 
         /* Update balance of stake account from which split was called */
@@ -971,7 +971,7 @@ staking-content = (store, web3t)->
         err, accountInfo <- as-callback web3t.velas.NativeStaking.getAccountInfo(fromPubkey$)
         if err?
             console.log "Split was confirmed"
-            store.staking.creating-staking-account = no
+            store.staking.splitting-staking-account = no
             return alert store, "Split was confirmed. Please reload stake accounts manually to see updates.", cb
         split_lamports = accountInfo?value?lamports
 
@@ -984,7 +984,7 @@ staking-content = (store, web3t)->
         <- notify store, lang.accountCreatedAndFundsSplitted + ".\n\nNew stake account address: " + splitStakePubkeyBase58
         store.staking.getAccountsFromCashe = no
         store.current.page = "validators"
-        store.staking.creating-staking-account = no
+        store.staking.splitting-staking-account = no
 
     icon-style =
         color: style.app.loader
@@ -1042,7 +1042,7 @@ staking-content = (store, web3t)->
           
     /* Render */    
     .pug.staking-content.delegate
-        loader { loading: store.staking.creating-staking-account, text: "Splitting in process" }
+        loader { loading: store.staking.splitting-staking-account, text: "Splitting in process" }
         .pug.single-section.form-group(id="choosen-pull")
             .pug.section
                 .title.pug

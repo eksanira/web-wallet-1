@@ -186,6 +186,7 @@ store =
         fetchValidators: null
         fetchAccounts: null
     staking:
+        splitting-staking-account: no
         creating-staking-account: no
         REWARDS_PER_PAGE: 10
         rewards_page: 1
