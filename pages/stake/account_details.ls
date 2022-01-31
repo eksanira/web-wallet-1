@@ -741,6 +741,8 @@ staking-content = (store, web3t)->
     style = get-primary-info store
     lang = get-lang store
 
+    down = (it)-> it.toLowerCase!
+
     account = store.staking.chosenAccount
     {
         address,
@@ -863,7 +865,7 @@ staking-content = (store, web3t)->
         cb null, \done
 
     remove-stake-acc = (public_key)->
-        down = (it)-> it.toLowerCase!
+
         index = store.staking.accounts |> findIndex (-> down(it.pubkey) is down(public_key))
         if index > -1
             store.staking.accounts.splice(index,1)
@@ -905,6 +907,7 @@ staking-content = (store, web3t)->
         #store.staking.getAccountsFromCashe = no
         store.current.page = \validators
         #navigate store, web3t, \validators
+
     split-account = ->
         cb = console.log 
         err <- as-callback web3t.velas.NativeStaking.getStakingAccounts(store.staking.parsedProgramAccounts)
@@ -944,7 +947,6 @@ staking-content = (store, web3t)->
             store.staking.creating-staking-account = no
             return alert store, error.toString!
 
-        /**/
         /* Split account */
         stakeAccount = store.staking.chosenAccount.address
         $voter = store.staking.chosenAccount.voter
@@ -962,6 +964,21 @@ staking-content = (store, web3t)->
             store.staking.creating-staking-account = no
             return alert store, err, cb
 
+        /* Update balance of stake account from which split was called */
+        fromPubkey$ = store.staking.chosenAccount.address
+        err, accountInfo <- as-callback web3t.velas.NativeStaking.getAccountInfo(fromPubkey$)
+        if err?
+            console.log "Split was confirmed"
+            store.staking.creating-staking-account = no
+            return alert store, "Split was confirmed. Please reload stake accounts manually to see updates.", cb
+        split_lamports = accountInfo?value?lamports
+
+        /* Find account in store.staking.accounts and update balance */
+        found-account = store.staking.accounts |> find (-> down(it.pubkey) is down(fromPubkey$))
+        if found-account?
+            found-account.balance = split_lamports `div` (10^9)
+            found-account.balanceRaw = split_lamports + ""
+            found-account.lamports = split_lamports + ""
         <- notify store, lang.accountCreatedAndFundsSplitted + ".\n\nNew stake account address: " + splitStakePubkeyBase58
         store.staking.getAccountsFromCashe = no
         store.current.page = "validators"
