@@ -54,7 +54,7 @@ export class StakingScreen extends BaseScreen {
 
   createStakingAccountButton = this.page.locator('#create-staking-account button span:text(" Create Account")');
 
-  creatingStakingAccountLoader =this.page.locator('" Creating staking account... "');
+  creatingStakingAccountLoader =this.page.locator('#create-staking-account button[disabled]');
 
   createStakingAccountForm = {
     amount: this.page.locator('.input-area input'),
