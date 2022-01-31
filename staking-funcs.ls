@@ -114,8 +114,8 @@ add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
     accounts = store.staking.accounts
     acc_type = config.acc_type
     /* Do not add account on ui if it is duplicate query */
-    if config.inProcess? and config.inProcess is yes
-        return cb null
+    #if config.inProcess? and config.inProcess is yes
+        #return cb null
     if acc_type not in <[ split create ]>
         return on-finish "Unknown type for acc_type"
 
