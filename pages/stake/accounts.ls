@@ -255,7 +255,9 @@ staking-accounts-content = (store, web3t)->
             cb null
 
         remove-stake-acc = ->
-            index = store.staking.accounts |> findIndex (-> it.pubkey is item.key)
+            index = store.staking.accounts
+                |> sort-by (.seed-index)
+                |> findIndex (-> it.pubkey is item.key)
             console.log "index to remove"
 
 
