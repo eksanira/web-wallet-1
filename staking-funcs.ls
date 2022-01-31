@@ -221,8 +221,9 @@ updateStakeAccount = ({ store, account, updatedAccount })->
     { lamports, data } = updatedAccount
     if not data?parsed?info
         index = store.staking.accounts |> findIndex (-> it.pubkey is account.pubkey)
-        store.staking.accounts.splice(index,1)
-        updateStakeAccount[account.pubkey] = null
+        if index > -1
+            store.staking.accounts.splice(index,1)
+            updateStakeAccount[account.pubkey] = null
     else
         { meta, stake } = data?parsed?info
         { lockup, rentExemptReserve, authorized } = meta
