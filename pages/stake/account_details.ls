@@ -761,7 +761,7 @@ staking-content = (store, web3t)->
         myStake,
         credits_observed,
         validator,
-        pubkeyб
+        pubkey
         lamports
     } = account
 
