@@ -65,7 +65,7 @@ export class StakingScreen extends BaseScreen {
     await this.creatingStakingAccountLoader.waitFor();
     while (await this.creatingStakingAccountLoader.isVisible()) {};
     log.debug(`Staking account was created. It took ${((new Date().getTime() - startTime)/1000).toFixed()} seconds`);
-    await this.page.waitForSelector('" Account created and funds deposited"', { timeout: 15000 });
+    await this.createStakingAccountButton.waitFor();
   }
 
   delegateTo = {
