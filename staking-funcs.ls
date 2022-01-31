@@ -113,6 +113,9 @@ query-accounts = (store, web3t, on-progress, on-finish) ->
 add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
     accounts = store.staking.accounts
     acc_type = config.acc_type
+    /* Do not add account on ui if it is duplicate query */
+    if config.inProcess? and config.inProcess is yes
+        return cb null
     if acc_type not in <[ split create ]>
         return on-finish "Unknown type for acc_type"
 
@@ -229,6 +232,7 @@ query-accounts-web3t = (store, web3t, on-progress, on-finish) ->
     native-wallet = store.current.account.wallets |> find(-> it.coin.token is "vlx_native")
     validatorsBackend = native-wallet.network.api.validatorsBackend + \/v1/staking-accounts
     err, data <- get validatorsBackend .end
+    console.log "[get validatorsBackend err]" err if err?
     return on-finish err if err?
     nativeAccountsFromBackendResult = data?body?stakingAccounts ? []
     console.error "[query-accounts-web3t] get parsedProgramAccounts err:", err if err?
@@ -321,9 +325,6 @@ convert-pools-to-view-model = (pools) ->
             my-stake: if it?stakes then it.stakes else []
             credits_observed : it.credits_observed
         }
-max-tries = 5
-tries = 1
-
 
 check-tx-confirmation = ({start, network, tx}, cb)->
     ->
@@ -340,7 +341,7 @@ check-tx = ({start, network, tx}, cb)->
     check-tx.timer = set-interval check-tx-confirmation({start, network, tx}, timer-cb), 1000
 
 
-creation-account-subscribe = ({ store, web3t, signature, timeout, acc_type, activationEpoch, deactivationEpoch, voter }, cb)->
+creation-account-subscribe = ({ store, web3t, signature, timeout, acc_type, activationEpoch, deactivationEpoch, voter, inProcess }, cb)->
     return cb "[Creation-account-subscribe] error: Signature is required" if not signature?
     commitment = 'confirmed'
     callback = (data)->
@@ -364,7 +365,7 @@ creation-account-subscribe = ({ store, web3t, signature, timeout, acc_type, acti
             store.staking.creating-staking-account = no
             return cb "An error occurred during stake account creation: " + err
         on-progress = ->
-        err <- add-stake-account(store, web3t, info, { acc_type, activationEpoch, deactivationEpoch, voter }, on-progress)
+        err <- add-stake-account(store, web3t, info, { acc_type, activationEpoch, deactivationEpoch, voter, inProcess }, on-progress)
         if err?
             store.staking.creating-staking-account = no
             return cb err

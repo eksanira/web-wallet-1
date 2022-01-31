@@ -340,30 +340,41 @@ staking-accounts-content = (store, web3t)->
         amount <- prompt2 store, lang.howMuchToDeposit
         return if not amount?
         return if amount+"".trim!.length is 0
+        create-staking-account.InProcess = yes
         store.staking.creating-staking-account = yes
         min_stake = web3t.velas.NativeStaking.min_stake
         main_balance = get-balance!
         tx-fee = 5000 `div` (10^9)
         rest = 0.1
         amount = amount `minus` (store.staking.rent `plus` tx-fee `plus` rest) if +(main_balance `minus` amount) <= 0
-        return alert store, lang.balanceIsNotEnoughToCreateStakingAccount  if +min_stake > +main_balance
-        return alert store, lang.minimalStakeMustBe + " #{(min_stake)} VLX" if +min_stake  > +(amount)
-        return alert store, lang.balanceIsNotEnoughToSpend + " #{(amount)} VLX" if +main_balance < +amount
+        if +min_stake > +main_balance
+            create-staking-account.InProcess = no
+            return alert store, lang.balanceIsNotEnoughToCreateStakingAccount
+        if +min_stake  > +(amount)
+            create-staking-account.InProcess = no
+            return alert store, lang.minimalStakeMustBe + " #{(min_stake)} VLX"
+        if +main_balance < +amount
+            create-staking-account.InProcess = no
+            return alert store, lang.balanceIsNotEnoughToSpend + " #{(amount)} VLX"
         amount = amount * 10^9
         err, result <- as-callback web3t.velas.NativeStaking.createAccount(amount)
         if err?
+            create-staking-account.InProcess = no
             store.staking.creating-staking-account = no
             if ((err.toString! ? "").index-of("custom program error: 0x1")) > -1
                 err = lang.balanceIsNotEnoughToCreateStakingAccount
             return alert store, err.toString!
         if result.error? then
+            create-staking-account.InProcess = no
             store.staking.creating-staking-account = no
             error-msg = result.description ? "An unexpected error occurred during account creation."
             return alert store, error-msg, cb
         signature = result
-        err <- creation-account-subscribe({ store, web3t, signature, acc_type: "create" })
+        err <- creation-account-subscribe({ store, web3t, signature, acc_type: "create", inProcess: create-staking-account.InProcess })
         if err?
+            create-staking-account.InProcess = no
             return alert store, err, cb
+        create-staking-account.InProcess = no
         <- notify store, lang.accountCreatedAndFundsDeposited
 
     totalOwnStakingAccounts = store.staking.totalOwnStakingAccounts ? 0
