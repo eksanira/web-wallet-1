@@ -43,11 +43,10 @@ test.describe('Swap', () => {
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
     });
 
-    // TODO: fix ETH > ETH velas bridge
-    test.skip('ETH Velas > ETH', async () => {
-      await wallets.swapTokens('token-vlx_eth', 'token-eth', 0.1);
+    test('ETH Velas > ETH', async () => {
+      await wallets.swapTokens('token-vlx_eth', 'token-eth', 0.0001);
       const txHash = await wallets.getTxHashFromTxlink();
-      await evmchain.waitForTx({ txHash, testName: test.info().title });
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
     });
 
     test('USDT Velas > USDT', async () => {
@@ -56,10 +55,10 @@ test.describe('Swap', () => {
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
     });
 
-    test.skip('USDC Velas > USDC', async () => {
-      await wallets.swapTokens('token-vlx_usdc', 'token-usdc', 0.001);
+    test('USDC Velas > USDC', async () => {
+      await wallets.swapTokens('token-vlx_usdc', 'token-usdc', 0.00001);
       const txHash = await wallets.getTxHashFromTxlink();
-      await evmchain.waitForTx({ txHash, testName: test.info().title });
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
     });
 
     test('BUSD Velas > BUSD', async () => {
@@ -82,18 +81,16 @@ test.describe('Swap', () => {
       transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title }));
     });
 
-    // TODO: fix VLWA-904 (bsc network issue)
-    test.skip('BEP-20 > EVM', async () => {
+    test('BEP-20 > EVM', async () => {
       await wallets.swapTokens('token-bsc_vlx', 'token-vlx_evm', 1);
       const txHash = await wallets.getTxHashFromTxlink();
-      await bscchain.waitForTx({ txHash, testName: test.info().title });
+      transactionsInProgress.push(bscchain.waitForTx({ txHash, testName: test.info().title }));
     });
 
-    // TODO: fix ETH > ETH velas bridge
-    test.skip('ETH > ETH Velas', async () => {
-      await wallets.swapTokens('token-eth', 'token-vlx_eth', 0.1);
+    test('ETH > ETH Velas', async () => {
+      await wallets.swapTokens('token-eth', 'token-vlx_eth', 0.0001);
       const txHash = await wallets.getTxHashFromTxlink();
-      await ropsten.waitForTx({ txHash, testName: test.info().title });
+      transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title }));
     });
 
     test('USDT > USDT Velas', async () => {
@@ -102,17 +99,16 @@ test.describe('Swap', () => {
       transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title }));
     });
 
-    test.skip('USDC > USDC Velas', async () => {
-      await wallets.swapTokens('token-usdc', 'token-vlx_usdc', 0.001);
+    test('USDC > USDC Velas', async () => {
+      await wallets.swapTokens('token-usdc', 'token-vlx_usdc', 0.00001);
       const txHash = await wallets.getTxHashFromTxlink();
-      await ropsten.waitForTx({ txHash, testName: test.info().title });
+      transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title }));
     });
 
-    // TODO: fix VLWA-904 (bsc network issue)
-    test.skip('BUSD > BUSD Velas', async () => {
+    test('BUSD > BUSD Velas', async () => {
       await wallets.swapTokens('token-busd', 'token-vlx_busd', 0.01);
       const txHash = await wallets.getTxHashFromTxlink();
-      await bscchain.waitForTx({ txHash, testName: test.info().title });
+      transactionsInProgress.push(bscchain.waitForTx({ txHash, testName: test.info().title }));
     });
   });
 
@@ -142,28 +138,29 @@ test.describe('Swap', () => {
       if (!txSignatureLink) throw new Error('No txSignatureLink');
       const txSignature = txSignatureLink.replace('https://native.velas.com/tx/', '');
       log.debug(`txSignature: ${txSignature}`);
-      await velasNative.waitForConfirmedTransaction(txSignature);
+
+      transactionsInProgress.push(velasNative.waitForConfirmedTransaction(txSignature));
     });
 
     // Legacy is irrelevant
     test.skip('VLX Legacy > VLX Native', async () => {
       await wallets.swapTokens('token-vlx2', 'token-vlx_native', 0.0001);
       const txHash = await wallets.getTxHashFromTxlink();
-      await evmchain.waitForTx({ txHash, testName: test.info().title });
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
     });
 
     // Legacy is irrelevant
     test.skip('VLX Legacy > EVM', async () => {
       await wallets.swapTokens('token-vlx2', 'token-vlx_evm', 0.0001);
       const txHash = await wallets.getTxHashFromTxlink();
-      await evmchain.waitForTx({ txHash, testName: test.info().title });
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
     });
 
     // Legacy is irrelevant
     test.skip('EVM > VLX Legacy', async () => {
       await wallets.swapTokens('token-vlx_evm', 'token-vlx2', 0.0001);
       const txHash = await wallets.getTxHashFromTxlink();
-      await evmchain.waitForTx({ txHash, testName: test.info().title });
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
     });
   });
 });
