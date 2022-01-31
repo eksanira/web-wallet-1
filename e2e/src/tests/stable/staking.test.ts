@@ -78,7 +78,6 @@ test.describe('Staking', () => {
       await staking.createStakingAccountForm.amount.fill(String(stakingAmount));
       await staking.modals.confirmPrompt();
       await staking.waitForStakingAccountCreation();
-      await staking.modals.clickOK();
       await staking.waitForLoaded();
 
       // assert
