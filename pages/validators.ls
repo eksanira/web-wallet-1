@@ -969,6 +969,9 @@ validators.init = ({ store, web3t }, cb)!->
     store.staking.add.add-validator-stake = 0
     store.staking.loadingAccountIndex = 0
     store.staking.loadingValidatorIndex = 0
+    store.staking.splitting-staking-account = no
+    store.staking.creating-staking-account = no
+
     index-is-different = store.current.accountIndex isnt store.staking.accountIndex
     if store.staking.pools-network is store.current.network then
         if (store.staking.all-pools-loaded? and store.staking.all-pools-loaded is yes and not index-is-different)
