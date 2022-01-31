@@ -921,7 +921,9 @@ staking-content = (store, web3t)->
             return alert store, err-message
         /**/
         amount <- prompt3 store, lang.howMuchToSplit
-        return if amount+"".trim!.length is 0
+        if amount+"".trim!.length is 0
+            store.staking.creating-staking-account = no
+            return
         min_stake = web3t.velas.NativeStaking.min_stake
         balance = balanceRaw `div` (10^9)
         if +amount > +balance
