@@ -151,7 +151,7 @@ test.describe('Staking', () => {
       await staking.stakeAccount.splitButton.click();
       await staking.createStakingAccountForm.amount.fill('1');
       await staking.modals.confirmPrompt();
-      await page.waitForSelector('" Account created and funds are splitted successfully"', { timeout: 20000 });
+      await page.waitForSelector('text=/account created and funds are splitted successfully/i', { timeout: 20000 });
       await staking.modals.clickOK();
       await staking.waitForSplitedStakeToAppear();
 
