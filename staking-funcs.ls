@@ -67,13 +67,14 @@ load-validators-from-cache = ({store, web3t}, cb)->
             return cb null, cache-result  
     err, validators <- as-callback web3t.velas.NativeStaking.getStakingValidators()
     console.error "GetStakingValidators err: " err if err?
-    return cb null, [] if err?
+    return cb err if err?
     store.staking.cachedValidators = validators  
     store.staking.cachedValidatorsNetwork = network
     store.staking.last-time = new Date().getTime()
     cb null, validators    
 query-pools-web3t = ({store, web3t, on-progress}, on-finish) -> 
     err, validators <- load-validators-from-cache { store, web3t }
+    return on-finish err if err?
     store.staking.totalValidators = validators.length
     store.staking.pools-are-loading = yes
     fill-pools { store, web3t, on-progress}, on-finish, validators
@@ -191,6 +192,8 @@ add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
             return on-finish err
         store.staking.accounts = accounts
         publicKey = new velasWeb3.PublicKey(stakeAccount)
+        cb2 = (err, res)->
+            return on-finish err if err?
 
         /* Subscribe to the changes of created stake account */
         store.staking.accounts
@@ -198,7 +201,7 @@ add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
                 a.address is stakeAccount
             |> each (it)->
                 publicKey  = it.pubKey
-                subscribe-to-stake-account({store, web3t, account: it, publicKey})
+                subscribe-to-stake-account({store, web3t, account: it, publicKey, cb: cb2})
         on-finish null
     fill-accounts { store, web3t, on-progress, on-finish: cb }, accs
 
@@ -212,7 +215,7 @@ filter-pools = (pools)->
         |> reverse
     store.staking.pools = running ++ delinquent
 
-updateStakeAccount = ({ store, account, updatedAccount })->
+updateStakeAccount = ({ store, account, updatedAccount, cb })->
     return if updateStakeAccount[account.pubkey]?
     updateStakeAccount[account.pubkey] = account.pubkey
     console.log "updateStakeAccount" {account, updatedAccount}
@@ -243,14 +246,15 @@ updateStakeAccount = ({ store, account, updatedAccount })->
     on-progress = ->
         store.staking.pools = convert-pools-to-view-model [...it]
     err, pools <- query-pools { store, web3t, on-progress }
+    return cb err if err?
     filter-pools(pools)
 
 /* If find set to true, then we first found account from store.staking.accounts by publicKey */
-subscribe-to-stake-account = ({store, web3t, account, publicKey, find})->
+subscribe-to-stake-account = ({store, web3t, account, publicKey, find, cb})->
     #console.log "[subscribe-to-stake-account]" publicKey.toBase58()
     commitment = 'confirmed'
     callback   = (updatedAccount)->
-        updateStakeAccount({ store, account, updatedAccount })
+        updateStakeAccount({ store, account, updatedAccount, cb })
     web3t.velas.NativeStaking.connection.onAccountChange(publicKey, callback, commitment)
 
 highlight = (store, AccountIndex)->
@@ -288,7 +292,9 @@ fill-accounts = ({ store, web3t, on-progress, on-finish }, [item, ...rest]) ->
         return on-finish null, []
     store.staking.loadingAccountIndex += 1
     rent = item?rentExemptReserve
-    subscribe-to-stake-account({store, web3t, account: item, publicKey: new velasWeb3.PublicKey(item.pubkey)})
+    cb2 = (err)->
+        return on-finish err if err?
+    subscribe-to-stake-account({store, web3t, account: item, publicKey: new velasWeb3.PublicKey(item.pubkey), cb: cb2})
     #TODO: in future change seed with address and do not display this field
     err, seed <- as-callback web3t.velas.NativeStaking.checkSeed(item.pubkey)
     item.seed    = seed
