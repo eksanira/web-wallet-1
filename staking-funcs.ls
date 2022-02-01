@@ -213,6 +213,7 @@ filter-pools = (pools)->
     store.staking.pools = running ++ delinquent
 
 updateStakeAccount = ({ store, account, updatedAccount })->
+    return if updateStakeAccount[account.pubkey]?
     updateStakeAccount[account.pubkey] = account.pubkey
     console.log "updateStakeAccount" {account, updatedAccount}
     if not account?
@@ -287,6 +288,7 @@ fill-accounts = ({ store, web3t, on-progress, on-finish }, [item, ...rest]) ->
         return on-finish null, []
     store.staking.loadingAccountIndex += 1
     rent = item?rentExemptReserve
+    subscribe-to-stake-account({store, web3t, account: item, publicKey: new velasWeb3.PublicKey(item.pubkey)})
     #TODO: in future change seed with address and do not display this field
     err, seed <- as-callback web3t.velas.NativeStaking.checkSeed(item.pubkey)
     item.seed    = seed
@@ -385,7 +387,6 @@ creation-account-subscribe = ({ store, web3t, signature, timeout, acc_type, acti
             store.staking.creating-staking-account = no
             return cb "Velas Native wallet not found!"
 
-        #err, info <- get-transaction-info( {network: wallet.network, tx: signature} )
         err, info <- check-tx({network: wallet.network, tx: signature, start: Date.now()})
         if info?status is "pending" then
            store.staking.creating-staking-account = no
