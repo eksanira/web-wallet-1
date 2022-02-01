@@ -848,7 +848,7 @@ staking-content = (store, web3t)->
         #err, options <- get-options
         #return alert store, err, cb if err?
         store.staking.add.add-validator-stake = Math.max (get-balance! `minus` 0.1), 0
-    your-balance = balanceRaw `div` (10^9) `plus` rent
+    your-balance = balanceRaw `div` (10^9)
     isSpinned = if ((store.staking.all-pools-loaded is no or !store.staking.all-pools-loaded?) and store.staking.pools-are-loading is yes) then "spin disabled" else ""
     cancel-pool = ->
         store.staking.chosenAccount = null
