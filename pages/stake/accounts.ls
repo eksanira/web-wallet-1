@@ -247,18 +247,22 @@ staking-accounts-content = (store, web3t)->
             return alert store, err.toString! if err?
             <- notify store, lang.fundsUndelegated
             store.staking.getAccountsFromCashe = no
-            #navigate store, web3t, \validators
+            if store.staking.webSocketAvailable is no
+                navigate store, web3t, \validators
 
         choose = ->
             store.staking.chosen-account = item
             navigate store, web3t, \poolchoosing
             cb null
 
-        remove-stake-acc = ->
-            index = store.staking.accounts
-                |> sort-by (.seed-index)
-                |> findIndex (-> it.pubkey is item.key)
-            console.log "index to remove"
+        remove-stake-acc = (public_key)->
+            index = store.staking.accounts |> findIndex (-> it.pubkey is public_key)
+            if index > -1
+                store.staking.accounts.splice(index,1)
+            accountIndex = store.current.accountIndex
+            index2 = (store.staking.accountsCached[accountIndex] ? []) |> findIndex (-> it.pubkey is public_key)
+            if index2 > -1
+                (store.staking.accountsCached[accountIndex] ? []).splice(index2,1)
 
 
         withdraw = ->
@@ -266,7 +270,7 @@ staking-accounts-content = (store, web3t)->
                 return
             agree <- confirm store, lang.areYouSureToWithdraw
             return if agree is no
-            { balanceRaw, rent, address, account } = item
+            { balanceRaw, rent, address, account, pubkey } = item
             amount = lamports `plus` rent
             err, result <- as-callback web3t.velas.NativeStaking.withdraw(address, amount)
             err-message = get-error-message(err, result)
@@ -275,7 +279,7 @@ staking-accounts-content = (store, web3t)->
             <- notify store, lang.fundsWithdrawn
             store.staking.getAccountsFromCashe = no
             store.current.page = \validators
-            remove-stake-acc()
+            remove-stake-acc(pubkey)
 
         now = moment!.unix!        
         locked-and-can-withdraw = unixTimestamp? and (unixTimestamp <= now)
@@ -385,7 +389,8 @@ staking-accounts-content = (store, web3t)->
             return alert store, err, cb
         create-staking-account.InProcess = no
         store.staking.creating-staking-account = no
-        #<- notify store, lang.accountCreatedAndFundsDeposited
+        if store.staking.webSocketAvailable is no
+            <- notify store, lang.accountCreatedAndFundsDeposited
 
     totalOwnStakingAccounts = store.staking.totalOwnStakingAccounts ? 0
     loadingAccountIndex = Math.min(totalOwnStakingAccounts, store.staking.loadingAccountIndex)

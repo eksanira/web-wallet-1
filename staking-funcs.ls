@@ -292,9 +292,13 @@ fill-accounts = ({ store, web3t, on-progress, on-finish }, [item, ...rest]) ->
         return on-finish null, []
     store.staking.loadingAccountIndex += 1
     rent = item?rentExemptReserve
-    cb2 = (err)->
-        return on-finish err if err?
-    subscribe-to-stake-account({store, web3t, account: item, publicKey: new velasWeb3.PublicKey(item.pubkey), cb: cb2})
+    if store.staking.webSocketAvailable is yes
+        try
+            cb2 = (err)->
+                return on-finish err if err?
+            subscribe-to-stake-account({store, web3t, account: item, publicKey: new velasWeb3.PublicKey(item.pubkey), cb: cb2})
+        catch err
+            store.staking.webSocketAvailable = no
     #TODO: in future change seed with address and do not display this field
     err, seed <- as-callback web3t.velas.NativeStaking.checkSeed(item.pubkey)
     item.seed    = seed
@@ -381,6 +385,8 @@ check-tx = ({start, network, tx}, cb)->
 creation-account-subscribe = ({ store, web3t, signature, timeout, acc_type, activationEpoch, deactivationEpoch, voter, inProcess }, cb)->
     return cb "[Creation-account-subscribe] error: Signature is required" if not signature?
     commitment = 'confirmed'
+    if store.staking.webSocketAvailable is no
+        return cb null
     callback = (data)->
         if data.err? then
             store.staking.creating-staking-account = no

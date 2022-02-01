@@ -971,6 +971,18 @@ validators.init = ({ store, web3t }, cb)!->
     store.staking.loadingValidatorIndex = 0
     store.staking.splitting-staking-account = no
     store.staking.creating-staking-account = no
+    store.staking.webSocketAvailable = yes
+
+    wallet = store.current.account.wallets |> find (-> it.coin.token is \vlx_native)
+    try
+        publicKey = new velasWeb3.PublicKey(wallet.publicKey)
+        callback = (res)->
+        commitment = 'finalized'
+        web3t.velas.NativeStaking.connection.onAccountChange(publicKey, callback, commitment)
+    catch err
+        console.log "ws onAccountChange err: " err
+        store.staking.webSocketAvailable = no
+
 
     index-is-different = store.current.accountIndex isnt store.staking.accountIndex
     if store.staking.pools-network is store.current.network then
@@ -978,7 +990,6 @@ validators.init = ({ store, web3t }, cb)!->
             return cb null
     else
         store.staking.pools-network = store.current.network
-        
     err, epochInfo <- as-callback web3t.velas.NativeStaking.getCurrentEpochInfo()
     console.error err if err?
     { epoch, blockHeight, slotIndex, slotsInEpoch, transactionCount } = epochInfo
@@ -989,7 +1000,7 @@ validators.init = ({ store, web3t }, cb)!->
     rent = 2282880 if err?
     rent = rent `div` (10^9)
     store.staking.rent = rent   
-    wallet = store.current.account.wallets |> find (-> it.coin.token is \vlx_native)
+
     return cb null if not wallet?
     web3t.velas.NativeStaking.setAccountPublicKey(wallet.publicKey)
     web3t.velas.NativeStaking.setAccountSecretKey(wallet.secretKey)
