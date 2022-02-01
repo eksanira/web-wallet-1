@@ -255,6 +255,7 @@ module.exports = (store, web3t)->
     staking = if store.current.page is \staking then \active else \not-active
     staking-active = if store.current.page is \validators then \active else \not-active
     info-active = if store.current.page is \info then \active else \not-active
+    staking2-active = if store.current.page is \staking2 then \active else \not-active
     resources = if store.current.page is \resources then \active else \not-active
     faq = if store.current.page is \faq then \active else \not-active
     notice = if store.current.page is \notification then \active else \not-active
@@ -318,6 +319,9 @@ module.exports = (store, web3t)->
         navigate store, web3t, \filestorage
     goto-staking = ->
         navigate store, web3t, \staking
+        store.menu.show = no
+    goto-choose-staker2 = ->
+        navigate store, web3t, \staking2
         store.menu.show = no
     goto-resources = ->
         navigate store, web3t, \resources
@@ -393,3 +397,7 @@ module.exports = (store, web3t)->
                 .menu-item.pug.testnet(on-click=goto-mainnet style=icon-style class="#{settings}" id="menu-testnet")
                     span.arrow_box.pug Testnet
                     img.pug(src="#{icons.test}" style=icon-color)
+            if store.preference.settings-visible is yes
+                .menu-item.pug(on-click=goto-choose-staker2 style=icon-style class="#{staking2-active}" id="menu-delegate")
+                    span.arrow_box.pug Staking 2.0
+                    img.pug(src="#{icons.staking}"style=icon-color)
