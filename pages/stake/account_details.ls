@@ -909,9 +909,13 @@ staking-content = (store, web3t)->
         #navigate store, web3t, \validators
 
     split-account = ->
-        cb = console.log 
+        cb = console.log
+
+        /* Comment?? */
         err <- as-callback web3t.velas.NativeStaking.getStakingAccounts(store.staking.parsedProgramAccounts)
         return cb err if err?
+        /* Comment?? */
+
         store.staking.splitting-staking-account = yes
         /* Get next account seed */
         err, seed <- as-callback web3t.velas.NativeStaking.getNextSeed()
@@ -982,6 +986,7 @@ staking-content = (store, web3t)->
             found-account.balanceRaw = split_lamports + ""
             found-account.lamports = split_lamports + ""
         <- notify store, lang.accountCreatedAndFundsSplitted + ".\n\nNew stake account address: " + splitStakePubkeyBase58
+
         store.staking.getAccountsFromCashe = no
         store.current.page = "validators"
         store.staking.splitting-staking-account = no
