@@ -865,15 +865,16 @@ staking-content = (store, web3t)->
         cb null, \done
 
     remove-stake-acc = (public_key)->
-
-        index = store.staking.accounts |> findIndex (-> down(it.pubkey) is down(public_key))
+        console.log "pubKey to remove" public_key
+        index = store.staking.accounts |> findIndex (-> it.pubkey is public_key)
         if index > -1
             store.staking.accounts.splice(index,1)
-        console.log "index" index
+        console.log "index to remove" index
 
         accountIndex = store.current.accountIndex
-        index2 = (store.staking.accountsCached[accountIndex] ? []) |> findIndex (-> it.pubkey is pubkey)
-        console.log "index cached" index2
+        index2 = (store.staking.accountsCached[accountIndex] ? []) |> findIndex (-> it.pubkey is public_key)
+        console.log "index cache to remove" index2
+
         if index2 > -1
             (store.staking.accountsCached[accountIndex] ? []).splice(index2,1)
 
@@ -884,12 +885,9 @@ staking-content = (store, web3t)->
         err, result <- as-callback web3t.velas.NativeStaking.withdraw(address, amount)
         err-message = get-error-message(err, result)
         return alert store, err-message if err-message?
-        #<- set-timeout _, 1000
         <- notify store, lang.fundsWithdrawn
-        store.staking.getAccountsFromCashe = no
-        #store.staking.fetchAccounts = yes
-        remove-stake-acc(pubkey)
-        #store.current.page = \validators
+        store.staking.getAccountsFromCashe = yes
+        remove-stake-acc(account.pubkey)
         navigate store, web3t, \validators
 
     delegate = ->
