@@ -911,7 +911,7 @@ staking-content = (store, web3t)->
     split-account = ->
         cb = console.log 
         err <- as-callback web3t.velas.NativeStaking.getStakingAccounts(store.staking.parsedProgramAccounts)
-        console.error err if err?
+        return cb err if err?
         store.staking.splitting-staking-account = yes
         /* Get next account seed */
         err, seed <- as-callback web3t.velas.NativeStaking.getNextSeed()

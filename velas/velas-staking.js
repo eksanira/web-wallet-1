@@ -357,8 +357,8 @@ class VelasStaking {
             accounts[i].seed    = await this.checkSeed(accounts[i].pubkey);
             accounts[i].address = accounts[i].pubkey;
             accounts[i].key     = accounts[i].pubkey;
-            accounts[i].balance = rent ? `${(Math.round((accounts[i].lamports - rent) / this.sol) * 100) / 100 } VLX` : `-`;
-            accounts[i].rent    = rent ? `${ Math.round((rent / this.sol) * 100) / 100 } VLX` : `-`;
+            accounts[i].balance = rent ? `${(Math.round((accounts[i].lamports - rent) / this.sol) * 100) / 100 }` : `-`;
+            accounts[i].rent    = rent ? `${ Math.round((rent / this.sol) * 100) / 100 }` : `-`;
             accounts[i].status  = `inactive`;
             accounts[i].validator = `-`;
 

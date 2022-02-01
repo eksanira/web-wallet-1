@@ -66,7 +66,7 @@ load-validators-from-cache = ({store, web3t}, cb)->
             cache-result = store.staking.cachedValidators  
             return cb null, cache-result  
     err, validators <- as-callback web3t.velas.NativeStaking.getStakingValidators()
-    console.error "GetStakingValidators err: " err if err?  
+    console.error "GetStakingValidators err: " err if err?
     return cb null, [] if err?
     store.staking.cachedValidators = validators  
     store.staking.cachedValidatorsNetwork = network
@@ -147,6 +147,7 @@ add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
     /* Avoid duplicates of stake accounts on UI */
     already-exists = store.staking.parsedProgramAccounts |> find (-> it.pubkey is stakeAccount)
     if already-exists?
+        console.error "acc already exists"
         return
 
     staker =
@@ -173,7 +174,9 @@ add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
     }
 
     store.staking.parsedProgramAccounts.push(account)
-    store.staking.splitting-staking-account = no
+
+    update-loader-var(store, config, no)
+
     err, accs <- as-callback web3t.velas.NativeStaking.getOwnStakingAccounts(store.staking.parsedProgramAccounts)
     if err?
         update-loader-var(store, config, no)
@@ -210,8 +213,6 @@ filter-pools = (pools)->
     store.staking.pools = running ++ delinquent
 
 updateStakeAccount = ({ store, account, updatedAccount })->
-    #if updateStakeAccount[account.pubkey]
-        #return
     updateStakeAccount[account.pubkey] = account.pubkey
     console.log "updateStakeAccount" {account, updatedAccount}
     if not account?
@@ -245,6 +246,7 @@ updateStakeAccount = ({ store, account, updatedAccount })->
 
 /* If find set to true, then we first found account from store.staking.accounts by publicKey */
 subscribe-to-stake-account = ({store, web3t, account, publicKey, find})->
+    #console.log "[subscribe-to-stake-account]" publicKey.toBase58()
     commitment = 'confirmed'
     callback   = (updatedAccount)->
         updateStakeAccount({ store, account, updatedAccount })
