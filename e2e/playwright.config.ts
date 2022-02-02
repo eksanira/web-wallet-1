@@ -9,7 +9,7 @@ const config: PlaywrightTestConfig = {
   },
   globalSetup: 'src/pw-helpers/before-hook.ts',
   // globalTeardown: '',
-  maxFailures: globalConfig.CI ? 10 : 1,
+  maxFailures: globalConfig.CI ? 5 : 1,
   projects: [
     {
       name: 'Chrome Stable',
