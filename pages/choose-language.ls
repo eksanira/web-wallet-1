@@ -6,7 +6,7 @@ require! {
     \../get-lang.ls
     \./icon.ls
     \../navigate.ls
-    \../../web3t/providers/superagent.ls : { get }
+    \../../web3t/providers/superagent.js : { get }
     \prelude-ls : { each, map, find }
     \../menu-funcs.ls
     \../icons.ls
