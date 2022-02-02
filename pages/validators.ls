@@ -1017,10 +1017,14 @@ validators.init = ({ store, web3t }, cb)!->
     #store.staking.accounts = convert-accounts-to-view-model(result)
     store.staking.accounts = result
 
-
-    store.staking.accounts |> each (account)->
-        publicKey  = account.pubKey
-        subscribe-to-stake-account({store, web3t, account, publicKey})
+    if store.staking.webSocketAvailable is yes
+        console.log "new subscription"
+        try
+            store.staking.accounts |> each (account)->
+                publicKey  = account.pubKey
+                subscribe-to-stake-account({store, web3t, account, publicKey})
+        catch err
+            store.staking.webSocketAvailable = no
 
     # Normalize current page for accounts in pagination
     type = "accounts"
