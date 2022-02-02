@@ -346,9 +346,11 @@ staking-accounts-content = (store, web3t)->
 
     create-staking-account = ->
         cb = console.log
+        buffer = {}
         amount <- prompt2 store, lang.howMuchToDeposit
         return if not amount?
         return if amount+"".trim!.length is 0
+        buffer.amount = amount
         create-staking-account.InProcess = yes
         store.staking.creating-staking-account = yes
         min_stake = web3t.velas.NativeStaking.min_stake
@@ -368,7 +370,7 @@ staking-accounts-content = (store, web3t)->
             store.staking.creating-staking-account = no
             create-staking-account.InProcess = no
             return alert store, lang.balanceIsNotEnoughToSpend + " #{(amount)} VLX"
-        amount = amount * 10^9
+        amount = buffer.amount * 10^9
         err, result <- as-callback web3t.velas.NativeStaking.createAccount(amount)
         if err?
             create-staking-account.InProcess = no
@@ -384,6 +386,7 @@ staking-accounts-content = (store, web3t)->
         signature = result
         err <- creation-account-subscribe({ store, web3t, signature, acc_type: "create", inProcess: create-staking-account.InProcess })
         if err?
+            console.log "creation-account-subscribe err"
             create-staking-account.InProcess = no
             store.staking.creating-staking-account = no
             return alert store, err, cb
@@ -429,7 +432,7 @@ staking-accounts-content = (store, web3t)->
                     .title.pug
                         h3.pug.section-title #{lang.yourStakingAccounts} 
                             span.pug.amount (#{store.staking.accounts.length})
-                        if not store.staking.webSocketAvailable or fetch-error-occurred
+                        if not store.staking.webSocketAvailable or fetch-error-occurred or (store.errors.fetchValidators? and store.staking.pools-are-loading is no)
                             .pug
                                 .loader.pug(on-click=refresh style=icon-style title="refresh" class="#{isSpinned}")
                                     icon \Sync, 25
