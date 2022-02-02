@@ -428,10 +428,11 @@ staking-accounts-content = (store, web3t)->
                 .pug.section
                     .title.pug
                         h3.pug.section-title #{lang.yourStakingAccounts} 
-                            span.pug.amount (#{store.staking.accounts.length}) 
-                        .pug
-                            .loader.pug(on-click=refresh style=icon-style title="refresh" class="#{isSpinned}")
-                                icon \Sync, 25
+                            span.pug.amount (#{store.staking.accounts.length})
+                        if not store.staking.webSocketAvailable or fetch-error-occurred
+                            .pug
+                                .loader.pug(on-click=refresh style=icon-style title="refresh" class="#{isSpinned}")
+                                    icon \Sync, 25
                         if fetch-error-occurred
                             .pug.pointer-container
                                 svg-icon
