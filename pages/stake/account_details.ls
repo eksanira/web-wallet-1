@@ -908,9 +908,27 @@ staking-content = (store, web3t)->
 
     split-account = ->
         cb = console.log
+        buffer = {}
+        amount <- prompt3 store, lang.howMuchToSplit
+        buffer.amount = amount
+        if amount+"".trim!.length is 0
+            store.staking.splitting-staking-account = no
+            return
+        min_stake = web3t.velas.NativeStaking.min_stake
+        balance = balanceRaw `div` (10^9)
+        if +buffer.amount > +balance
+            store.staking.splitting-staking-account = no
+            return alert store, lang.balanceIsNotEnoughToSpend + " #{buffer.amount} VLX"
+        if +min_stake > +balance
+            threshold-amount = min_stake `plus` 0.00228288
+            store.staking.splitting-staking-account = no
+            return alert store, lang.balanceIsNotEnoughToCreateStakingAccount + " (#{threshold-amount} VLX)"
+        if +(min_stake) > +buffer.amount
+            store.staking.splitting-staking-account = no
+            return alert store, lang.minimalStakeMustBe + " #{min_stake} VLX"
 
-        #err <- as-callback web3t.velas.NativeStaking.getStakingAccounts(store.staking.parsedProgramAccounts)
-        #return cb err if err?
+        err <- as-callback web3t.velas.NativeStaking.getStakingAccounts(store.staking.parsedProgramAccounts)
+        return cb err if err?
 
         store.staking.splitting-staking-account = yes
         /* Get next account seed */
@@ -919,23 +937,8 @@ staking-content = (store, web3t)->
         if err-message?
             store.staking.splitting-staking-account = no
             return alert store, err-message
-        amount <- prompt3 store, lang.howMuchToSplit
-        if amount+"".trim!.length is 0
-            store.staking.splitting-staking-account = no
-            return
-        min_stake = web3t.velas.NativeStaking.min_stake
-        balance = balanceRaw `div` (10^9)
-        if +amount > +balance
-            store.staking.splitting-staking-account = no
-            return alert store, lang.balanceIsNotEnoughToSpend + " #{amount} VLX"
-        if +min_stake > +balance
-            threshold-amount = min_stake `plus` 0.00228288
-            store.staking.splitting-staking-account = no
-            return alert store, lang.balanceIsNotEnoughToCreateStakingAccount + " (#{threshold-amount} VLX)"
-        if +(min_stake) > +amount
-            store.staking.splitting-staking-account = no
-            return alert store, lang.minimalStakeMustBe + " #{min_stake} VLX"
-        amount = amount * 10^9
+
+        amount = buffer.amount * 10^9
         /* Create new account */
         fromPubkey$ = store.staking.chosenAccount.address
         err, splitStakePubkey <- as-callback web3t.velas.NativeStaking.createNewStakeAccountWithSeed()
@@ -1360,10 +1363,14 @@ try-get-extra-slot = (default-response, new-slot, cb)->
     err, result <- as-callback(web3t.velas.NativeStaking.getConfirmedBlocksWithLimit(new-slot, limit))
     cb null, result?result?0
 #    
-get_confirmed_block_with_encoding = (slot, cb)->    
-    err, confirmedBlock <- as-callback(web3t.velas.NativeStaking.getConfirmedBlock(slot))
-    console.error err if err?
-    cb null, confirmedBlock 
+get_confirmed_block_with_encoding = (slot, cb)->
+    try
+        err, confirmedBlock <- as-callback(web3t.velas.NativeStaking.getConfirmedBlock(slot))
+        console.error err if err?
+        return cb err if err?
+        cb null, confirmedBlock
+    catch err
+        return cb err
 #    
 retrieveRewardData = (firstSlotInEpoch, firstNormalSlot, slotsPerEpoch, slotsInEpoch, firstAvailableBlock, firstNormalEpoch, epoch, cb)->
     if firstSlotInEpoch < firstAvailableBlock

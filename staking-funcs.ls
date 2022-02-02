@@ -158,16 +158,30 @@ add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
     lamports     = info?lamports
     custodian    = staker
     { activationEpoch, deactivationEpoch } = config
+    balanceRaw = lamports `minus` '2282880'
+    pubKey = new velasWeb3.PublicKey(stakeAccount)
 
     account = {
         activationEpoch: activationEpoch
+        address: stakeAccount
+        balanceRaw
+        balance: Math.round(balanceRaw `div` (10^9))
+        creditsObserved: 0
+        credits_observed: 0
         custodian
         deactivationEpoch: deactivationEpoch
         epoch: 0
+        key: stakeAccount
         lamports
         pubkey: stakeAccount
+        pubKey
+        rent: "2282880" `div` (10^9)
+        rentRaw: "2282880"
         rentExemptReserve: "2282880"
+        seed: "stake:#{seed}"
+        seedIndex: seed
         staker
+        status: 'loading'
         voter: config.voter
         validator: config.voter
         withdrawer: staker
@@ -175,35 +189,25 @@ add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
     }
 
     store.staking.parsedProgramAccounts.push(account)
-
-    update-loader-var(store, config, no)
-
     err, accs <- as-callback web3t.velas.NativeStaking.getOwnStakingAccounts(store.staking.parsedProgramAccounts)
     if err?
         update-loader-var(store, config, no)
         return on-finish err
     web3t.velas.NativeStaking.setAccounts(accs);
-    store.staking.totalOwnStakingAccounts = accs.length
-    store.staking.accounts-are-loading = yes
 
-    cb = (err, accounts)->
-        if err?
-            update-loader-var(store, config, no)
-            return on-finish err
-        store.staking.accounts = accounts
-        publicKey = new velasWeb3.PublicKey(stakeAccount)
-        cb2 = (err, res)->
-            return on-finish err if err?
+    store.staking.accounts.push(account)
+    update-loader-var(store, config, no)
 
-        /* Subscribe to the changes of created stake account */
-        store.staking.accounts
-            |> filter (a)->
-                a.address is stakeAccount
-            |> each (it)->
-                publicKey  = it.pubKey
-                subscribe-to-stake-account({store, web3t, account: it, publicKey, cb: cb2})
-        on-finish null
-    fill-accounts { store, web3t, on-progress, on-finish: cb }, accs
+    /* Subscribe to the changes of created stake account */
+    store.staking.accounts
+        |> filter (a)->
+            a.address is stakeAccount
+        |> each (it)->
+            publicKey  = it.pubKey
+            subscribe-to-stake-account({store, web3t, account: it, publicKey: pubKey})
+    search-new-account(store, stakeAccount)
+    on-finish null
+
 
 filter-pools = (pools)->
     store.staking.pools = convert-pools-to-view-model pools
@@ -216,11 +220,8 @@ filter-pools = (pools)->
     store.staking.pools = running ++ delinquent
 
 updateStakeAccount = ({ store, account, updatedAccount, cb })->
-    return if updateStakeAccount[account.pubkey]?
-    updateStakeAccount[account.pubkey] = account.pubkey
     console.log "updateStakeAccount" {account, updatedAccount}
     if not account?
-        updateStakeAccount[account.pubkey] = null
         console.log("No account was found")
         return
     { lamports, data } = updatedAccount
@@ -228,7 +229,6 @@ updateStakeAccount = ({ store, account, updatedAccount, cb })->
         index = store.staking.accounts |> findIndex (-> it.pubkey is account.pubkey)
         if index > -1
             store.staking.accounts.splice(index,1)
-            updateStakeAccount[account.pubkey] = null
     else
         { meta, stake } = data?parsed?info
         { lockup, rentExemptReserve, authorized } = meta
@@ -242,7 +242,7 @@ updateStakeAccount = ({ store, account, updatedAccount, cb })->
 
         updates = { lamports: updatedAccount.lamports, stake, validator: voter, voter, rentExemptReserve, creditsObserved, activationEpoch, deactivationEpoch }
         account <<<< updates
-        updateStakeAccount[account.pubkey] = null
+
     on-progress = ->
         store.staking.pools = convert-pools-to-view-model [...it]
     err, pools <- query-pools { store, web3t, on-progress }
@@ -251,11 +251,15 @@ updateStakeAccount = ({ store, account, updatedAccount, cb })->
 
 /* If find set to true, then we first found account from store.staking.accounts by publicKey */
 subscribe-to-stake-account = ({store, web3t, account, publicKey, find, cb})->
+    if account.subscriptionID?
+        return cb null if cb?
+        return
     #console.log "[subscribe-to-stake-account]" publicKey.toBase58()
     commitment = 'confirmed'
     callback   = (updatedAccount)->
         updateStakeAccount({ store, account, updatedAccount, cb })
-    web3t.velas.NativeStaking.connection.onAccountChange(publicKey, callback, commitment)
+    subscriptionID = web3t.velas.NativeStaking.connection.onAccountChange(publicKey, callback, commitment)
+    account.subscriptionID = subscriptionID
 
 highlight = (store, AccountIndex)->
     return if not store.staking.accounts[AccountIndex]?
@@ -281,6 +285,7 @@ query-accounts-web3t = (store, web3t, on-progress, on-finish) ->
     return on-finish err if err?
     store.staking.accounts-are-loading = yes
     fill-accounts { store, web3t, on-progress, on-finish }, accs
+
 fill-accounts = ({ store, web3t, on-progress, on-finish }, [item, ...rest]) ->
     if not item? then
         store.staking.all-accounts-loaded = yes
@@ -292,13 +297,7 @@ fill-accounts = ({ store, web3t, on-progress, on-finish }, [item, ...rest]) ->
         return on-finish null, []
     store.staking.loadingAccountIndex += 1
     rent = item?rentExemptReserve
-    if store.staking.webSocketAvailable is yes
-        try
-            cb2 = (err)->
-                return on-finish err if err?
-            subscribe-to-stake-account({store, web3t, account: item, publicKey: new velasWeb3.PublicKey(item.pubkey), cb: cb2})
-        catch err
-            store.staking.webSocketAvailable = no
+
     #TODO: in future change seed with address and do not display this field
     err, seed <- as-callback web3t.velas.NativeStaking.checkSeed(item.pubkey)
     item.seed    = seed
@@ -392,7 +391,7 @@ creation-account-subscribe = ({ store, web3t, signature, timeout, acc_type, acti
             store.staking.creating-staking-account = no
             return cb "An error occurred during stake account creation."
 
-        store.staking.getAccountsFromCashe = no
+        store.staking.getAccountsFromCashe = yes
 
         wallet = store.current.account.wallets |> find -> it.coin.token is \vlx_native
         if not wallet?
