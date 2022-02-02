@@ -971,7 +971,6 @@ validators.init = ({ store, web3t }, cb)!->
     store.staking.loadingValidatorIndex = 0
     store.staking.splitting-staking-account = no
     store.staking.creating-staking-account = no
-    store.staking.webSocketAvailable = yes
     store.staking.subscribedAccounts = {}
 
     wallet = store.current.account.wallets |> find (-> it.coin.token is \vlx_native)
@@ -979,7 +978,8 @@ validators.init = ({ store, web3t }, cb)!->
         publicKey = new velasWeb3.PublicKey(wallet.publicKey)
         callback = (res)->
         commitment = 'finalized'
-        web3t.velas.NativeStaking.connection.onAccountChange(publicKey, callback, commitment)
+        id = web3t.velas.NativeStaking.connection.onAccountChange(publicKey, callback, commitment)
+        store.staking.webSocketAvailable = yes
     catch err
         console.log "ws onAccountChange err: " err
         store.staking.webSocketAvailable = no
@@ -993,8 +993,8 @@ validators.init = ({ store, web3t }, cb)!->
         store.staking.pools-network = store.current.network
     err, epochInfo <- as-callback web3t.velas.NativeStaking.getCurrentEpochInfo()
     console.error err if err?
-    { epoch, blockHeight, slotIndex, slotsInEpoch, transactionCount } = epochInfo
-    store.staking.current-epoch = epochInfo.epoch
+    epoch = epochInfo?epoch
+    store.staking.current-epoch = epoch
 
     store.staking.pools = []
     err, rent <- as-callback web3t.velas.NativeStaking.connection.getMinimumBalanceForRentExemption(200)
@@ -1017,15 +1017,13 @@ validators.init = ({ store, web3t }, cb)!->
         store.errors.fetchAccounts = { message: err }
     #store.staking.accounts = convert-accounts-to-view-model(result)
     store.staking.accounts = result
-
-    if store.staking.webSocketAvailable is yes
-        console.log "new subscription"
-        try
-            store.staking.accounts |> each (account)->
-                publicKey  = account.pubKey
-                subscribe-to-stake-account({store, web3t, account, publicKey})
-        catch err
-            store.staking.webSocketAvailable = no
+    try
+        store.staking.accounts |> each (account)->
+            publicKey  = account.pubKey
+            subscribe-to-stake-account({store, web3t, account, publicKey})
+    catch err
+        console.log "err" err
+        store.staking.webSocketAvailable = no
 
     # Normalize current page for accounts in pagination
     type = "accounts"
