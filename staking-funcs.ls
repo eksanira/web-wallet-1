@@ -220,8 +220,10 @@ filter-pools = (pools)->
     store.staking.pools = running ++ delinquent
 
 updateStakeAccount = ({ store, account, updatedAccount, cb })->
+    updateStakeAccount[account.pubkey] = account.pubkey
     console.log "updateStakeAccount" {account, updatedAccount}
     if not account?
+        updateStakeAccount[account.pubkey] = null
         console.log("No account was found")
         return
     { lamports, data } = updatedAccount
@@ -260,6 +262,7 @@ subscribe-to-stake-account = ({store, web3t, account, publicKey, find, cb})->
         updateStakeAccount({ store, account, updatedAccount, cb })
     subscriptionID = web3t.velas.NativeStaking.connection.onAccountChange(publicKey, callback, commitment)
     account.subscriptionID = subscriptionID
+    store.staking.subscribedAccounts[account.pubkey] = yes
 
 highlight = (store, AccountIndex)->
     return if not store.staking.accounts[AccountIndex]?

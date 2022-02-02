@@ -972,6 +972,7 @@ validators.init = ({ store, web3t }, cb)!->
     store.staking.splitting-staking-account = no
     store.staking.creating-staking-account = no
     store.staking.webSocketAvailable = yes
+    store.staking.subscribedAccounts = {}
 
     wallet = store.current.account.wallets |> find (-> it.coin.token is \vlx_native)
     try
