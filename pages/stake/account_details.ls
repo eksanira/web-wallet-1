@@ -888,7 +888,9 @@ staking-content = (store, web3t)->
         <- notify store, lang.fundsWithdrawn
         store.staking.getAccountsFromCashe = yes
         remove-stake-acc(account.pubkey)
-        navigate store, web3t, \validators
+        if store.staking.webSocketAvailable is no
+            return navigate store, web3t, \validators
+        store.current.page = \validators
 
     delegate = ->
         navigate store, web3t, \poolchoosing
@@ -903,8 +905,9 @@ staking-content = (store, web3t)->
         <- set-timeout _, 1000
         <- notify store, lang.fundsUndelegated
         #store.staking.getAccountsFromCashe = no
+        if store.staking.webSocketAvailable is no
+            return navigate store, web3t, \validators
         store.current.page = \validators
-        #navigate store, web3t, \validators
 
     split-account = ->
         cb = console.log
