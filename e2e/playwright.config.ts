@@ -9,7 +9,7 @@ const config: PlaywrightTestConfig = {
   },
   globalSetup: 'src/pw-helpers/before-hook.ts',
   // globalTeardown: '',
-  maxFailures: globalConfig.CI ? 10 : 1,
+  maxFailures: globalConfig.CI ? 5 : 1,
   projects: [
     {
       name: 'Chrome Stable',
@@ -19,7 +19,7 @@ const config: PlaywrightTestConfig = {
         browserName: 'chromium',
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36',
         channel: 'chrome',
-        headless: process.env.CI === 'true',
+        headless: globalConfig.headless,
         launchOptions: {
           args: ['--disable-dev-shm-usage', '--disable-gpu', '--no-sandbox', `--window-size=${windowSize.width},${windowSize.height}`, '--disable-features=TranslateUI'],
           devtools: false,
