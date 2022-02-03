@@ -291,18 +291,18 @@ staking-accounts-content = (store, web3t)->
         
         $button =
             | can-delegate =>
-                button { store, text: lang.to_delegate, on-click: choose, type: \secondary , icon : \arrowRight }
+                button { classes: "action-delegate", store, text: lang.to_delegate, on-click: choose, type: \secondary , icon : \arrowRight }
             | (not-locked or locked-and-can-withdraw) and (+deactivationEpoch isnt +max-epoch) and (+store.staking.current-epoch >= +deactivationEpoch) =>
                 disabled =
                     | (deactivationEpoch? and activationEpoch?) and +deactivationEpoch >= +store.staking.current-epoch => yes
                     | _ => no
-                button { store, text: lang.withdraw, on-click: withdraw, type: \secondary , icon : \arrowLeft, makeDisabled:disabled }
-            | _ => 
+                button { classes: "action-withdraw", store, text: lang.withdraw, on-click: withdraw, type: \secondary , icon : \arrowLeft, makeDisabled:disabled }
+            | _ =>
                 disabled = item.status in <[ deactivating ]>
                 if activationEpoch? and deactivationEpoch? and (activationEpoch !== deactivationEpoch)
                     if +activationEpoch < +deactivationEpoch and +deactivationEpoch isnt +max-epoch
-                        disabled = yes     
-                button { store, classes: "action-undelegate" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon : \arrowLeft, makeDisabled: disabled }
+                        disabled = yes
+                button { store, classes: "action-undelegate, undelegate-stake" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon : \arrowLeft, makeDisabled: disabled }
         highlighted = if highlight is yes then "highlight" else ""
 
         tr.pug(class="stake-account-item #{item.status} #{highlighted}" key="#{address}")
