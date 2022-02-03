@@ -10,6 +10,7 @@ export const config = {
   environment,
   logLevel: process.env.LOG_LEVEL || 'debug',
   network,
+  headless: !!process.env.CI || !!process.env.HEADLESS || false,
 };
 
 export const walletURL = `${data.walletHosts[config.environment]}?network=${config.network}`;
