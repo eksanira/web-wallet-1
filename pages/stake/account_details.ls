@@ -1070,7 +1070,7 @@ staking-content = (store, web3t)->
                             img.pug.check(src="#{icons.img-check}")
             .pug.section
                 .title.pug
-                    h3.pug #{lang.seed}
+                    h3.pug ID
                 .description.pug
                     span.pug(style=seed-style)
                         | #{store.staking.chosenAccount.seed}
