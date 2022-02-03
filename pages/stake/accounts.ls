@@ -55,7 +55,7 @@ as-callback = (p, cb)->
     .notification-entity
         @media(max-width: 540px)
             display: block
-            margin-top: 20px !important 
+            margin-top: 20px !important
     .hint
         .tooltip
             position: absolute
@@ -302,7 +302,7 @@ staking-accounts-content = (store, web3t)->
                 if activationEpoch? and deactivationEpoch? and (activationEpoch !== deactivationEpoch)
                     if +activationEpoch < +deactivationEpoch and +deactivationEpoch isnt +max-epoch
                         disabled = yes
-                button { store, classes: "action-undelegate, undelegate-stake" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon : \arrowLeft, makeDisabled: disabled }
+                button { store, classes: "action-undelegate" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon : \arrowLeft, makeDisabled: disabled }
         highlighted = if highlight is yes then "highlight" else ""
 
         tr.pug(class="stake-account-item #{item.status} #{highlighted}" key="#{address}")
