@@ -99,11 +99,11 @@ test.describe('Staking', () => {
       let undelegateButtonAppears = false;
       const startTime = new Date().getTime();
       while (!undelegateButtonAppears) {
+        if (new Date().getTime() - startTime > 20000) throw new Error(`Undelegated stake does not appear`);
         await wallets.refreshBalanceButton.click();
         await page.waitForSelector('#staking-accounts h3:text("LOADING")');
         await staking.waitForLoaded();
         undelegateButtonAppears = await staking.accounts.undelegateButton.isVisible();
-        if (new Date().getTime() - startTime > 15000) throw new Error(`Undelegated stake does not appear`);
       }
     });
 
@@ -134,11 +134,11 @@ test.describe('Staking', () => {
       let delegateButtonAppears = false;
       const startTime = new Date().getTime();
       while (!delegateButtonAppears) {
+        if (new Date().getTime() - startTime > 20000) throw new Error(`Delegated stake does not appear`);
         await wallets.refreshBalanceButton.click();
         await page.waitForSelector('#staking-accounts h3:text("LOADING")');
         await staking.waitForLoaded();
         delegateButtonAppears = await staking.accounts.delegateButton.isVisible();
-        if (new Date().getTime() - startTime > 15000) throw new Error(`Delegated stake does not appear`);
       }
     });
 
