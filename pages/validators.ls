@@ -896,6 +896,12 @@ validators = ({ store, web3t })->
     style=
         background: info.app.wallet
         color: info.app.text
+    title-style =
+        z-index: 3
+        color: info.app.text
+        border-bottom: "1px solid #{info.app.border}"
+        background: info.app.background
+        background-color: info.app.bgspare
     border-style =
         color: info.app.text
         border-bottom: "1px solid #{info.app.border}"
@@ -918,7 +924,7 @@ validators = ({ store, web3t })->
     show-class =
         if store.current.open-menu then \hide else \ ""
     .pug.staking
-        .pug.title(style=border-style)
+        .pug.title(style=title-style)
             .pug.header(class="#{show-class}") #{lang.delegateStake}
             .pug.close(on-click=go-back)
                 img.icon-svg.pug(src="#{icons.arrow-left}" style=icon-color)
