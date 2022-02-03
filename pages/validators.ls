@@ -852,7 +852,7 @@ staking-content = (store, web3t)->
                 .title.pug
                     h2.pug #{lang.balance}
                 .description.pug
-                    span.pug #{your-balance} VLX
+                    span.pug(id="vlx-native-balance") #{your-balance} VLX
             stake-accounts {store, web3t}
             .form-group.pug(id="pools")
                 alert-txn { store }
