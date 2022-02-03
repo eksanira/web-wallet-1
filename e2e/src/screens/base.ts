@@ -1,6 +1,5 @@
 import { Locator } from '@playwright/test';
 import { Browser, BrowserContext, Page } from '../common-test-exports';
-import { log } from '../tools/logger';
 
 type MenuItem = 'wallets' | 'staking' | 'search' | 'settings' | 'support' | 'testnet';
 
@@ -25,15 +24,6 @@ export abstract class BaseScreen {
       await this.page.click('" Ok"');
     },
   };
-
-  async getStore(): Promise<void> {
-    // store.current.account.wallets
-    const href = await this.page.evaluate(() => document.location.href);
-    log.warn(href);
-    const window: any = await this.page.evaluate(() => window);
-    // const wallet = window.store;
-    log.warn(window);
-  }
 
   async useMax(): Promise<void> {
     await this.page.locator('#send-max').click();

@@ -17,27 +17,29 @@ test.describe('Staking', () => {
     await page.goto(walletURL);
     await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
     await wallets.openMenu('staking');
+
+    // TEMPORARY
+    await page.click('.switch-account');
+    await page.waitForTimeout(500);
+    await page.click('" Account 2"');
+    await staking.waitForLoaded();
   });
 
   // don't remove "serial". tests in this suite depend on each other
   test.describe.serial('Actions >', () => {
     const stakingAmount = 5;
-    test.only('Cleanup beforeall', async () => {
-      await staking.getStore();
-
+    test('Cleanup beforeall', async () => {
       await staking.cleanup.stakesToUndelegate();
       await staking.cleanup.stakesToWithdraw();
       await staking.cleanup.stakesNotDelegated();
     });
 
-    test('Use max', async () => {
-      await staking.makeSureUiBalanceEqualsChainBalance(data.wallets.staking.staker.publicKey);
-      const finalVLXNativeBalance = helpers.toFixedNumber((await velasNative.getBalance(data.wallets.staking.staker.publicKey)).VLX);
+    test.skip('Use max', async () => {
+      const balance = await staking.getVLXNativeBalance();
       await staking.createStakingAccountButton.click();
       await staking.useMax();
-      const maxAmountValue = await staking.createStakingAccountForm.amount.getAttribute('value');
-      const maxAmount = helpers.toFixedNumber(Number(maxAmountValue?.replace(',', '')));
-      assert.equal(maxAmount, finalVLXNativeBalance - 1);
+      const maxAmount = await staking.createStakingAccountForm.getMaxAmount();
+      assert.equal(maxAmount, Math.floor(balance) - 1);
     });
 
     test('Create staking account', async () => {
@@ -169,5 +171,16 @@ test.describe('Staking', () => {
       assert.isTrue(await staking.validatorsList.validator.copy.first().isVisible(), 'No copy address icon in validators list');
       assert.isTrue(await staking.validatorsList.validator.myStakes.first().isVisible(), 'No my-stake column in validators list');
     });
+
+    // TODO
+    test.skip('stakes list could be refreshed manually if WS connection is not established', async () => {
+    });
+
+    test('Cleanup afterall', async () => {
+      await staking.cleanup.stakesToUndelegate();
+      await staking.cleanup.stakesToWithdraw();
+      await staking.cleanup.stakesNotDelegated();
+    });
+
   });
 });

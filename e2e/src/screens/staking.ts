@@ -12,6 +12,8 @@ export class StakingScreen extends BaseScreen {
     super(page);
   }
 
+  vlxNativeBalance = this.page.locator('#vlx-native-balance');
+
   accounts = {
     delegateButton: this.page.locator('#staking-accounts tr.inactive span:text(" Delegate")'),
     delegateButtonSecond: this.page.locator(':nth-match(#staking-accounts tr.inactive span:text(" Delegate"), 2)'),
@@ -19,6 +21,7 @@ export class StakingScreen extends BaseScreen {
     withdrawButton: this.page.locator('#staking-accounts tr.loading button:not([disabled]) span:text(" Withdraw")'),
     loader: this.page.locator('#staking-accounts .entities-loader'),
     stakerAddress: this.page.locator('#staking-accounts [datacolumn="Staker Address"]'),
+    
 
     emptyListSelector: '#staking-accounts .amount:text(" (0) ")',
 
@@ -53,11 +56,18 @@ export class StakingScreen extends BaseScreen {
   };
 
   createStakingAccountButton = this.page.locator('#create-staking-account button span:text(" Create Account")');
+  creatingStake = this.createStakingAccountButton.locator('" Creating...');
 
   creatingStakingAccountLoader =this.page.locator('#create-staking-account button[disabled]');
 
   createStakingAccountForm = {
     amount: this.page.locator('.input-area input'),
+    maxAmount: '',
+    getMaxAmount: async() => {
+      const maxAmountValue = await this.createStakingAccountForm.amount.getAttribute('value');
+      const maxAmount = Number(maxAmountValue?.replace(',', ''));
+      return maxAmount;
+    }
   };
 
   async waitForStakingAccountCreation() {
@@ -102,17 +112,16 @@ export class StakingScreen extends BaseScreen {
   async waitForStakesAmountUpdated(params: { initialStakesAmount: number, stakeType?: Stake | 'all', timeout?: number }): Promise<number> {
     const { initialStakesAmount } = params;
     const stakeType = params.stakeType || 'all';
-    const timeout = params.timeout || 30000;
+    const timeout = params.timeout || 10000;
 
     let finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);
     const startTime = new Date().getTime();
-    while (finalAmountOfStakingAccounts === initialStakesAmount) {
-      log.debug(`Amount of stake accounts still the same - ${finalAmountOfStakingAccounts}. Wait and refresh the staking data...`);
-      await this.page.waitForTimeout(2000);
-      await this.refresh();
+    while (finalAmountOfStakingAccounts === initialStakesAmount && startTime < new Date().getTime() + 10000) {
+      log.debug(`Amount of stake accounts still the same - ${finalAmountOfStakingAccounts}. Wait for WS message...`);
+      await this.page.waitForTimeout(500);
       finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);
       if (startTime - new Date().getTime() >= timeout) {
-        throw new Error(`You expected "${stakeType}" stakes amount to be changed. But no changes during 30 sec. Initial and final "${stakeType}" stakes amount: ${initialStakesAmount}.`);
+        throw new Error(`You expected "${stakeType}" stakes amount to be changed. But no changes during ${timeout} sec. Initial and final "${stakeType}" stakes amount: ${initialStakesAmount}.`);
       }
     }
     log.debug(`Great! Amount of stake accounts has changed: ${initialStakesAmount} > ${finalAmountOfStakingAccounts}.`);
@@ -283,14 +292,6 @@ export class StakingScreen extends BaseScreen {
         await this.modals.confirmPrompt();
         await this.page.waitForSelector('" Funds undelegated successfully"');
         await this.modals.clickOK();
-        await this.waitForLoaded();
-        toUndelegateStakesAmount = await this.getAmountOfStakes('Undelegate');
-      }
-
-      while (toUndelegateStakesAmount !== 0) {
-        await this.page.waitForTimeout(1000);
-        await this.refresh();
-        log.debug('Amount of staking accounts hasn\'t changed, refreshing...');
         toUndelegateStakesAmount = await this.getAmountOfStakes('Undelegate');
       }
     },
@@ -302,14 +303,6 @@ export class StakingScreen extends BaseScreen {
         await this.modals.confirmPrompt();
         await this.page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
         await this.modals.clickOK();
-        await this.waitForLoaded();
-        toWithdrawStakesAmount = await this.getAmountOfStakes('Withdraw');
-      }
-
-      while (toWithdrawStakesAmount !== 0) {
-        await this.page.waitForTimeout(1000);
-        await this.refresh();
-        log.debug('Amount of staking accounts hasn\'t changed, refreshing...');
         toWithdrawStakesAmount = await this.getAmountOfStakes('Withdraw');
       }
     },
@@ -323,28 +316,15 @@ export class StakingScreen extends BaseScreen {
         await this.modals.confirmPrompt();
         await this.page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
         await this.page.click('" Ok"');
-        await this.waitForLoaded();
-        const previousNotDelegatedStakesAmount = notDelegatedStakesAmount;
         notDelegatedStakesAmount = await this.getAmountOfStakes('Delegate');
-
-        while (previousNotDelegatedStakesAmount === notDelegatedStakesAmount) {
-          await this.page.waitForTimeout(1000);
-          await this.refresh();
-          log.debug('Amount of staking accounts hasn\'t changed, refreshing...');
-          notDelegatedStakesAmount = await this.getAmountOfStakes('Delegate');
-        }
       }
     },
 
   };
 
-  async makeSureUiBalanceEqualsChainBalance(address: string): Promise<void> {
-    const initialWalletBalance = helpers.toFixedNumber((await velasNative.getBalance(address)).VLX);
-    let uiBalance = (await this.page.innerText('.section .description span')).replace('VLX', '').trim();
-    while (initialWalletBalance !== helpers.toFixedNumber(Number(uiBalance))) {
-      await this.refresh();
-      uiBalance = (await this.page.innerText('.section .description span')).replace('VLX', '').trim();
-      log.debug('Balance on UI is not the same as on blockchain, refreshing...');
-    }
+  async getVLXNativeBalance(): Promise<number> {
+    const textWithBalance = (await this.vlxNativeBalance.textContent())?.trim();
+    const balance = Number(textWithBalance?.split(' ')[0]);
+    return balance;
   }
 }
