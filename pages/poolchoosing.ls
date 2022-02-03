@@ -230,6 +230,7 @@ require! {
                         -web-kit-transition: breathe 3s ease-in infinite
                         height: auto
                         max-height: 70vh
+                        background: rgba(255, 255, 255, 0.04)
                         .stake-pointer
                             background: rgb(37, 87, 127)
                         &.lockup
@@ -280,8 +281,7 @@ require! {
                         width: 100%
                         border-collapse: collapse
                         margin: 0px auto
-                    tr:nth-of-type(odd)
-                        background: rgba(gray, 0.2)
+
                     th
                         font-weight: 400
                         &:first-child
