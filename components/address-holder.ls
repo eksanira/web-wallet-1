@@ -91,8 +91,7 @@ require! {
             display: inline-block
             cursor: pointer
             user-select: text !important
-            &.active
-                color: orange
+
 module.exports = ({ store, wallet, type, text })->
     style = get-primary-info store
     address-suffix = store.current.address-suffix
