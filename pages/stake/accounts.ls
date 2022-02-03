@@ -411,6 +411,7 @@ staking-accounts-content = (store, web3t)->
                     path.pug(xmlns="http://www.w3.org/2000/svg" d="M1796 2907C 1749 2827 1701 2743 1515 2420C 1407 2230 1275 2001 1222 1910C 1170 1819 1110 1716 1090 1680C 950 1438 891 1334 845 1255C 816 1206 747 1084 690 985C 633 886 554 749 514 680L514 680L441 555L1130 552C 1510 551 2130 551 2508 552L2508 552L3197 555L3102 720C 3050 811 2991 914 2970 950C 2950 986 2856 1150 2761 1315C 2665 1480 2510 1750 2415 1915C 1758 3060 1827 2940 1820 2940C 1817 2940 1806 2925 1796 2907z" stroke="none" fill="rgb(255 215 0)" fill-rule="nonzero")
 
     .pug.staking-accounts-content
+        loader { loading: store.staking.creating-staking-account, text: "Creating staking account..." }
         .pug
             .form-group.pug(id="create-staking-account")
                 .pug.section.create-staking-account 
