@@ -3,6 +3,7 @@ import {
   assert, data, expect, helpers, test, walletURL,
 } from '../../common-test-exports';
 import { AuthScreen, StakingScreen, WalletsScreen } from '../../screens';
+import { log } from '../../tools/logger';
 
 let auth: AuthScreen;
 let wallets: WalletsScreen;
@@ -17,24 +18,22 @@ test.describe('Staking', () => {
     await page.goto(walletURL);
     await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
     await wallets.openMenu('staking');
-
-    // TEMPORARY
-    await page.click('.switch-account');
-    await page.waitForTimeout(500);
-    await page.click('" Account 2"');
     await staking.waitForLoaded();
   });
 
   // don't remove "serial". tests in this suite depend on each other
   test.describe.serial('Actions >', () => {
     const stakingAmount = 5;
-    test('Cleanup beforeall', async () => {
+    test('Cleanup beforeall', async ({ page }) => {
+      if (await page.isVisible('button[disabled]')) {
+        throw new Error(`There are stakes in warm up or cool down perios. Test suite could not be continued.`);
+      }
       await staking.cleanup.stakesToUndelegate();
       await staking.cleanup.stakesToWithdraw();
       await staking.cleanup.stakesNotDelegated();
     });
 
-    test.skip('Use max', async () => {
+    test('Use max', async () => {
       const balance = await staking.getVLXNativeBalance();
       await staking.createStakingAccountButton.click();
       await staking.useMax();
@@ -44,6 +43,7 @@ test.describe('Staking', () => {
 
     test('Create staking account', async () => {
       // arrange
+      // VLXNativeAddress is hardcoded address for the 1st account
       const VLXNativeAddress = data.wallets.staking.staker.publicKey;
       const initialAmountOfStakingAccounts = await staking.getAmountOfStakes('Delegate');
       const stakingAccountAddresses = await staking.getStakingAccountsAddresses();
@@ -57,7 +57,6 @@ test.describe('Staking', () => {
       await staking.waitForLoaded();
 
       // assert
-      // new stake does not appear in the list immediately
       const finalAmountOfStakingAccounts = await staking.waitForStakesAmountUpdated({ initialStakesAmount: initialAmountOfStakingAccounts, stakeType: 'Delegate' });
       assert.equal(finalAmountOfStakingAccounts, initialAmountOfStakingAccounts + 1);
 
@@ -77,7 +76,7 @@ test.describe('Staking', () => {
       const initialAmountOfDelegatedStakes = await staking.getAmountOfStakes('Undelegate');
       const stakeAccountAddress = await staking.getFirstStakingAccountAddressFromTheList('Delegate');
 
-      await staking.accounts.delegate();
+      await staking.accounts.clickDelegate();
       await staking.delegateTo.selectValidator.first().waitFor({ timeout: 20000 });
       await staking.delegateTo.selectValidator.first().click();
       await staking.modals.confirmPrompt();
@@ -94,6 +93,18 @@ test.describe('Staking', () => {
       assert.equal(stakeAccOnBlockchain.active, 0);
       assert.equal(stakeAccOnBlockchain.inactive, stakingAmount * 10 ** 9);
       assert.equal(stakeAccOnBlockchain.state, 'activating');
+
+      // postcondition - refresh until delegated stake becomes undelegated
+      // await staking.refreshStakesToGetUpdatedCachedStatuses({from: 'Delegate', to: 'Undelegate'})
+      let undelegateButtonAppears = false;
+      const startTime = new Date().getTime();
+      while (!undelegateButtonAppears) {
+        await wallets.refreshBalanceButton.click();
+        await page.waitForSelector('#staking-accounts h3:text("LOADING")');
+        await staking.waitForLoaded();
+        undelegateButtonAppears = await staking.accounts.undelegateButton.isVisible();
+        if (new Date().getTime() - startTime > 15000) throw new Error(`Undelegated stake does not appear`);
+      }
     });
 
     test('Undelegate stake', async ({ page }) => {
@@ -101,12 +112,14 @@ test.describe('Staking', () => {
       const initialToDelegateStakesAmount = await staking.getAmountOfStakes('Delegate');
       const stakeAccountAddress = await staking.getFirstStakingAccountAddressFromTheList('Delegate');
 
-      await staking.clickUndelegate();
+      await staking.accounts.clickUndelegate();
       await staking.modals.confirmPrompt();
       await page.waitForSelector('" Funds undelegated successfully"', { timeout: 10000 });
       await staking.modals.clickOK();
       await staking.waitForLoaded();
+
       const finalToUndelegateStakesAmount = await staking.waitForStakesAmountUpdated({ initialStakesAmount: initialToUndelegateStakesAmount, stakeType: 'Undelegate' });
+
       assert.equal(finalToUndelegateStakesAmount, initialToUndelegateStakesAmount - 1, 'Amount of stakes to undelegate has not changed after undelegation');
       assert.equal(await staking.getAmountOfStakes('Delegate'), initialToDelegateStakesAmount + 1, 'Amount of stakes to withdraw has not changed after undelegation');
 
@@ -114,6 +127,19 @@ test.describe('Staking', () => {
       assert.equal(stakeAccOnBlockchain.active, 0);
       assert.equal(stakeAccOnBlockchain.inactive, stakingAmount * 10 ** 9);
       assert.equal(stakeAccOnBlockchain.state, 'inactive');
+
+      // postcondition - refresh until undelegated stake becomes delegated
+      // await staking.refreshStakesToGetUpdatedCachedStatuses({from: 'Delegate', to: 'Undelegate'})
+
+      let delegateButtonAppears = false;
+      const startTime = new Date().getTime();
+      while (!delegateButtonAppears) {
+        await wallets.refreshBalanceButton.click();
+        await page.waitForSelector('#staking-accounts h3:text("LOADING")');
+        await staking.waitForLoaded();
+        delegateButtonAppears = await staking.accounts.delegateButton.isVisible();
+        if (new Date().getTime() - startTime > 15000) throw new Error(`Delegated stake does not appear`);
+      }
     });
 
     test('Split stake', async ({ page }) => {
@@ -124,6 +150,7 @@ test.describe('Staking', () => {
       await staking.stakeAccount.splitButton.click();
       await staking.createStakingAccountForm.amount.fill('1');
       await staking.modals.confirmPrompt();
+      await staking.stakeAccount.splittingInProcess.waitFor();
       await page.waitForSelector('text=/account created and funds are splitted successfully/i', { timeout: 20000 });
       await staking.modals.clickOK();
       await staking.waitForSplitedStakeToAppear();
@@ -175,12 +202,11 @@ test.describe('Staking', () => {
     // TODO
     test.skip('stakes list could be refreshed manually if WS connection is not established', async () => {
     });
+  });
 
-    test('Cleanup afterall', async () => {
-      await staking.cleanup.stakesToUndelegate();
-      await staking.cleanup.stakesToWithdraw();
-      await staking.cleanup.stakesNotDelegated();
-    });
-
+  test('Cleanup afterall', async () => {
+    await staking.cleanup.stakesToUndelegate();
+    await staking.cleanup.stakesToWithdraw();
+    await staking.cleanup.stakesNotDelegated();
   });
 });

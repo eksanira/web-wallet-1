@@ -5,7 +5,7 @@ const windowSize = { width: 1900, height: 1080 };
 
 const config: PlaywrightTestConfig = {
   expect: {
-    timeout: 5 * 1000,
+    timeout: 6 * 1000,
   },
   globalSetup: 'src/pw-helpers/before-hook.ts',
   // globalTeardown: '',
@@ -49,7 +49,7 @@ const config: PlaywrightTestConfig = {
   // repeatEach: 5,
   // reporter: 'list',
   retries: globalConfig.CI ? 1 : 0,
-  timeout: 220000,
+  timeout: 120000,
   workers: 2,
 };
 

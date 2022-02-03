@@ -168,7 +168,7 @@ export class WalletsScreen extends BaseScreen {
     return tokenId;
   }
 
-  async updateBalances(): Promise<void> {
+  async refreshBalances(): Promise<void> {
     await this.refreshBalanceButton.click();
     await this.waitForWalletsDataLoaded();
   }
