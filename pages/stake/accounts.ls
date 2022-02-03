@@ -316,7 +316,8 @@ staking-accounts-content = (store, web3t)->
                     address-holder-popup { store, wallet: wallet-validator, item }
                 else
                     "---"
-            td.pug #{seed}
+            td.pug
+                .pug.seed #{seed}
             if no
                 td.pug(class="account-status #{status}") #{$status}
             td.pug
@@ -458,7 +459,7 @@ staking-accounts-content = (store, web3t)->
                                                     td.pug(width="40%" style=staker-pool-style title="Your Staking Account") #{lang.account} (?)
                                                     td.pug(width="10%" style=stats title="Your Deposited Balance") #{lang.balance} (?)
                                                     td.pug(width="30%" style=stats title="Where you staked") #{lang.validator} (?)
-                                                    td.pug(width="7%" style=stats title="The ID of your stake. This is made to simplify the search of your stake in validator list") #{lang.seed} (?)
+                                                    td.pug(width="7%" style=stats title="The ID of your stake. This is made to simplify the search of your stake in validator list") ID (?)
                                                     if no
                                                         td.pug(width="10%" style=stats title="Current staking status. Please notice that you cannot stake / unstake immediately. You need to go through the waiting period. This is made to reduce attacks by staking and unstaking spam.") #{lang.status} (?)
                                                     td.pug(width="10%" style=stats) #{(lang.action ? "Action")}

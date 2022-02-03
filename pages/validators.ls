@@ -73,6 +73,8 @@ require! {
             opacity: 1
         100%
             opacity: 0
+    .main-sections
+        margin-bottom: 50px
     .blink
         animation: 1s linear blink-animation  infinite
         -webkit-animation: 1s linear blink-animation  infinite
@@ -217,11 +219,9 @@ require! {
                 margin: 5px 0
                 outline: none
             .section
-                &:last-of-type
-                    margin-bottom: 50px
                 border-bottom: 1px solid rgba(240, 237, 237, 0.16)
                 padding: 30px 20px
-                display: flex
+
                 .chosen-pool
                     .buttons
                         text-align: left
@@ -264,8 +264,7 @@ require! {
                     @media(max-width: 540px)
                         background-image: none
                 .title
-                    padding: 0px 10px 0 0
-                    width: 17%
+                    padding: 0px 10px 10px 0
                     min-width: 150px
                     text-align: left
                     text-transform: uppercase
@@ -280,7 +279,7 @@ require! {
                 .description
                     padding: 0px
                     font-size: 14px
-                    width: 80%
+                    width: 100%
                     text-align: left
                     hr
                         margin: 15px auto
@@ -310,6 +309,7 @@ require! {
                         -web-kit-transition: breathe 3s ease-in infinite
                         position: relative
                         max-height: 80vh
+                        background: rgba(255, 255, 255, 0.04)
                         .stake-pointer
                             background: rgb(37, 87, 127)
                         &.lockup
@@ -338,11 +338,10 @@ require! {
                             &.with-stake
                                 filter: saturate(6.5)
                         tr
+                            border-bottom: 1px solid rgba(255, 255, 255, 0.07)
                             animation: appear .1s ease-in
                             &.activating, &.active
                                 color: var(--color-td)
-                            &.inactive
-                                color: orange
                             &.banned
                                 color: red
                             .inner-address-holder
@@ -372,13 +371,7 @@ require! {
                                 color: white
                                 line-height: 1.6
                                 border-radius: 4px
-                                background: gray
-                                &.active, &.activating
-                                    background: rgb(38, 219, 85)
-                                &.inactive
-                                    background: orange
-                                &.banned
-                                    background: red
+
                         button
                             width: 100%
                             height: 36px
@@ -387,8 +380,7 @@ require! {
                         width: 100%
                         border-collapse: collapse
                         margin: 0px auto
-                    tr:nth-of-type(odd)
-                        background: rgba(gray, 0.2)
+
                     th
                         font-weight: 400
                         &:first-child
