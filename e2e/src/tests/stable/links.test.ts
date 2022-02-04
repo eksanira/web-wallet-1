@@ -1,21 +1,22 @@
-import { test } from '@playwright/test';
-import { assert } from '../../assert';
-import { walletURL } from '../../config';
-import { setupPage } from '../../pw-helpers/setup-page';
+import { AuthScreen } from '../../screens';
+import { assert, test, walletURL } from '../../common-test-exports';
 
 test.describe('Links', () => {
+  let auth: AuthScreen;
+
   test.beforeEach(async ({ page }) => {
-    setupPage(page);
     await page.goto(walletURL, { waitUntil: 'networkidle' });
+    auth = new AuthScreen(page);
   });
 
   test('Download links are correct', async ({ page }) => {
-    const appleLink = await page.getAttribute('#download-ios', 'href');
-    const androidLink = await page.getAttribute('#download-android', 'href');
+    const appleLink = await auth.downloadButtons.iOS.getAttribute('href');
+    const androidLink = await auth.downloadButtons.android.getAttribute('href');
     assert.isTrue(appleLink?.includes('https://apps.apple.com/'));
     assert.isTrue(androidLink?.includes('https://play.google.com/'));
 
-    await page.click('#download-desktop');
+    await auth.downloadButtons.desktop.click();
+    await auth.installWallets.platformsList.waitFor();
     await page.waitForSelector('.platforms');
 
     const donwloadLinks = await page.$$('a');

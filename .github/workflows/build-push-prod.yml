@@ -151,6 +151,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: test-results
-          path: e2e/test-results/
+          name: test-report
+          path: |
+            e2e/test-report/
+            e2e/test-report-swap/
           retention-days: 7

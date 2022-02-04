@@ -1,8 +1,7 @@
-import { config } from '../config';
-import { log } from '../tools/logger';
-import { Browser, BrowserContext, Page } from '../types';
+import { Locator } from '@playwright/test';
+import { Browser, BrowserContext, Page } from '../common-test-exports';
 
-type MenuItem = 'wallets' | 'staking' | 'search' | 'settings' | 'support';
+type MenuItem = 'wallets' | 'staking' | 'search' | 'settings' | 'support' | 'testnet';
 
 export abstract class BaseScreen {
   context: BrowserContext;
@@ -16,19 +15,22 @@ export abstract class BaseScreen {
     this.browser = browser;
   }
 
-  async confirmPrompt(): Promise<void> {
-    await this.page.click('#prompt-confirm');
+  modals = {
+    confirmPrompt: async (params?: { timeout?: number }): Promise<void> => {
+      await this.page.click('" Confirm"', { timeout: params?.timeout || 10000 });
+    },
+
+    clickOK: async (): Promise<void> => {
+      await this.page.click('" Ok"');
+    },
+  };
+
+  async useMax(): Promise<void> {
+    await this.page.locator('#send-max').click();
   }
 
   async isLoggedIn(): Promise<boolean> {
-    try {
-      await this.page.waitForSelector('.balance', { timeout: 500 });
-      log.info('User is logged in');
-      return true;
-    } catch (e) {
-      log.info('User is not logged in');
-      return false;
-    }
+    return await this.page.locator('.right-side .menu-item.bottom').isVisible();
   }
 
   async openMenu(item: MenuItem): Promise<void> {
@@ -36,14 +38,19 @@ export abstract class BaseScreen {
     let menuItemName: MenuItem | 'delegate' = item;
     if (item === 'staking') menuItemName = 'delegate';
     await this.page.click(`#menu-${menuItemName}`);
-
-    // wait for wallets data loaded
-    if (menuItemName === 'wallets') {
-      await this.page.waitForSelector('.wallet-item .top-left [class=" img"]', { state: 'visible', timeout: 31000 });
-    }
   }
 
-  async waitForSelectorDisappears(selector: string, timeout = config.defaultWaitTimeout): Promise<void> {
+  getElementWhichTextContentContainsWords(wordsList: string[]): Locator {
+    let selector = 'text=/';
+    wordsList.forEach((word: string) => {
+      selector += `(?=.*${word})`;
+    });
+    selector += '/i';
+    // 'text=/(?=.*not)(?=.*valid)(?=.*address)/i'
+    return this.page.locator(selector);
+  }
+
+  async waitForSelectorDisappears(selector: string, timeout = 5000): Promise<void> {
     let isElementVisible = await this.page.isVisible(selector);
     let totalWaitTime = 0;
     const oneIterationWaitTime = 100;

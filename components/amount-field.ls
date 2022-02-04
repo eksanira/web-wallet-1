@@ -149,7 +149,7 @@ module.exports = ({ store, value, on-change, placeholder, id, show-details, toke
         | wallet.coin?custom is yes and icons.customWalletIcon? => icons.customWalletIcon
         | _ => wallet.coin.image
     .pug.input-area
-        CurrencyInput.pug(class="textfield" style=input-style key="amount" allowDecimals=yes allowNegativeValue=no value="#{value}" decimalsLimit=decimalsLimit label="Send" decimalSeparator=DECIMAL_SEPARATOR groupSeparator="," onValueChange=on-change-internal)
+        CurrencyInput.pug(id="value-input" class="textfield" style=input-style key="amount" allowDecimals=yes allowNegativeValue=no value="#{value}" decimalsLimit=decimalsLimit label="Send" decimalSeparator=DECIMAL_SEPARATOR groupSeparator="," onValueChange=on-change-internal)
         span.suffix.pug(style=input-style)
             img.icon.pug(src="#{wallet-icon}")
             span.pug #{token-label}

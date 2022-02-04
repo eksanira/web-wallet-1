@@ -90,6 +90,10 @@ store =
             opened: no
             progress: \0
             update-progress: null
+    forceReload: yes
+    forceReloadTxs: yes
+    previous:
+        page: ''
     custom-token:
         add: no
         isLoading: no
@@ -178,7 +182,17 @@ store =
             move-stake: 0
             add-validator-stake: ""
             add-validator-topup: ""
+    errors:
+        fetchValidators: null
+        fetchAccounts: null
     staking:
+        webSocketAvailable: yes
+        splitting-staking-account: no
+        creating-staking-account: no
+        REWARDS_PER_PAGE: 10
+        rewards_page: 1
+        rewards-index: 0
+        fetchAccounts: yes
         accounts: []
         myStakeMaxPart: null
         reward-info: []

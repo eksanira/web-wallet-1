@@ -10,6 +10,7 @@ require! {
     \./refresh-txs.ls : \refreshWaletTxs
 }
 export set-account = (web3, store, cb)->
+    
     err, account <- new-account store, seedmem.mnemonic
     return cb err if err?
     store.current.account = account
@@ -20,6 +21,7 @@ export set-account = (web3, store, cb)->
     cb null
 export refresh-account = (web3, store, cb)-->
     scam-warning!
+    return cb null if store.forceReload isnt yes
     err <- set-account web3, store
     return cb err if err?
     #err, name <- web3.get-account-name store
@@ -30,7 +32,9 @@ export refresh-account = (web3, store, cb)-->
     account-name = store.current.account.account-name
     store.current.nickname = "" if account-name isnt "Anonymous"
     store.current.nicknamefull = account-name if account-name isnt "Anonymous"
-    refresh-wallet web3, store, cb
+    err <- refresh-wallet web3, store
+    #store.forceReload = no
+    cb null
 refresh-txs = (web3, store, cb)-->
     <- refresh-walet-txs web3, store
 export background-refresh-account = (web3, store, cb)->
@@ -42,6 +46,8 @@ export background-refresh-account = (web3, store, cb)->
     err <- refresh-account web3, bg-store
     store.current.refreshing = no
     return cb err if err?
+    bg-store.forceReload = no
+    store.forceReload = no
     transaction ->
         wallet-index = 
             | store.current?filter?token? => 

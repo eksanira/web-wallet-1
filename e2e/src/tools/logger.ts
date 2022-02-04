@@ -10,7 +10,6 @@ export const log = tracer.colorConsole({
   format: [
     defaultLogFormat,
     {
-      // error: `${defaultLogFormat}\n{{stack}}`,
       fatal: `${defaultLogFormat}\n{{stack}}`,
     },
   ],

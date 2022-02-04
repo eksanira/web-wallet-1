@@ -93,13 +93,17 @@ module.exports = ({ store, type, disabled, config })->
         store.staking["visible_per_page_#{type}_selector"] = !store.staking["visible_per_page_#{type}_selector"]
     close-per-page-selector = ->
         store.staking["visible_per_page_#{type}_selector"] = no
+    p-style =
+        background-color: style.app.background
+        background: style.app.background
+        zIndex: 2
     # Render
     .pug.table-pagination
         .pug.pagination-holder
-            span.pug.per-page-selector(key="#{type}-selector" id="#{type}-selector" on-click=switch-per-page-selector onMouseLeave=close-per-page-selector)
+            span.pug.per-page-selector(key="#{type}-selector" id="#{type}-selector" on-click=switch-per-page-selector onMouseLeave=close-per-page-selector style=p-style)
                 .to-show.pug Show #{per-page}
                 if store.staking["visible_per_page_#{type}_selector"] is yes
-                    .per-page-options.pug
+                    .per-page-options.pug(style=p-style)
                         .span.pug.per-page-option(on-click=set-per-page(5)) 5
                         .span.pug.per-page-option(on-click=set-per-page(10)) 10
                         .span.pug.per-page-option(on-click=set-per-page(20)) 20

@@ -1,8 +1,9 @@
 import Axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { infura } from './explorers-api';
+import { ropsten } from './explorers-api';
 
 export class BalancesAPI {
   axios: AxiosInstance;
+
   axiosConfig: AxiosRequestConfig;
 
   constructor() {
@@ -25,13 +26,13 @@ export class BalancesAPI {
   async apiVelasCom() {
     const apiTestnetVelasURL = 'https://api.testnet.velas.com/rpc';
     const apiTestnetVelasResponse = await this.axios.post(apiTestnetVelasURL, {
-      jsonrpc: "2.0",
+      jsonrpc: '2.0',
       id: 1,
-      method: "eth_getBalance",
+      method: 'eth_getBalance',
       params: [
-        "0x1201553d1cda7c3bd7abc037a382d958b2674528",
-        "latest"
-      ]
+        '0x1201553d1cda7c3bd7abc037a382d958b2674528',
+        'latest',
+      ],
     });
     if (!apiTestnetVelasResponse.data) throw new Error(`Invalid response from: ${apiTestnetVelasURL}\nResponse data:\n${apiTestnetVelasResponse.data}`);
   }
@@ -39,13 +40,13 @@ export class BalancesAPI {
   async evmExplorer() {
     const evmExplorerTestnetVelasURL = 'https://evmexplorer.testnet.velas.com/rpc';
     const evmExplorerTestnetVelasResponse = await this.axios.post(evmExplorerTestnetVelasURL, {
-      jsonrpc: "2.0",
+      jsonrpc: '2.0',
       id: 1,
-      method: "eth_getBalance",
+      method: 'eth_getBalance',
       params: [
-        "0x1201553d1cda7c3bd7abc037a382d958b2674528",
-        "latest"
-      ]
+        '0x1201553d1cda7c3bd7abc037a382d958b2674528',
+        'latest',
+      ],
     });
     if (!evmExplorerTestnetVelasResponse.data) throw new Error(`Invalid response from: ${evmExplorerTestnetVelasURL}\nResponse data:\n${evmExplorerTestnetVelasResponse.data}`);
   }
@@ -53,19 +54,19 @@ export class BalancesAPI {
   async explorer() {
     const explorerTestnetVelasURL = 'https://explorer.testnet.velas.com/rpc';
     const explorerTestnetVelasResponse = await this.axios.post(explorerTestnetVelasURL, {
-      jsonrpc: "2.0",
+      jsonrpc: '2.0',
       id: 1,
-      method: "eth_getBalance",
+      method: 'eth_getBalance',
       params: [
-        "0x1201553d1cda7c3bd7abc037a382d958b2674528",
-        "latest"
-      ]
+        '0x1201553d1cda7c3bd7abc037a382d958b2674528',
+        'latest',
+      ],
     });
     if (!explorerTestnetVelasResponse.data) throw new Error(`Invalid response from: ${explorerTestnetVelasURL}\nResponse data:\n${explorerTestnetVelasResponse.data}`);
   }
 
   async ethBalance() {
-    await infura.getaddressBalance('0x9c525b0dbab6cef23ff3caf639e41e2d6cee857d');
+    await ropsten.getaddressBalance('0x9c525b0dbab6cef23ff3caf639e41e2d6cee857d');
   }
 }
 
