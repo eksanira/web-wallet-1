@@ -124,12 +124,20 @@ require! {
                     right: 20px;
                     z-index: 1;
                     padding: 5px;
-                    width: 30%p;
+                    width: 19vw;
                     position: absolute;
                     background: #27282c
                     opacity: 0;
                     font-size: 10px;
                     display: none;
+                    @media screen and (max-width: 1400px)
+                        width: 16vw;
+                        font-size: 8px;
+                        padding: 3px;
+                    @media screen and (max-width: 1000px)
+                        width: 19vw;
+                        font-size: 7px;
+                        padding: 3px;
                 >.tooltipIcon
                     width: 13px;
                     height: 13px;
