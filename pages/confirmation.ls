@@ -196,6 +196,15 @@ require! {
             @media screen and (max-width: 800px)
                 padding: 7px 0
                 text-align: center
+
+subtitle-notify-msg = (store)->
+    | store.staking.webSocketAvailable is no =>
+        if store.current.page in <[ validators account_details poolchoosing ]>
+            "This action may take some time to reflect on the staking dashboard."
+        else
+            null
+    | _ => null
+
 alert-modal = (store)->
     return null if typeof! store.current.alert isnt \String
     cancel = ->
@@ -246,6 +255,7 @@ notification-modal = (store)->
         color: style.app.text
     confirmation-style2 =
         color: style.app.text
+        user-select: "text"
     button-style=
         color: style.app.text
     confirmation=
@@ -254,10 +264,18 @@ notification-modal = (store)->
         color: style.app.text
         border-bottom: "1px solid #{style.app.border}"
     lang = get-lang store
+
+    subtitle-msg = subtitle-notify-msg(store)
+    subtitle-style =
+        opacity: 0.3
+        font-size: "13px"
+
     .pug.confirmation
         .pug.confirmation-body(style=confirmation)
             .pug.header(style=confirmation-style) Alert
             .pug.text(style=confirmation-style2) #{store.current.notification}
+            if subtitle-msg?
+                .pug.subitile-msg(style=subtitle-style) #{subtitle-msg}
             .pug.buttons
                 button.pug.button(on-click=cancel style=button-style id="notification-close")
                     span.cancel.pug
@@ -342,6 +360,7 @@ swap-confirmation-modal = (store)->
         color: style.app.text
     confirmation-style2 =
         color: style.app.text
+        user-select: "text"
     button-style=
         color: style.app.text
     confirmation=
@@ -400,6 +419,7 @@ prompt-modal = (store)->
         background: style.app.background
         background-color: style.app.bgspare
         color: style.app.text
+        user-select: "text"
     input-style =
         background: style.app.input
         color: style.app.text
@@ -458,6 +478,7 @@ prompt-modal2 = (store)->
         background: style.app.background
         background-color: style.app.bgspare
         color: style.app.text
+        user-select: "text"
     input-style =
         background: style.app.input
         color: style.app.text
@@ -536,6 +557,7 @@ prompt-modal3 = (store)->
         background: style.app.background
         background-color: style.app.bgspare
         color: style.app.text
+        user-select: "text"
     input-style =
         background: style.app.input
         color: style.app.text
