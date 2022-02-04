@@ -124,7 +124,7 @@ require! {
                     right: 20px;
                     z-index: 1;
                     padding: 5px;
-                    width: 360px;
+                    width: 30%p;
                     position: absolute;
                     background: #27282c
                     opacity: 0;
@@ -325,11 +325,7 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
             wallet-is-disabled = isNaN(wallet.balance)
             send-swap-disabled = wallet-is-disabled or is-loading
             is-custom = wallet.coin.custom is yes
-            arrayCoinName = wallet.coin.name.split(" ")
-            modifyName = wallet.coin.name
-            if arrayCoinName[0] === "Velas"
-                arrayCoinName.shift()
-                modifyName = arrayCoinName.join!
+
             /* Render */
             .wallet.pug.wallet-item(class="#{big} #{disabled-class}" key="#{token}" style=border-style id="token-#{token}")
                 .wallet-top.pug(on-click=expand)
@@ -337,7 +333,7 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
                         .img.pug(class="#{placeholder-coin}")
                             img.pug(src="#{wallet-icon}")
                         .info.pug
-                            .balance.pug.title(class="#{placeholder}") #{modifyName}
+                            .balance.pug.title(class="#{placeholder}") #{name}
                             if store.current.device is \desktop
                                 .price.token.pug(class="#{placeholder}" title="#{wallet.balance}")
                                     span.pug #{ round-human wallet.balance }
@@ -371,7 +367,7 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
                              .tooltipContent.pug #{lang.tooltip_vlx_erc20}
                         .top-middle.pug(style=wallet-style)
                             if +wallet.pending-sent is 0
-                                .balance.pug.title(class="#{placeholder}") #{modifyName}
+                                .balance.pug.title(class="#{placeholder}") #{name}
                             .balance.pug(class="#{placeholder}")
                                 span.pug(title="#{wallet.balance}") #{ round-human wallet.balance }
                                     img.label-coin.pug(class="#{placeholder-coin}" src="#{wallet.coin.image}")
