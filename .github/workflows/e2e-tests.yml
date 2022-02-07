@@ -41,59 +41,59 @@ jobs:
         with:
           node-version: '14.x'
 
-      # - uses: joschi/setup-jdk@v2
-      #   with:
-      #     java-version: '8'
+      - uses: joschi/setup-jdk@v2
+        with:
+          java-version: '8'
 
-      # - name: install web3t modules
-      #   working-directory: .compiled-ssr/web3t
-      #   run: npm i
+      - name: install web3t modules
+        working-directory: .compiled-ssr/web3t
+        run: npm i
 
-      # - name: install lsxc
-      #   run: npm i lsxc -g --unsafe-perm
+      - name: install lsxc
+        run: npm i lsxc -g --unsafe-perm
 
-      # - name: copy web3 side by side to wallet
-      #   working-directory: ../
-      #   run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
+      - name: copy web3 side by side to wallet
+        working-directory: ../
+        run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
 
-      # - name: delete wallet build cache
-      #   working-directory: ./
-      #   run: rm -rf ./.compiled
+      - name: delete wallet build cache
+        working-directory: ./
+        run: rm -rf ./.compiled
 
-      # - name: run wallet
-      #   working-directory: ./
-      #   run: |
-      #     npm run wallet-start:no-watch &
-      #     echo '- - - - - Wallet is started but it takes up to 30 seconds to be up - - - - -'
+      - name: run wallet
+        working-directory: ./
+        run: |
+          npm run wallet-start:no-watch &
+          echo '- - - - - Wallet is started but it takes up to 30 seconds to be up - - - - -'
 
 
-      # - name: install test npm modules
-      #   run: npm i
+      - name: install test npm modules
+        run: npm i
 
-      # - name: blockchain health check
-      #   run: CI=true npm run blockchain-health-check
+      - name: blockchain health check
+        run: CI=true npm run blockchain-health-check
 
-      # # - name: balances api health check
-      # #   run: CI=true npm run balances-api-health-check
+      # - name: balances api health check
+      #   run: CI=true npm run balances-api-health-check
 
-      # - name: check that wallet has started
-      #   run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check previous command output ^" && exit 1)
+      - name: check that wallet has started
+        run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check previous command output ^" && exit 1)
 
-      # - name: clean previous test report
-      #   run: rm -rf ./test-report/
+      - name: clean previous test report
+        run: rm -rf ./test-report/
 
-      # - name: run tests
-      #   run: CI=true npm test
+      - name: run tests
+        run: CI=true npm test
 
-      # - name: upload artifacts
-      #   if: always()
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: test-report
-      #     path: |
-      #       e2e/test-report/
-      #       e2e/test-report-swap/
-      #     retention-days: 7
+      - name: upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-report
+          path: |
+            e2e/test-report/
+            e2e/test-report-swap/
+          retention-days: 7
 
       # - name: generate allure report
       #   if: always()
