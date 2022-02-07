@@ -34,20 +34,23 @@ export class WalletsScreen extends BaseScreen {
   constructor(public page: Page) {
     super(page);
   }
-
+  
   backButton = this.page.locator('.close');
-
+  
   balanceAmount = this.page.locator('.amount:not(.placeholder)');
-
+  
+  
   lockButton = this.page.locator('.menu-item.bottom');
-
+  
   manageWalletsModal = this.page.locator('.manage-account');
-
+  
   swapButton = this.page.locator('.with-swap #wallet-swap:not([disabled])');
-
+  
   sendButton = this.page.locator('#send-confirm:not([disabled])');
-
+  
   testnetMenuItem = this.page.locator('#menu-testnet');
+  
+  totalBalance = this.page.locator('.balance div:not(.placeholder.amount) #balance-total');
 
   walletItemInWalletsList = this.page.locator('.big.wallet');
 
@@ -165,7 +168,7 @@ export class WalletsScreen extends BaseScreen {
     return tokenId;
   }
 
-  async updateBalances(): Promise<void> {
+  async refreshBalances(): Promise<void> {
     await this.refreshBalanceButton.click();
     await this.waitForWalletsDataLoaded();
   }

@@ -38,11 +38,6 @@ export abstract class BaseScreen {
     let menuItemName: MenuItem | 'delegate' = item;
     if (item === 'staking') menuItemName = 'delegate';
     await this.page.click(`#menu-${menuItemName}`);
-
-    // wait for wallets data loaded
-    if (menuItemName === 'wallets') {
-      await this.page.waitForSelector('.wallet-item .top-left [class=" img"]', { state: 'visible', timeout: 31000 });
-    }
   }
 
   getElementWhichTextContentContainsWords(wordsList: string[]): Locator {

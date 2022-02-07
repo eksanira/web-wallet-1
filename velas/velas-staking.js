@@ -226,7 +226,7 @@ class VelasStaking {
             );
 
             if (this.accounts.filter(item => {
-                return item.address.toLowerCase() === stakeAccountWithSeed.toBase58().toLowerCase()}
+                return (item.address || item.pubkey).toLowerCase() === stakeAccountWithSeed.toBase58().toLowerCase()}
             ).length === 0) {
                 return i.toString();
             };
@@ -234,11 +234,13 @@ class VelasStaking {
     };
     
     async createNewStakeAccountWithSeed(){
+        console.log("[createNewStakeAccountWithSeed]",  this.getAccountPublicKey().toBase58());
 
         let stakeAccountWithSeed;
 
         try {
             const seed       = await this.getNextSeed();
+            console.log("seed", seed);
 
             stakeAccountWithSeed = await PublicKey.createWithSeed(
                 this.getAccountPublicKey(),
@@ -265,9 +267,13 @@ class VelasStaking {
         try {
             const rent       = await this.connection.getMinimumBalanceForRentExemption(200);
             const fromPubkey = this.getAccountPublicKey();
+             console.log("[createAccount]1");
             const authorized = new Authorized(fromPubkey, fromPubkey);
+             console.log("[createAccount]2");
             const lamports   = amount_sol + rent;
+             console.log("[createAccount]3");
             const seed       = await this.getNextSeed();
+            console.log("[createAccount]4", {seed, rent, fromPubkey, authorized, lamports});
 
             const stakeAccountWithSeed = await PublicKey.createWithSeed(
                 fromPubkey,
@@ -357,8 +363,8 @@ class VelasStaking {
             accounts[i].seed    = await this.checkSeed(accounts[i].pubkey);
             accounts[i].address = accounts[i].pubkey;
             accounts[i].key     = accounts[i].pubkey;
-            accounts[i].balance = rent ? `${(Math.round((accounts[i].lamports - rent) / this.sol) * 100) / 100 } VLX` : `-`;
-            accounts[i].rent    = rent ? `${ Math.round((rent / this.sol) * 100) / 100 } VLX` : `-`;
+            accounts[i].balance = rent ? `${(Math.round((accounts[i].lamports - rent) / this.sol) * 100) / 100 }` : `-`;
+            accounts[i].rent    = rent ? `${ Math.round((rent / this.sol) * 100) / 100 }` : `-`;
             accounts[i].status  = `inactive`;
             accounts[i].validator = `-`;
 

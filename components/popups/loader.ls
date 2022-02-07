@@ -13,7 +13,7 @@ require! {
     $off-white: rgba($white, 0.2)
     $spin-duration: 1s
     $pulse-duration: 750ms
-    z-index: 1
+    z-index: 111
     opacity: 1;
     position: fixed
     top: 0 
@@ -53,7 +53,7 @@ require! {
         left: 50%
         width: ($base-line-height / 4)
         height: $base-line-height
-        background: $off-white
+        background: rgba(43, 140, 116,  0.64)
         animation: pulse $pulse-duration infinite
         animation-delay: ($pulse-duration / 3)
         &:before, &:after
@@ -62,7 +62,7 @@ require! {
             display: block
             height: ($base-line-height / 1.5)
             width: ($base-line-height / 4)
-            background: $off-white
+            background: rgba(43, 140, 116,  0.64)
             top: 50%
             transform: translateY(-50%)
             animation: pulse $pulse-duration infinite
