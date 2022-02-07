@@ -17,6 +17,9 @@ jobs:
       - name: checkout JsWallet
         uses: actions/checkout@v2
 
+      - name: echo branch name
+        uses: echo ${GITHUB_REF##*/}
+
       - name: checkout web3t
         uses: actions/checkout@v2
         with:
