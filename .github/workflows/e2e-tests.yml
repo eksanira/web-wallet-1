@@ -17,9 +17,9 @@ jobs:
       - name: checkout JsWallet
         uses: actions/checkout@v2
 
-      # - name: get branch name
-      #   run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
-      #   id: get-branch-name
+      - name: get branch name
+        run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
+        id: get-branch-name
 
       # - name: checkout web3t, testnet branch
       #   uses: actions/checkout@v2
