@@ -17,16 +17,16 @@ jobs:
       - name: checkout JsWallet
         uses: actions/checkout@v2
 
-      - name: get branch name
-        run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
-        id: get-branch-name
+      # - name: get branch name
+      #   run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
+      #   id: get-branch-name
 
-      - name: checkout web3t, testnet branch
-        uses: actions/checkout@v2
-        with:
-          repository: velas/web3t
-          path: .compiled-ssr/web3t
-          ref: testnet
+      # - name: checkout web3t, testnet branch
+      #   uses: actions/checkout@v2
+      #   with:
+      #     repository: velas/web3t
+      #     path: .compiled-ssr/web3t
+      #     ref: testnet
 
       - name: try to checkout web3t, the same branch as JsWallet
         uses: actions/checkout@v2
