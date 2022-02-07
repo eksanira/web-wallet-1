@@ -66,6 +66,8 @@ require! {
             &.show
                 .name, .icon
                     visibility: visible
+        .disabled
+            opacity: 0.3
         .ckeck
             color: #3cd5af
         .cancel
@@ -187,15 +189,23 @@ module.exports = (store, web3t)->
         margin-left: "10px"
     border-right=
         border-right: "1px solid #{style.app.border}"
+
+    make-disabled = store.current.page in <[ account_details poolchoosing ]>
+    disabled-class = if make-disabled then "disabled" else ""
+
     open-account = ->
+        return if make-disabled
         store.current.switch-account = not store.current.switch-account
     open-menu = ->
+        return if make-disabled
         store.current.open-menu = not store.current.open-menu
     edit-account-name = ->
+        return if make-disabled
         store.current.edit-account-name = current-account-name!
     default-account-name = -> "Account #{store.current.account-index}"
     edit-account = (e)->
         #console.log e
+        return if make-disabled
         store.current.edit-account-name = e.target.value
     done-edit = ->
         local-storage.set-item default-account-name!, store.current.edit-account-name
@@ -212,11 +222,11 @@ module.exports = (store, web3t)->
     view-account-template = ->
         .pug.switch-account.h1(class="#{show-class}")
             span.name.pug(on-click=open-account) #{account-name}
-            span.pug.icon(on-click=edit-account-name)
+            span.pug.icon(class="#{disabled-class}" on-click=edit-account-name)
                 img.icon-svg-edit.pug(src="#{icons.create}" style=icon2)
-            span.pug.icon(on-click=open-account class="#{rotate-class}")
+            span.pug.icon(class="#{disabled-class}" on-click=open-account class="#{rotate-class}")
                 img.icon-svg-create.pug(src="#{icons.arrow-down}" style=icon3)
-            span.pug.icon.menus(on-click=open-menu class="#{show-class}")
+            span.pug.icon.menus(class="#{disabled-class}" on-click=open-menu class="#{show-class}")
                 img.icon-svg-create.pug(src="#{icons.menu}" style=icon-color)
     edit-account-template = ->
         .pug.switch-account.h1

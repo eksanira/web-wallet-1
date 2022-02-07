@@ -1,37 +1,57 @@
-### Prepare
-Install **expo** globally
-`npm i expo-cli -g`
+# Prepare
 
-Install **junit2html**
-`sudo pip3 install junit2html` or `sudo pip install junit2html`
-
-Install required browsers
-`npx playwright install chrome`
-
-Install modules
+### Install modules
 `npm i`
 
-### Configuration
-Refer to `config.ts` file
+###### Sometimes browser installation required
+`npx playwright install chrome`
 
-### Run tests
-`npx playwright test <path>`
-e.g. `npx playwright test src/tests/auth.test.ts`
 
-Run all tests:
-`npx playwright test`
+### Run wallet*
+*Only required for running tests on localhost.
 
-Before running tests locally, build and run wallet: `npm run wallet-start`.
+Build and run wallet: `npm run wallet-start`.
 
-### Debug
-#### Enabling debug window
+More about wallet start in JsWallet/README.md.
+
+# Run tests
+`npx playwright test <path or test name>`
+
+e.g. `npx playwright test src/tests/auth.test.ts` or `npx playwright test auth`
+
+##### Run all tests:
+`npm test`
+
+# Configuration
+`ENVIRONMENT`
+
+Available options: 'local', 'devnet', 'testnet', 'prod'
+
+Default value: 'local' (127.0.0.1)
+
+
+`NETWORK`
+
+Available options: 'devnet', 'testnet', 'mainnet'
+
+Default value: 'testnet'
+
+So, when you don't pass any params `http://127.0.0.1:8080/main-index.html` is used.
+
+
+#### Debug
+##### Enabling debug window
 Add PWDEBUG=1 before your test script, e.g.
+
 `PWDEBUG=1 npx playwright test`
 
-#### Enable playwright logs
+##### Enable playwright logs
+
 `DEBUG=pw:api`
 
-
 ### Allure
-allure generate ./allure-results --clean && allure open ./allure-report
+`allure generate ./allure-results --clean && allure open ./allure-report`
 
+
+### LINTER
+`npm run lint`

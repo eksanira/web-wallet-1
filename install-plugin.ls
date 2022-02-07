@@ -135,7 +135,10 @@ uninstall-plugin = (cweb3, token, cb)->
     err <- remove-from-registry name
     return cb err if err?
     local-storage.set-item name, ""
-    cweb3.refresh cb
+    store.forceReload = yes
+    <- cweb3.refresh
+    store.forceReload = no
+    cb null
 ask-user = (cweb3, store, plugin, cb)->
     err, registry <- get-registry
     return cb err if err?
@@ -153,6 +156,8 @@ export build-install = (cweb3, store)-> (plugin, cb)->
     return cb err if err?
     cweb3.refresh cb
 export build-quick-install = (cweb3, store)-> (plugin, cb)->
+    store.forceReload = yes
+    store.forceReloadTxs = yes
     return cb "Please unlock the wallet" if store.current.page is \locked
     err <- verify-plugin plugin
     return cb err if err?
