@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: echo branch name
-        run: echo ${GITHUB_REF\#\#\*/}
+        run: echo ${GITHUB_REF#refs/heads/}
 
       - name: checkout web3t
         uses: actions/checkout@v2
