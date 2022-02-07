@@ -17,21 +17,20 @@ jobs:
       - name: checkout JsWallet
         uses: actions/checkout@v2
 
-      - name: echo branch name
+      - name: get branch name
         run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
         id: get-branch-name
-
-      - name: echo previous step result
-        run: echo ${{ steps.get-branch-name.outputs.branch_name }}
 
       - name: checkout web3t
         uses: actions/checkout@v2
         with:
           repository: velas/web3t
           path: .compiled-ssr/web3t
-          ref: ${{ steps.branch_name.outputs.match }}
+          # ref: ${{ steps.branch_name.outputs.match }}
+          ref: "asdfasdfasdf"
 
       - name: checkout web3t
+        if: ${{ failure() }}
         uses: actions/checkout@v2
         with:
           repository: velas/web3t
