@@ -21,20 +21,20 @@ jobs:
         run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
         id: get-branch-name
 
-      - name: checkout web3t, the same branch as JsWallet
-        uses: actions/checkout@v2
-        continue-on-error: true
-        with:
-          repository: velas/web3t
-          path: .compiled-ssr/web3t
-          ref: ${{ steps.branch_name.outputs.match }}
-
       - name: checkout web3t, testnet branch
         uses: actions/checkout@v2
         with:
           repository: velas/web3t
           path: .compiled-ssr/web3t
           ref: testnet
+
+      - name: try to checkout web3t, the same branch as JsWallet
+        uses: actions/checkout@v2
+        continue-on-error: true
+        with:
+          repository: velas/web3t
+          path: .compiled-ssr/web3t
+          ref: ${{ steps.branch_name.outputs.match }}
 
       - uses: actions/setup-node@v2
         with:
