@@ -1,0 +1,25 @@
+name: CI-test
+on:
+  pull_request:
+    branches:
+      - '**'
+      - '!master'
+concurrency:
+  group: CI-test-${{github.event.pull_request.number}}
+  cancel-in-progress: true
+jobs:
+  e2e-tests-local-before-merge-to-testnet:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./e2e
+    steps:
+      - name: checkout JsWallet
+        uses: actions/checkout@v2
+
+      - name: 1
+        run: echo 1 && exit 1
+
+      - name: 2
+        if: failure()
+        run: echo 2
