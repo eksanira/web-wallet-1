@@ -40,9 +40,9 @@ jobs:
         with:
           node-version: '14.x'
 
-      - uses: joschi/setup-jdk@v2
-        with:
-          java-version: '8'
+      # - uses: joschi/setup-jdk@v2
+      #   with:
+      #     java-version: '8'
 
       - name: install web3t modules
         working-directory: .compiled-ssr/web3t
@@ -69,8 +69,8 @@ jobs:
       - name: install test npm modules
         run: npm i
 
-      # - name: blockchain health check
-      #   run: CI=true npm run blockchain-health-check
+      - name: blockchain health check
+        run: CI=true npm run blockchain-health-check
 
       # - name: balances api health check
       #   run: CI=true npm run balances-api-health-check
