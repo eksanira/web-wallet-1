@@ -4,7 +4,7 @@ require! {
     \../get-lang.ls
     \../pages/icon.ls
     \../icons.ls
-    \../send-funcs.ls
+    \../send-funcs.js
     \../numbers.js : {parseNum}
     \../math.ls : { times, minus, div, plus }
     \prelude-ls : { find }

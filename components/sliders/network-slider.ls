@@ -8,7 +8,7 @@ require! {
     \../../icon.ls
     \../../icons.ls
     \../../swaping/networks.ls : "token-networks" 
-    \../../send-funcs.ls   
+    \../../send-funcs.js   
     \../../pages/confirmation.ls : { network-details-modal }  
 }
 .network-slider

@@ -5,7 +5,7 @@ require! {
     \../math.ls : { times }
     \./keyboard.ls
     \../numbers.js : {parseNum}
-    \../send-funcs.ls
+    \../send-funcs.js
     \../round-number.ls
     \./react-currency-input-field : { default: CurrencyInput }
 }

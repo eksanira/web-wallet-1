@@ -1,6 +1,6 @@
 require! {
     \react
-    \../send-funcs.ls
+    \../send-funcs.js
     \prelude-ls : { map, find, keys, filter, pairs-to-obj, obj-to-pairs, uniqueBy }
     \../get-primary-info.ls
     \./icon.ls
