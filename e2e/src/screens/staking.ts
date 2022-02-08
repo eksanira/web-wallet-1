@@ -85,7 +85,7 @@ export class StakingScreen extends BaseScreen {
     const startTime = new Date().getTime();
     await this.creatingStakingAccountLoader.waitFor();
     let accountCreationIsInProgress = await this.creatingStakingAccountLoader.isVisible();
-    while (accountCreationIsInProgress && (new Date().getTime() - startTime < 20000)) {
+    while (accountCreationIsInProgress && (new Date().getTime() - startTime < 25000)) {
       await this.page.waitForTimeout(100);
       accountCreationIsInProgress = await this.creatingStakingAccountLoader.isVisible();
     };

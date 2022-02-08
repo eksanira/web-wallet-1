@@ -3,7 +3,6 @@ import {
   assert, data, expect, helpers, test, walletURL,
 } from '../../common-test-exports';
 import { AuthScreen, StakingScreen, WalletsScreen } from '../../screens';
-import { log } from '../../tools/logger';
 
 let auth: AuthScreen;
 let wallets: WalletsScreen;
@@ -95,16 +94,17 @@ test.describe('Staking', () => {
       assert.equal(stakeAccOnBlockchain.state, 'activating');
 
       // postcondition - refresh until delegated stake becomes undelegated
-      // await staking.refreshStakesToGetUpdatedCachedStatuses({from: 'Delegate', to: 'Undelegate'})
-      let undelegateButtonAppears = false;
-      const startTime = new Date().getTime();
-      while (!undelegateButtonAppears) {
-        if (new Date().getTime() - startTime > 20000) throw new Error(`Undelegated stake does not appear`);
-        await wallets.refreshBalanceButton.click();
-        await page.waitForSelector('#staking-accounts h3:text("LOADING")');
-        await staking.waitForLoaded();
-        undelegateButtonAppears = await staking.accounts.undelegateButton.isVisible();
-      }
+      
+      // let undelegateButtonAppears = false;
+      // const startTime = new Date().getTime();
+      // while (!undelegateButtonAppears) {
+      //   if (new Date().getTime() - startTime > 20000) throw new Error(`Undelegated stake does not appear`);
+      //   await wallets.refreshBalanceButton.click();
+      //   await page.waitForSelector('#staking-accounts h3:text("LOADING")');
+      //   await staking.waitForLoaded();
+      //   undelegateButtonAppears = await staking.accounts.undelegateButton.isVisible();
+      // }
+      await helpers.sleep(5000);
     });
 
     test('Undelegate stake', async ({ page }) => {
@@ -131,15 +131,16 @@ test.describe('Staking', () => {
       // postcondition - refresh until undelegated stake becomes delegated
       // await staking.refreshStakesToGetUpdatedCachedStatuses({from: 'Delegate', to: 'Undelegate'})
 
-      let delegateButtonAppears = false;
-      const startTime = new Date().getTime();
-      while (!delegateButtonAppears) {
-        if (new Date().getTime() - startTime > 20000) throw new Error(`Delegated stake does not appear`);
-        await wallets.refreshBalanceButton.click();
-        await page.waitForSelector('#staking-accounts h3:text("LOADING")');
-        await staking.waitForLoaded();
-        delegateButtonAppears = await staking.accounts.delegateButton.isVisible();
-      }
+      // let delegateButtonAppears = false;
+      // const startTime = new Date().getTime();
+      // while (!delegateButtonAppears) {
+      //   if (new Date().getTime() - startTime > 20000) throw new Error(`Delegated stake does not appear`);
+      //   await wallets.refreshBalanceButton.click();
+      //   await page.waitForSelector('#staking-accounts h3:text("LOADING")');
+      //   await staking.waitForLoaded();
+      //   delegateButtonAppears = await staking.accounts.delegateButton.isVisible();
+      // }
+      await helpers.sleep(5000);
     });
 
     test('Split stake', async ({ page }) => {
@@ -151,7 +152,7 @@ test.describe('Staking', () => {
       await staking.createStakingAccountForm.amount.fill('1');
       await staking.modals.confirmPrompt();
       await staking.stakeAccount.splittingInProcess.waitFor();
-      await page.waitForSelector('text=/account created and funds are splitted successfully/i', { timeout: 20000 });
+      await page.waitForSelector('text=/account created and funds are splitted successfully/i', { timeout: 25000 });
       await staking.modals.clickOK();
       await staking.waitForSplitedStakeToAppear();
 
