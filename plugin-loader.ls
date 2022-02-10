@@ -4,14 +4,14 @@ require! {
     \./browser/window.ls
     \localStorage
 }
-gobyte = require \../web3t/plugins/gobyte-coin.ls
+gobyte = require \../web3t/plugins/gobyte-coin.js
 export common = (store)->
-    vlx2 = require \../web3t/plugins/vlx2-coin.ls
-    btc  = require \../web3t/plugins/btc-coin.ls
-    vlx_native  = require \../web3t/plugins/sol-coin.ls
-    eth  = require \../web3t/plugins/eth-coin.ls
-    vlx_evm = require \../web3t/plugins/vlx-coin.ls
-    #vlx_evm_legacy = require \../web3t/plugins/vlx-evm-legacy-coin.ls
+    vlx2 = require \../web3t/plugins/vlx2-coin.js
+    btc  = require \../web3t/plugins/btc-coin.js
+    vlx_native  = require \../web3t/plugins/sol-coin.js
+    eth  = require \../web3t/plugins/eth-coin.js
+    vlx_evm = require \../web3t/plugins/vlx-coin.js
+    #vlx_evm_legacy = require \../web3t/plugins/vlx-evm-legacy-coin.js
     coins = [ vlx_native, vlx_evm, vlx2, btc, eth ]
     if store.url-params.gbx?
         coins.push gobyte
@@ -19,10 +19,11 @@ export common = (store)->
 
 base-array = <[ vlx_native vlx_evm vlx2 btc eth ]>
 
-legacy-tokens =
-    * require \../web3t/plugins/eth-legacy-coin.ls
+
+legacy-tokens = 
+    * require \../web3t/plugins/eth-legacy-coin.js
     * require \../web3t/plugins/usdt_erc20_legacy-coin.json
-    * require \../web3t/plugins/vlx2-coin.ls
+    * require \../web3t/plugins/vlx2-coin.js 
 
 legacy-arr = <[ vlx2 vlx_evm_legacy usdt_erc20_legacy eth_legacy ]>
 

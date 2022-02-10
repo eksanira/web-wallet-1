@@ -9,7 +9,7 @@ require! {
     \copy-to-clipboard
     \./pages/confirmation.ls : { confirm, prompt, alert, notify, prompt-password, prompt-choose-token }
     \./get-lang.ls
-    \../web3t/providers/deps.ls : { bip39 }
+    \../web3t/providers/deps.js : { bip39 }
 }
 export generate-wallet = ->
     bip39.generate-mnemonic!
