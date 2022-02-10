@@ -56,7 +56,7 @@
     (createTransaction = ref$.createTransaction),
     (pushTx = ref$.pushTx),
     (getTransactionInfo = ref$.getTransactionInfo);
-  (ref$ = require('./calc-amount.ls')),
+  (ref$ = require('./calc-amount.js')),
     (changeAmountCalcFiat = ref$.changeAmountCalcFiat),
     (changeAmountSend = ref$.changeAmountSend),
     (changeAmount = ref$.changeAmount),
@@ -323,7 +323,136 @@
     });
   };
 
+  /**
+   * Recursively makes allowance request untill find available web3Provider.
+   */
+  const checkAllowanceWithAvailableWeb3Provider = (
+    {
+      web3Providers,
+      wallet,
+      send,
+      value,
+      FOREIGN_BRIDGE,
+      FOREIGN_BRIDGE_TOKEN,
+      sendValue,
+      checkAllowedAmount,
+      isSelfSend,
+    },
+    cb
+  ) => {
+    const [web3Provider, ...extraWeb3Providers] = web3Providers;
+    if (!web3Provider) {
+      return cb(
+        '[checkAllowanceWithAvailableWeb3Provider] err: No web3Provider!'
+      );
+    }
 
+    const walletWithChangedWeb3Providers = {
+      ...wallet,
+      network: {
+        ...wallet.network,
+        api: { ...wallet.network.api, web3Provider, extraWeb3Providers },
+      },
+    };
+
+    const web3 = new Web3(
+      new Web3.providers.HttpProvider(
+        walletWithChangedWeb3Providers.network.api.web3Provider
+      )
+    );
+    web3.eth.providerUrl =
+      walletWithChangedWeb3Providers.network.api.web3Provider;
+
+    let contract = web3.eth
+      .contract(abis.ForeignBridgeErcToErc)
+      .at(FOREIGN_BRIDGE_TOKEN);
+    const formattedValue = times(value, Math.pow(10, 18));
+
+    /* Check for allowed amount for contract */
+    contract.allowance(
+      walletWithChangedWeb3Providers.address,
+      FOREIGN_BRIDGE,
+      function (err, allowedRaw) {
+        if (err) {
+          const isExtraWeb3Providers = extraWeb3Providers.length !== 0;
+          if (isExtraWeb3Providers) {
+            return checkAllowanceWithAvailableWeb3Provider(
+              {
+                web3Providers: extraWeb3Providers,
+                wallet: walletWithChangedWeb3Providers,
+                send,
+                value,
+                FOREIGN_BRIDGE,
+                FOREIGN_BRIDGE_TOKEN,
+                sendValue,
+                checkAllowedAmount,
+                isSelfSend,
+              },
+              cb
+            );
+          }
+        }
+        const allowed = div(allowedRaw, Math.pow(10, 0));
+        contract = web3.eth
+          .contract(abis.ForeignBridgeErcToErc)
+          .at(FOREIGN_BRIDGE);
+        contract.minPerTx(function (err, minPerTxRaw) {
+          const minPerTx = div(minPerTxRaw, Math.pow(10, 18));
+          if (+sendValue < +minPerTx) {
+            return cb('Min amount per transaction is ' + minPerTx + ' BUSD');
+          }
+          contract.maxAvailablePerTx(function (err, maxPerTxRaw) {
+            const maxPerTx = div(maxPerTxRaw, Math.pow(10, 18));
+            if (+sendValue > +maxPerTx) {
+              return cb('Max amount per transaction is ' + maxPerTx + ' BUSD');
+            }
+            return checkAllowedAmount(
+              {
+                contract,
+                wallet: walletWithChangedWeb3Providers,
+                amount: send.amountSend,
+                allowed,
+                bridge: FOREIGN_BRIDGE,
+                bridgeToken: FOREIGN_BRIDGE_TOKEN,
+              },
+              function (err) {
+                var data, contractAddress;
+                if (err != null) {
+                  return cb(err);
+                }
+                data = (function () {
+                  switch (false) {
+                    case isSelfSend !== true:
+                      return contract.transfer.getData(
+                        FOREIGN_BRIDGE,
+                        formattedValue
+                      );
+                    default: {
+                      const receiver = send.to;
+                      return contract.relayTokens.getData(
+                        receiver,
+                        formattedValue
+                      );
+                    }
+                  }
+                })();
+                contractAddress = (function () {
+                  switch (false) {
+                    case isSelfSend !== true:
+                      return FOREIGN_BRIDGE_TOKEN;
+                    default:
+                      return FOREIGN_BRIDGE;
+                  }
+                })();
+
+                return cb(null, { data, contractAddress });
+              }
+            );
+          });
+        });
+      }
+    );
+  };
 
   module.exports = function (store, web3t) {
     var lang,
@@ -443,7 +572,7 @@
         txObj;
       (to = arg$.to),
         (wallet = arg$.wallet),
-        (network = arg$.network),
+        (network = toJS(arg$.network)),
         (amountSend = arg$.amountSend),
         (amountSendFee = arg$.amountSendFee),
         (data = arg$.data),
@@ -1019,16 +1148,8 @@
         ref$,
         FOREIGN_BRIDGE,
         FOREIGN_BRIDGE_TOKEN,
-        web3,
-        contract,
-        value,
-        receiver,
-        allowedRaw,
-        allowed,
-        minPerTxRaw,
-        minPerTx,
-        maxPerTxRaw,
-        maxPerTx;
+        value;
+
       if (!(token === 'busd' && chosenNetwork.id === 'vlx_busd')) {
         return cb(null);
       }
@@ -1044,62 +1165,35 @@
       (ref$ = wallet.network),
         (FOREIGN_BRIDGE = ref$.FOREIGN_BRIDGE),
         (FOREIGN_BRIDGE_TOKEN = ref$.FOREIGN_BRIDGE_TOKEN);
-      web3 = new Web3(
-        new Web3.providers.HttpProvider(wallet.network.api.web3Provider)
-      );
-      web3.eth.providerUrl = wallet.network.api.web3Provider;
-      contract = web3.eth
-        .contract(abis.ForeignBridgeErcToErc)
-        .at(FOREIGN_BRIDGE_TOKEN);
+
       value = store.current.send.amountSend;
-      value = times(value, Math.pow(10, 18));
-      receiver = send.to;
+      const sendValue = send.amountSend;
       /* Check for allowed amount for contract */
-      allowedRaw = contract.allowance(wallet.address, FOREIGN_BRIDGE);
-      allowed = div(allowedRaw, Math.pow(10, 0));
-      contract = web3.eth
-        .contract(abis.ForeignBridgeErcToErc)
-        .at(FOREIGN_BRIDGE);
-      minPerTxRaw = contract.minPerTx();
-      minPerTx = div(minPerTxRaw, Math.pow(10, 18));
-      if (+send.amountSend < +minPerTx) {
-        return cb('Min amount per transaction is ' + minPerTx + ' BUSD');
-      }
-      maxPerTxRaw = contract.maxAvailablePerTx();
-      maxPerTx = div(maxPerTxRaw, Math.pow(10, 18));
-      if (+send.amountSend > +maxPerTx) {
-        return cb('Max amount per transaction is ' + maxPerTx + ' BUSD');
-      }
-      return checkAllowedAmount(
+      const { web3Provider, extraWeb3Providers } = wallet.network.api;
+      const web3Providers = commonProvider.getWeb3Providers(
+        web3Provider,
+        extraWeb3Providers
+      );
+
+      checkAllowanceWithAvailableWeb3Provider(
         {
-          contract: contract,
-          wallet: wallet,
-          amount: send.amountSend,
-          allowed: allowed,
-          bridge: FOREIGN_BRIDGE,
-          bridgeToken: FOREIGN_BRIDGE_TOKEN,
+          web3Providers,
+          wallet,
+          send,
+          value,
+          chosenNetworkWallet,
+          FOREIGN_BRIDGE,
+          FOREIGN_BRIDGE_TOKEN,
+          sendValue,
+          checkAllowedAmount,
+          isSelfSend,
+          store,
         },
-        function (err) {
-          var data, contractAddress;
-          if (err != null) {
+        (err, result) => {
+          if (err) {
             return cb(err);
           }
-          data = (function () {
-            switch (false) {
-              case isSelfSend !== true:
-                return contract.transfer.getData(FOREIGN_BRIDGE, value);
-              default:
-                return contract.relayTokens.getData(receiver, value);
-            }
-          })();
-          contractAddress = (function () {
-            switch (false) {
-              case isSelfSend !== true:
-                return FOREIGN_BRIDGE_TOKEN;
-              default:
-                return FOREIGN_BRIDGE;
-            }
-          })();
+          const { data, contractAddress } = result;
           store.current.send.contractAddress = contractAddress;
           store.current.send.data = data;
           return cb(null, data);
@@ -2492,15 +2586,23 @@
           ref3$,
           addr,
         },
-        (e$, data) => {
+        (e$, result) => {
           if (e$) {
             err = e$;
           }
-          const { homeFee, contractPrev } = data;
-          homeFeePercent = homeFee === 0 ? 0 : div(
-            homeFee,
-            Math.pow(10, wallet != null ? wallet.network.decimals : void 8)
-          );
+          const { contractPrev } = result;
+          let { homeFee } = result;
+
+          homeFeePercent =
+            homeFee === 0
+              ? 0
+              : div(
+                  homeFee,
+                  Math.pow(
+                    10,
+                    wallet != null ? wallet.network.decimals : void 8
+                  )
+                );
           store.current.send.homeFeePercent = homeFeePercent;
 
           dailyLimit = contractPrev.dailyLimit();
