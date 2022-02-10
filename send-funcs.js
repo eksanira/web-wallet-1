@@ -454,6 +454,40 @@
     );
   };
 
+  /**
+   * Recursively makes minPerTx request untill find available web3Provider.
+   */
+  const generateWeb3AndContractForMinPerTxWithAvaliableWeb3Provider = (
+    { web3Providers, contractConfig },
+    cb
+  ) => {
+    const [web3Provider, ...extraWeb3Providers] = web3Providers;
+    const { abi, bridge } = contractConfig;
+
+    const web3 = new Web3(new Web3.providers.HttpProvider(web3Provider));
+    web3.eth.providerUrl = web3Provider;
+    const contract = web3.eth.contract(abi).at(bridge);
+
+    return contract.minPerTx((err, minPerTxRaw) => {
+      if (err) {
+        if (extraWeb3Providers.length !== 0) {
+          return generateWeb3AndContractForMinPerTxWithAvaliableWeb3Provider(
+            {
+              web3Providers: extraWeb3Providers,
+              contractConfig: {
+                abi,
+                bridge,
+              },
+            },
+            cb
+          );
+        }
+      }
+
+      return cb(null, { minPerTxRaw, web3, contractPrev: contract });
+    });
+  };
+
   module.exports = function (store, web3t) {
     var lang,
       send,
@@ -617,7 +651,7 @@
           secretKey: wallet.secretKey,
         },
         recipient: recipient,
-        network: network,
+        network: toJS(network),
         token: token,
         coin: coin,
         amount: amountSend,
@@ -1878,62 +1912,55 @@
           (ref12$ = wallet.network),
             (FOREIGN_BRIDGE = ref12$.FOREIGN_BRIDGE),
             (FOREIGN_BRIDGE_TOKEN = ref12$.FOREIGN_BRIDGE_TOKEN);
-          web3 = new Web3(
-            new Web3.providers.HttpProvider(
-              wallet != null
-                ? (ref12$ = wallet.network) != null
-                  ? (ref13$ = ref12$.api) != null
-                    ? ref13$.web3Provider
-                    : void 8
-                  : void 8
-                : void 8
-            )
+          network = toJS(wallet.network);
+          const web3Provider = wallet?.network?.api?.web3Provider;
+          let web3Providers = commonProvider.getWeb3Providers(
+            web3Provider,
+            toJS(wallet?.network?.api?.extraWeb3Providers),
           );
-          web3.eth.providerUrl =
-            wallet != null
-              ? (ref14$ = wallet.network) != null
-                ? (ref15$ = ref14$.api) != null
-                  ? ref15$.web3Provider
-                  : void 8
-                : void 8
-              : void 8;
-          contract = web3.eth
-            .contract(abis.ForeignBridgeNativeToErc)
-            .at(FOREIGN_BRIDGE);
-          network = wallet.network;
           /* Get minPerTx from HomeBridge */
-          minPerTxRaw = contract.minPerTx();
-          minPerTx = div(minPerTxRaw, Math.pow(10, network.decimals));
-          /* Get maxPerTx from HomeBridge */
-          maxPerTxRaw = contract.maxAvailablePerTx();
-          maxPerTx = div(maxPerTxRaw, Math.pow(10, network.decimals));
-          if (+send.amountSend < +minPerTx) {
-            return cb('Min amount per transaction is ' + minPerTx + ' VLX');
-          }
-          if (+send.amountSend > +maxPerTx) {
-            return cb('Max amount per transaction is ' + maxPerTx + ' VLX');
-          }
-          contract = web3.eth
-            .contract(abis.ForeignBridgeNativeToErc)
-            .at(FOREIGN_BRIDGE_TOKEN);
-          data = (function () {
-            switch (false) {
-              case isSelfSend !== true:
-                return contract.transfer.getData(
-                  FOREIGN_BRIDGE,
-                  toHex(value),
-                  send.to
-                );
-              default:
-                return contract.transferAndCall.getData(
-                  FOREIGN_BRIDGE,
-                  value,
-                  send.to
-                );
+          generateWeb3AndContractForMinPerTxWithAvaliableWeb3Provider(
+            {
+              web3Providers,
+              contractConfig: {
+                abi: abis.ForeignBridgeNativeToErc,
+                bridge: FOREIGN_BRIDGE,
+              },
+            },
+            function (err, { minPerTxRaw, web3, contractPrev }) {
+              minPerTx = div(minPerTxRaw, Math.pow(10, network.decimals));
+              /* Get maxPerTx from HomeBridge */
+              maxPerTxRaw = contractPrev.maxAvailablePerTx();
+              maxPerTx = div(maxPerTxRaw, Math.pow(10, network.decimals));
+              if (+send.amountSend < +minPerTx) {
+                return cb('Min amount per transaction is ' + minPerTx + ' VLX');
+              }
+              if (+send.amountSend > +maxPerTx) {
+                return cb('Max amount per transaction is ' + maxPerTx + ' VLX');
+              }
+              contract = web3.eth
+                .contract(abis.ForeignBridgeNativeToErc)
+                .at(FOREIGN_BRIDGE_TOKEN);
+              data = (function () {
+                switch (false) {
+                  case isSelfSend !== true:
+                    return contract.transfer.getData(
+                      FOREIGN_BRIDGE,
+                      toHex(value),
+                      send.to
+                    );
+                  default:
+                    return contract.transferAndCall.getData(
+                      FOREIGN_BRIDGE,
+                      value,
+                      send.to
+                    );
+                }
+              })();
+              send.data = data;
+              send.contractAddress = FOREIGN_BRIDGE_TOKEN;
             }
-          })();
-          send.data = data;
-          send.contractAddress = FOREIGN_BRIDGE_TOKEN;
+          );
         }
         /* DONE! */
         /* Swap from ETH to ETHEREUM (VELAS) */
@@ -2405,7 +2432,7 @@
       return calcFee(
         {
           token: token,
-          network: send.network,
+          network: toJS(send.network),
           amount: amountSend,
           feeType: send.feeType,
           txType: send.txType,
