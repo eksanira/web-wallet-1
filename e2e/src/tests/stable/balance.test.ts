@@ -2,7 +2,7 @@ import { velasNative } from '@velas/velas-chain-test-wrapper';
 import balancesAPI from '../../api/balances-api';
 import { AuthScreen, Currency, WalletsScreen } from '../../screens';
 import {
-  assert, data, helpers, test, walletURL,
+  assert, expect, data, helpers, test, walletURL,
 } from '../../common-test-exports';
 import { log } from '../../tools/logger';
 
@@ -36,10 +36,10 @@ test.describe('Balance', () => {
 
       switch (walletsList[i]) {
         case 'token-vlx2':
-          assert.equal(amountOfTokens, '80.999895');
+          expect(amountOfTokens).toEqual('80.999895');
           break;
         case 'token-vlx_native':
-          assert.equal(amountOfTokens, String(VLXNativeBalanceOnBlockchain));
+          expect(amountOfTokens).toEqual(String(VLXNativeBalanceOnBlockchain));
           const tx = await velasNative.transfer({
             lamports: balanceUpdateAmount * 10 ** 9,
             payerSeed: data.wallets.payer.seed,
@@ -53,14 +53,14 @@ test.describe('Balance', () => {
         case 'token-btc':
           try {
             await balancesAPI.bitcore();
-            assert.equal(amountOfTokens, '0.03484302');
+            expect(amountOfTokens).toEqual('0.03484302');
           } catch (e) {
             log.debug(e);
             log.warn('Bitcoin balance check skipped because of 3rd party service is down');
           }
           break;
         case 'token-vlx_evm':
-          assert.equal(amountOfTokens, '1801.000622564');
+          expect(amountOfTokens).toEqual('1801.000622564');
           break;
       }
     }

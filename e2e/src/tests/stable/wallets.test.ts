@@ -1,5 +1,5 @@
 import {
-  assert, config, data, test, walletURL
+  assert, config, data, expect, test, walletURL
 } from '../../common-test-exports';
 import { AuthScreen, WalletsScreen } from '../../screens';
 
@@ -38,10 +38,10 @@ test.describe.parallel('Wallets screen', () => {
     test('Lock and unlock', async () => {
       await wallets.lockButton.click();
       await auth.passwordInput.isVisible();
-      assert.isFalse(await wallets.lockButton.isVisible());
+      await expect(wallets.lockButton).toBeVisible();
 
       await auth.pinForLoggedOutAcc.typeAndConfirm('111222');
-      assert.isTrue(await auth.isLoggedIn());
+      expect(await auth.isLoggedIn()).toBeTruthy();
     });
 
     test('Add and hide litecoin wallet', async () => {
@@ -50,18 +50,18 @@ test.describe.parallel('Wallets screen', () => {
       await wallets.addWalletsPopup.open();
       await wallets.addWalletsPopup.add('token-ltc');
       await wallets.selectWallet('token-ltc');
-      assert.isTrue(await wallets.isWalletInWalletsList('token-ltc'));
+      expect(await wallets.isWalletInWalletsList('token-ltc')).toBeTruthy();
 
       // remove litecoin
       await wallets.hideWallet();
-      assert.isFalse(await wallets.isWalletInWalletsList('token-ltc'));
+      expect(await wallets.isWalletInWalletsList('token-ltc')).toBeFalsy();
     });
 
     test('Switch account', async ({ page }) => {
       await wallets.selectWallet('token-vlx_native');
       await page.click('.switch-account');
       await page.click('" Account 2"');
-      assert.equal(await wallets.getWalletAddress(), 'BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW', 'Account 2 address on UI does not equal expected');
+      expect(await wallets.getWalletAddress()).toEqual('BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW');
     });
 
     test('Show QR', async ({ page }) => {
@@ -82,7 +82,7 @@ test.describe.parallel('Wallets screen', () => {
       // copy to clipboard
       await wallets.copyToClipboardButton.click();
       const copiedText = await page.evaluate(async () => await navigator.clipboard.readText());
-      assert.equal(copiedText, 'G3N4212jLtDNCkfuWuUHsyG2aiwMWQLkeKDETZbo4KG');
+      expect(copiedText).toEqual('G3N4212jLtDNCkfuWuUHsyG2aiwMWQLkeKDETZbo4KG');
 
       // back to wallets list
       await page.click('" Cancel"');
@@ -99,27 +99,27 @@ test.describe.parallel('Wallets screen', () => {
     test('WAG on Velas', async () => {
       await wallets.addCustomToken(data.customTokens.velas.wag, 'Velas', 'testnet');
       const customTokenBalance = await wallets.getCustomTokenBalance('#token-wag_testnet_Velas__custom');
-      assert.equal(customTokenBalance, '1');
+      expect(customTokenBalance).toEqual('1');
     });
 
     test('WEENUS on Ethereum', async () => {
       await wallets.addCustomToken(data.customTokens.eth.weenus, 'Ethereum', 'testnet');
       const customTokenBalance = await wallets.getCustomTokenBalance('#token-weenus_testnet_Ethereum__custom');
-      assert.equal(customTokenBalance, '2');
+      expect(customTokenBalance).toEqual('2');
     });
 
     test('DAI on BSC', async () => {
       await wallets.addCustomToken(data.customTokens.bsc.dai, 'BSC', 'testnet');
 
       const customTokenBalance = await wallets.getCustomTokenBalance('#token-dai_testnet_BSC__custom');
-      assert.equal(customTokenBalance, '3');
+      expect(customTokenBalance).toEqual('3');
     });
 
     test('DAI on Heco', async () => {
       await wallets.addCustomToken(data.customTokens.heco.dai, 'Heco', 'testnet');
 
       const customTokenBalance = await wallets.getCustomTokenBalance('#token-dai_testnet_Heco__custom');
-      assert.equal(customTokenBalance, '4');
+      expect(customTokenBalance).toEqual('4');
     });
   });
 });

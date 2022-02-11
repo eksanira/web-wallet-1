@@ -2,7 +2,7 @@ import {
   AuthScreen, SearchScreen, SettingsScreen, StakingScreen, WalletsScreen,
 } from '../../screens';
 import {
-  assert, data, test, walletURL,
+  data, expect, test, walletURL,
 } from '../../common-test-exports';
 
 let wallets: WalletsScreen;
@@ -33,7 +33,7 @@ test.describe.parallel('Navigation', () => {
       // check that navigation doesn't get broken by locking screen
       await wallets.lockButton.click();
       await auth.pinForLoggedOutAcc.typeAndConfirm('111222');
-      assert.isTrue(await auth.isLoggedIn());
+      expect(await auth.isLoggedIn()).toBeTruthy();
 
       switch (screen) {
         case 'settings':
@@ -63,13 +63,13 @@ test.describe.parallel('Navigation', () => {
           await wallets.openMenu('wallets');
           await wallets.clickSendButton();
           await wallets.sendForm.recepientInput.waitFor();
-          assert.isFalse(await wallets.swapForm.networkSelector.isVisible());
+          expect(await wallets.swapForm.networkSelector.isVisible()).toBeFalsy();
           break;
       }
 
       await wallets.backButton.click();
       await wallets.waitForWalletsDataLoaded();
-      assert.isTrue(await wallets.walletItemInWalletsList.first().isVisible());
+      await expect(wallets.walletItemInWalletsList.first()).toBeVisible();
     }
   });
 
@@ -80,6 +80,6 @@ test.describe.parallel('Navigation', () => {
     ]);
 
     await newPage.waitForLoadState();
-    assert.isTrue(newPage.url().includes('https://support.velas.com'));
+    expect(newPage.url()).toContain('https://support.velas.com')
   });
 });

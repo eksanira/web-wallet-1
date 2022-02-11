@@ -1,5 +1,6 @@
 import { AuthScreen } from '../../screens';
-import { assert, test, walletURL } from '../../common-test-exports';
+import { expect, test, walletURL } from '../../common-test-exports';
+import { log } from '../../tools/logger';
 
 test.describe('Links', () => {
   let auth: AuthScreen;
@@ -12,8 +13,8 @@ test.describe('Links', () => {
   test('Download links are correct', async ({ page }) => {
     const appleLink = await auth.downloadButtons.iOS.getAttribute('href');
     const androidLink = await auth.downloadButtons.android.getAttribute('href');
-    assert.isTrue(appleLink?.includes('https://apps.apple.com/'));
-    assert.isTrue(androidLink?.includes('https://play.google.com/'));
+    expect(appleLink).toContain('https://apps.apple.com/');
+    expect(androidLink).toContain('https://play.google.com/');
 
     await auth.downloadButtons.desktop.click();
     await auth.installWallets.platformsList.waitFor();
@@ -23,7 +24,8 @@ test.describe('Links', () => {
     for (let i = 0; i < donwloadLinks.length; i++) {
       const linkElement = donwloadLinks[i];
       const downloadLink = await linkElement.getAttribute('href');
-      assert.isTrue(downloadLink?.includes('https://github.com/velas/JsWalletDesktop'), `${await linkElement.textContent()} doesn't lead to correct destination`);
+      expect(downloadLink).toContain('https://github.com/velas/JsWalletDesktop');
+      log.debug(`Desktop download link: ${await linkElement.textContent()}`);
     }
   });
 });

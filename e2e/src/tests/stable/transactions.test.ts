@@ -1,6 +1,6 @@
 import { velasNative } from '@velas/velas-chain-test-wrapper';
 import {
-  assert, data, helpers, test, walletURL,
+  assert, expect, data, helpers, test, walletURL,
 } from '../../common-test-exports';
 import { ropsten } from '../../api/explorers-api';
 import { AuthScreen, WalletsScreen } from '../../screens';
@@ -29,10 +29,10 @@ test.describe.parallel('Transactions', () => {
     const txSignature = await wallets.getTxHashFromTxlink();
 
     const tx = await velasNative.waitForConfirmedTransaction(txSignature);
-    assert.exists(tx);
+    expect(tx).toBeDefined();
 
     const receiverFinalBalance = await velasNative.getBalance(data.wallets.fundsReceiver.address);
-    assert.equal(helpers.toFixedNumber(receiverFinalBalance.VLX, 6), helpers.toFixedNumber((receiverInitialBalance.VLX + transactionAmount), 6));
+    expect(helpers.toFixedNumber(receiverFinalBalance.VLX, 6)).toEqual(helpers.toFixedNumber((receiverInitialBalance.VLX + transactionAmount), 6));
 
     const senderFinalBalance = await velasNative.getBalance(data.wallets.txSender.address);
     assert.isBelow(senderFinalBalance.VLX, senderInitialBalance.VLX - transactionAmount, 'Final sender balance is not below the initial sender balance');
@@ -47,7 +47,7 @@ test.describe.parallel('Transactions', () => {
     // TODO: btc chain api
     const txSignatureLink = await wallets.txListAfterSendOrSwap.linkToTxExecuted.getAttribute('href');
     if (!txSignatureLink) throw new Error('No txSignatureLink');
-    assert.isTrue(txSignatureLink.includes('https://bitpay.com/insight/#/BTC/testnet/'));
+    expect(txSignatureLink).toContain('https://bitpay.com/insight/#/BTC/testnet/');
   });
 
   // TODO: network request error
@@ -59,7 +59,7 @@ test.describe.parallel('Transactions', () => {
     // TODO: ltc chain api
     const txSignatureLink = await wallets.txListAfterSendOrSwap.linkToTxExecuted.getAttribute('href');
     if (!txSignatureLink) throw new Error('No txSignatureLink');
-    assert.isTrue(txSignatureLink.includes('https://testnet.litecore.io/'));
+    expect(txSignatureLink).toContain('https://testnet.litecore.io/');
   });
 
   test('Send ETH Legacy', async () => {

@@ -1,7 +1,8 @@
 import {
-  assert, data, test, walletURL,
+  data, expect, test, walletURL,
 } from '../common-test-exports';
 import { AuthScreen, WalletsScreen } from '../screens';
+import { log } from '../tools/logger';
 
 let wallets: WalletsScreen;
 let auth: AuthScreen;
@@ -42,6 +43,7 @@ test.describe(' > ', () => {
     await page.click('.manage-account .closed');
     await wallets.waitForWalletsDataLoaded();
 
-    assert.lengthOf(errorLog, 0, `Following console errors have been found:\n${errorLog.join('\n= = = = = = = = = = = = = = = =\n')}\n`);
+    log.error(`Console errors have been found:\n${errorLog.join('\n= = = = = = = = = = = = = = = =\n')}\n`)
+    expect(errorLog).toHaveLength(0);
   });
 });

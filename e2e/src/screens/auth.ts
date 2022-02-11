@@ -13,8 +13,6 @@ export class AuthScreen extends BaseScreen {
 
   menuItems = this.page.locator('.menu-items');
 
-  seedPhraseChecksumMatchError = this.page.locator('" Seed phrase checksum not match. Please try again."');
-
   downloadButtons = {
     iOS: this.page.locator('#download-ios'),
     android: this.page.locator('#download-android'),

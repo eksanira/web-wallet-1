@@ -1,6 +1,6 @@
 import { AuthScreen, Language, WalletsScreen } from '../../screens';
 import {
-  assert, data, expect, test, walletURL,
+  data, expect, test, walletURL,
 } from '../../common-test-exports';
 import { log } from '../../tools/logger';
 
@@ -37,7 +37,7 @@ test.describe.parallel('Auth', () => {
       await auth.loginByRestoringSeed(data.wallets.login.seed);
 
       await wallets.selectWallet('token-vlx_native');
-      assert.equal(await wallets.getWalletAddress(), accountAddress24Words, 'Account address on UI does not equal expected');
+      expect(await wallets.getWalletAddress()).toEqual(accountAddress24Words);
     });
 
     test('24-words seed phrase', async () => {
@@ -48,7 +48,7 @@ test.describe.parallel('Auth', () => {
       await auth.wordByWordSeedInputForm.fill(data.wallets.login.seedArr, { fast: true });
 
       await wallets.selectWallet('token-vlx_native');
-      assert.equal(await wallets.getWalletAddress(), accountAddress24Words, 'Account address on UI does not equal expected');
+      expect(await wallets.getWalletAddress()).toEqual(accountAddress24Words);
     });
 
     test('12-words seed phrase', async () => {
@@ -63,18 +63,18 @@ test.describe.parallel('Auth', () => {
       await auth.wordByWordSeedInputForm.fill(seed12Words);
 
       await wallets.selectWallet('token-vlx_native');
-      assert.equal(await wallets.getWalletAddress(), accountAddress12Words, 'Account address on UI does not equal expected');
+      expect(await wallets.getWalletAddress()).toEqual(accountAddress12Words);
     });
 
-    test('Can\'t restore with incorrect 24-word seed phrase', async () => {
+    test('Can\'t restore with incorrect 24-word seed phrase', async ({ page }) => {
       await auth.language.select('en');
       await auth.welcome.restore();
       await auth.restoreFrom.seed('24');
       await auth.pinForNewAcc.fillAndConfirm('111222');
       await auth.wordByWordSeedInputForm.fill(Array(24).fill('sad'), { fast: true });
 
-      assert.isTrue(await auth.seedPhraseChecksumMatchError.isVisible(), 'No alert for incorrect seed phrase on UI');
-      assert.isFalse(await auth.isLoggedIn(), 'Restored with incorrect seed phrase');
+      await expect(page.locator('" Seed phrase checksum not match. Please try again."')).toBeVisible();
+      expect(await auth.isLoggedIn()).toBeFalsy();
     });
   });
 
@@ -94,7 +94,7 @@ test.describe.parallel('Auth', () => {
       await auth.pinForLoggedOutAcc.typeAndConfirm('111222');
 
       await wallets.selectWallet('token-vlx_native');
-      assert.equal(await wallets.getWalletAddress(), accountAddress24Words, 'Account address on UI does not equal expected');
+      expect(await wallets.getWalletAddress()).toEqual(accountAddress24Words);
     });
   });
 
@@ -122,7 +122,7 @@ test.describe.parallel('Auth', () => {
         log.info(language);
         await auth.language.select(language);
         const actualWelcomeText = (await auth.language.welcomeText.textContent())?.trim();
-        assert.equal(actualWelcomeText, welcomeTexts[language], `${language} language on UI does not equal chosen language`);
+        expect(actualWelcomeText).toEqual(welcomeTexts[language]);
         await page.reload();
       }
     });

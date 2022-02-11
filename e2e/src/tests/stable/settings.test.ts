@@ -2,7 +2,7 @@ import {
   AuthScreen, Language, SettingsScreen, WalletsScreen,
 } from '../../screens';
 import {
-  assert, data, test, walletURL,
+  assert, expect, data, test, walletURL,
 } from '../../common-test-exports';
 import { log } from '../../tools/logger';
 
@@ -34,7 +34,7 @@ test.describe.parallel('Settings', () => {
 
     const copiedKey = await page.evaluate(async () => await navigator.clipboard.readText());
     log.info(copiedKey);
-    assert.equal(copiedKey, 'WnexSzUPFb258nLxGC1jiCShUZC1DbTpaRC2kizKxnpKNuvsqAhegBUCVgoULDxog19CjxfYaijS5Cpe78EFKqQ');
+    expect(copiedKey).toEqual('WnexSzUPFb258nLxGC1jiCShUZC1DbTpaRC2kizKxnpKNuvsqAhegBUCVgoULDxog19CjxfYaijS5Cpe78EFKqQ');
   });
 
   test('Switch account index', async () => {
@@ -54,7 +54,7 @@ test.describe.parallel('Settings', () => {
 
     await wallets.openMenu('settings');
     await settings.networkSwitcher.click();
-    assert.isFalse(await wallets.testnetMenuItem.isVisible());
+    expect(wallets.testnetMenuItem).not.toBeVisible();
 
     await wallets.openMenu('wallets');
     await wallets.selectWallet('token-btc');
@@ -62,7 +62,8 @@ test.describe.parallel('Settings', () => {
 
     await wallets.openMenu('settings');
     await settings.networkSwitcher.click();
-    assert.isTrue(await wallets.testnetMenuItem.isVisible());
+    expect(wallets.testnetMenuItem).toBeVisible();
+    
 
     await wallets.openMenu('wallets');
     await wallets.selectWallet('token-btc');

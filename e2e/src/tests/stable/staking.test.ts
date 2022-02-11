@@ -37,7 +37,7 @@ test.describe('Staking', () => {
       await staking.createStakingAccountButton.click();
       await staking.useMax();
       const maxAmount = await staking.createStakingAccountForm.getMaxAmount();
-      assert.equal(maxAmount, Math.floor(balance) - 1);
+      expect(maxAmount).toEqual(Math.floor(balance) - 1);
     });
 
     test('Create staking account', async () => {
@@ -57,18 +57,18 @@ test.describe('Staking', () => {
 
       // assert
       const finalAmountOfStakingAccounts = await staking.waitForStakesAmountUpdated({ initialStakesAmount: initialAmountOfStakingAccounts, stakeType: 'Delegate' });
-      assert.equal(finalAmountOfStakingAccounts, initialAmountOfStakingAccounts + 1);
+      expect(finalAmountOfStakingAccounts).toEqual(initialAmountOfStakingAccounts + 1);
 
       const newlyAddedStakingAccountAddress = (await staking.getStakingAccountsUpdate(stakingAccountAddresses))?.added;
       if (!newlyAddedStakingAccountAddress) throw new Error('No new staking account appears in the list');
 
       // assert VLXNative balance decreases on staking amount
       const finalVLXNativeBalance = helpers.toFixedNumber((await velasNative.getBalance(VLXNativeAddress)).VLX);
-      assert.equal(finalVLXNativeBalance, initialVLXNativeBalance - stakingAmount);
+      expect(finalVLXNativeBalance).toEqual(initialVLXNativeBalance - stakingAmount);
 
       // check newly created staking account on blockchain
       await staking.makeSureStakingAccIsCreatedAndNotDelegated(newlyAddedStakingAccountAddress);
-      assert.equal(helpers.toFixedNumber((await velasNative.getBalance(newlyAddedStakingAccountAddress)).VLX), stakingAmount);
+      expect(helpers.toFixedNumber((await velasNative.getBalance(newlyAddedStakingAccountAddress)).VLX)).toEqual(stakingAmount);
     });
 
     test('Delegate stake', async ({ page }) => {
@@ -82,16 +82,16 @@ test.describe('Staking', () => {
       const alert = page.locator('.confirmation .text');
       await alert.waitFor({ timeout: 20000 });
       const alertText = await alert.textContent();
-      assert.include(alertText, 'Funds delegated to');
+      expect(alertText).toContain('Funds delegated to');
       await staking.modals.clickOK();
       await staking.waitForLoaded();
       const finalAmountOfDelegatedStakes = await staking.waitForStakesAmountUpdated({ initialStakesAmount: initialAmountOfDelegatedStakes, stakeType: 'Undelegate' });
       expect(finalAmountOfDelegatedStakes).toEqual(initialAmountOfDelegatedStakes + 1);
 
       const stakeAccOnBlockchain = await velasNative.getStakeAccount(stakeAccountAddress);
-      assert.equal(stakeAccOnBlockchain.active, 0);
-      assert.equal(stakeAccOnBlockchain.inactive, stakingAmount * 10 ** 9);
-      assert.equal(stakeAccOnBlockchain.state, 'activating');
+      expect(stakeAccOnBlockchain.active).toEqual(0);
+      expect(stakeAccOnBlockchain.inactive).toEqual(stakingAmount * 10 ** 9);
+      expect(stakeAccOnBlockchain.state).toEqual('activating');
 
       // postcondition - refresh until delegated stake becomes undelegated
       
@@ -124,9 +124,9 @@ test.describe('Staking', () => {
       assert.equal(await staking.getAmountOfStakes('Delegate'), initialToDelegateStakesAmount + 1, 'Amount of stakes to withdraw has not changed after undelegation');
 
       const stakeAccOnBlockchain = await velasNative.getStakeAccount(stakeAccountAddress);
-      assert.equal(stakeAccOnBlockchain.active, 0);
-      assert.equal(stakeAccOnBlockchain.inactive, stakingAmount * 10 ** 9);
-      assert.equal(stakeAccOnBlockchain.state, 'inactive');
+      expect(stakeAccOnBlockchain.active).toEqual(0);
+      expect(stakeAccOnBlockchain.inactive).toEqual(stakingAmount * 10 ** 9);
+      expect(stakeAccOnBlockchain.state).toEqual('inactive');
 
       // postcondition - refresh until undelegated stake becomes delegated
       // await staking.refreshStakesToGetUpdatedCachedStatuses({from: 'Delegate', to: 'Undelegate'})
@@ -157,7 +157,7 @@ test.describe('Staking', () => {
       await staking.waitForSplitedStakeToAppear();
 
       const finalAmountOfStakingAccounts = await staking.waitForStakesAmountUpdated({ initialStakesAmount: initialAmountOfStakingAccounts, stakeType: 'Delegate' });
-      assert.equal(finalAmountOfStakingAccounts, initialAmountOfStakingAccounts + 1);
+      expect(finalAmountOfStakingAccounts).toEqual(initialAmountOfStakingAccounts + 1);
 
       const addedAfterSplitAccountAddress = (await staking.getStakingAccountsUpdate(stakingAccountAddresses))?.added;
       if (!addedAfterSplitAccountAddress) throw new Error('No staking accounts appears. But it was expected after staking');
@@ -183,21 +183,20 @@ test.describe('Staking', () => {
       await staking.waitForLoaded();
 
       const finalAmountOfStakingAccounts = await staking.waitForStakesAmountUpdated({ initialStakesAmount: initialAmountOfStakingAccounts, stakeType: 'all' });
-
-      assert.equal(finalAmountOfStakingAccounts, initialAmountOfStakingAccounts - 1);
+      expect(finalAmountOfStakingAccounts).toEqual(initialAmountOfStakingAccounts - 1);
 
       await staking.makeSureStakingAccountDoesNotExistOnBlockchain(stakeAccountAddress);
       const withdrawedStakeAccountAddress = (await staking.getStakingAccountsUpdate(stakingAccountAddresses))?.removed;
       if (!withdrawedStakeAccountAddress) throw new Error(`Withdwed stake ${stakingAccountAddresses} does not disappear from stakes list`);
-      assert.equal(withdrawedStakeAccountAddress, stakeAccountAddress);
+      expect(withdrawedStakeAccountAddress).toEqual(stakeAccountAddress);
     });
 
     test('Validators list', async ({ page }) => {
       await page.waitForSelector('.validator-item .identicon', { timeout: 10000 });
       await staking.validatorsList.validator.icon.first().waitFor();
-      assert.isTrue(await staking.validatorsList.validator.browse.first().isVisible(), 'No icon with link to explorer in validators list');
-      assert.isTrue(await staking.validatorsList.validator.copy.first().isVisible(), 'No copy address icon in validators list');
-      assert.isTrue(await staking.validatorsList.validator.myStakes.first().isVisible(), 'No my-stake column in validators list');
+      expect(staking.validatorsList.validator.browse.first()).toBeVisible();
+      expect(staking.validatorsList.validator.copy.first()).toBeVisible();
+      expect(staking.validatorsList.validator.myStakes.first()).toBeVisible();
     });
 
     // TODO
