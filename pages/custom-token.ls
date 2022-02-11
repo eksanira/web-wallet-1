@@ -444,7 +444,7 @@ form-group = (classes, title, style, content)->
 custom-token = ({ store, web3t })->
     return null if store.custom-token.add is no
     
-    load-coins = require("../../web3t/load-coins.ls")
+    load-coins = require("../../web3t/load-coins.js")
     load-coins-keys = load-coins |> keys
     err, $web3t-tokens <- load-coins {plugins:[]}
     console.error err if err?

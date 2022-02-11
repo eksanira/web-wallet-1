@@ -4,7 +4,7 @@
   localStorage = require('localStorage');
   ref$ = require('prelude-ls'), any = ref$.any, map = ref$.map, filter = ref$.filter;
   ref$ = require('./modal.ls'), install = ref$.install, replace = ref$.replace;
-  get = require('../web3t/providers/superagent.ls').get;
+  get = require('../web3t/providers/superagent.js').get;
   jsonParse = require('./json-parse.ls');
   providers = require('./providers.ls');
   dash = require('../web3t/plugins/dash-coin.js');

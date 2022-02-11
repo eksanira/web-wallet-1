@@ -1,7 +1,7 @@
 require! {
     \./navigate.ls
     \./seed.ls : seedmem
-    \../web3t/providers/deps.ls : { bip39 }
+    \../web3t/providers/deps.js : { bip39 }
     \./pages/confirmation.ls : { alert }
     \prelude-ls : { words, map, filter, join }
     \./get-lang.ls
