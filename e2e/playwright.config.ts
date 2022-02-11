@@ -1,5 +1,5 @@
 import { PlaywrightTestConfig } from '@playwright/test';
-import { config as globalConfig } from './src/config';
+import { config as globalConfig, walletURL } from './src/config';
 
 const windowSize = { width: 1900, height: 1080 };
 
@@ -16,6 +16,7 @@ const config: PlaywrightTestConfig = {
       use: {
         actionTimeout: 8000,
         navigationTimeout: 30 * 1000,
+        baseURL: walletURL,
         browserName: 'chromium',
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36',
         channel: 'chrome',
