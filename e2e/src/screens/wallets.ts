@@ -34,22 +34,22 @@ export class WalletsScreen extends BaseScreen {
   constructor(public page: Page) {
     super(page);
   }
-  
+
   backButton = this.page.locator('.close');
-  
+
   balanceAmount = this.page.locator('.amount:not(.placeholder)');
-  
-  
+
+
   lockButton = this.page.locator('.menu-item.bottom');
-  
+
   manageWalletsModal = this.page.locator('.manage-account');
-  
+
   swapButton = this.page.locator('.with-swap #wallet-swap:not([disabled])');
-  
+
   sendButton = this.page.locator('#send-confirm:not([disabled])');
-  
+
   testnetMenuItem = this.page.locator('#menu-testnet');
-  
+
   totalBalance = this.page.locator('.balance div:not(.placeholder.amount) #balance-total');
 
   walletItemInWalletsList = this.page.locator('.big.wallet');
@@ -219,7 +219,8 @@ export class WalletsScreen extends BaseScreen {
     await this.addToken(fromToken);
     await this.addToken(toToken);
     await this.selectWallet(fromToken);
-    await this.swapActions.click();
+    await this.swapButton.click({timeout: 15000});
+    await this.swapForm.networkSelector.waitFor({ timeout: 20000 });
     await this.swapActions.chooseDestinationNetwork(toToken);
 
     if (params?.customAddress) {
@@ -254,10 +255,6 @@ export class WalletsScreen extends BaseScreen {
   };
 
   private swapActions = {
-    click: async () => {
-      await this.swapButton.click();
-      await this.swapForm.networkSelector.waitFor();
-    },
     fill: async (transactionAmount: string) => {
       await this.swapForm.amountInput.fill(transactionAmount);
     },
@@ -294,8 +291,8 @@ export class WalletsScreen extends BaseScreen {
       log.debug(`Select destination network - ${destinationNetworkName}`);
       await this.page.click('.network-slider .right');
       const destinationNetowk = this.page.locator(`.switch-menu div:text("${destinationNetworkName}")`);
-      await destinationNetowk.click({ timeout: 10000 });
-      await this.waitForSelectorDisappears('.switch-menu', 20000);
+      await destinationNetowk.click({ timeout: 25000 });
+      await this.waitForSelectorDisappears('.switch-menu', 25000);
     },
     confirm: async () => {
       await this.sendButton.waitFor();

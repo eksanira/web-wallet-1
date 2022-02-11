@@ -19,7 +19,7 @@ test.describe.parallel('Wallets screen', () => {
       await auth.loginByRestoringSeed(data.wallets.fundsReceiver.seed);
 
       await wallets.selectWallet('token-vlx_native');
-      await wallets.txHistory.txDetails.first().waitFor({ timeout: 30000 });
+      await wallets.txHistory.txDetails.first().waitFor({ timeout: 35000 });
       const transactions = await wallets.txHistory.txDetails.elementHandles();
       assert.isAbove(transactions.length, 10, 'Amount of transactions in the list is less than 10');
 
