@@ -44,7 +44,7 @@ test.describe('Staking', () => {
       // arrange
       // VLXNativeAddress is hardcoded address for the 1st account
       const VLXNativeAddress = data.wallets.staking.staker.publicKey;
-      const initialAmountOfStakingAccounts = await staking.getAmountOfStakes('Delegate');
+      const initialAmountOfStakingAccountsToBeDelegated = (await staking.getAmountOfStakes()).Delegate;
       const stakingAccountAddresses = await staking.getStakingAccountsAddresses();
       const initialVLXNativeBalance = helpers.toFixedNumber((await velasNative.getBalance(VLXNativeAddress)).VLX);
 
@@ -56,8 +56,8 @@ test.describe('Staking', () => {
       await staking.waitForLoaded();
 
       // assert
-      const finalAmountOfStakingAccounts = await staking.waitForStakesAmountUpdated({ initialStakesAmount: initialAmountOfStakingAccounts, stakeType: 'Delegate' });
-      expect(finalAmountOfStakingAccounts).toEqual(initialAmountOfStakingAccounts + 1);
+      const finalAmountOfStakingAccounts = await staking.waitForStakesAmountUpdated({ initialStakesAmount: initialAmountOfStakingAccountsToBeDelegated, stakeType: 'Delegate' });
+      expect(finalAmountOfStakingAccounts).toEqual(initialAmountOfStakingAccountsToBeDelegated + 1);
 
       const newlyAddedStakingAccountAddress = (await staking.getStakingAccountsUpdate(stakingAccountAddresses))?.added;
       if (!newlyAddedStakingAccountAddress) throw new Error('No new staking account appears in the list');
@@ -72,7 +72,7 @@ test.describe('Staking', () => {
     });
 
     test('Delegate stake', async ({ page }) => {
-      const initialAmountOfDelegatedStakes = await staking.getAmountOfStakes('Undelegate');
+      const initialAmountOfDelegatedStakes = (await staking.getAmountOfStakes()).Undelegate;
       const stakeAccountAddress = await staking.getFirstStakingAccountAddressFromTheList('Delegate');
 
       await staking.accounts.clickDelegate();
@@ -108,8 +108,8 @@ test.describe('Staking', () => {
     });
 
     test('Undelegate stake', async ({ page }) => {
-      const initialToUndelegateStakesAmount = await staking.getAmountOfStakes('Undelegate');
-      const initialToDelegateStakesAmount = await staking.getAmountOfStakes('Delegate');
+      const initialToUndelegateStakesAmount = (await staking.getAmountOfStakes()).Undelegate;
+      const initialToDelegateStakesAmount = (await staking.getAmountOfStakes()).Delegate;
       const stakeAccountAddress = await staking.getFirstStakingAccountAddressFromTheList('Delegate');
 
       await staking.accounts.clickUndelegate();
@@ -121,7 +121,7 @@ test.describe('Staking', () => {
       const finalToUndelegateStakesAmount = await staking.waitForStakesAmountUpdated({ initialStakesAmount: initialToUndelegateStakesAmount, stakeType: 'Undelegate' });
 
       assert.equal(finalToUndelegateStakesAmount, initialToUndelegateStakesAmount - 1, 'Amount of stakes to undelegate has not changed after undelegation');
-      assert.equal(await staking.getAmountOfStakes('Delegate'), initialToDelegateStakesAmount + 1, 'Amount of stakes to withdraw has not changed after undelegation');
+      assert.equal((await staking.getAmountOfStakes()).Delegate, initialToDelegateStakesAmount + 1, 'Amount of stakes to withdraw has not changed after undelegation');
 
       const stakeAccOnBlockchain = await velasNative.getStakeAccount(stakeAccountAddress);
       expect(stakeAccOnBlockchain.active).toEqual(0);
@@ -144,7 +144,7 @@ test.describe('Staking', () => {
     });
 
     test('Split stake', async ({ page }) => {
-      const initialAmountOfStakingAccounts = await staking.getAmountOfStakes('Delegate');
+      const initialAmountOfStakingAccounts = (await staking.getAmountOfStakes()).Delegate;
       const stakingAccountAddresses = await staking.getStakingAccountsAddresses();
 
       await staking.selectAccount('Delegate');
@@ -172,7 +172,7 @@ test.describe('Staking', () => {
 
     test('Withdraw stake', async ({ page }) => {
       const stakingAccountAddresses = await staking.getStakingAccountsAddresses();
-      const initialAmountOfStakingAccounts = await staking.getAmountOfStakes('all');
+      const initialAmountOfStakingAccounts = (await staking.getAmountOfStakes()).all;
       const stakeAccountAddress = await staking.getFirstStakingAccountAddressFromTheList('Delegate');
 
       await staking.selectAccount('Delegate');
