@@ -190,7 +190,7 @@ module.exports = (store, web3t)->
     border-right=
         border-right: "1px solid #{style.app.border}"
 
-    make-disabled = store.current.page in <[ account_details poolchoosing ]>
+    make-disabled = store.current.page in <[ account_details poolchoosing staking2 ]>
     disabled-class = if make-disabled then "disabled" else ""
 
     open-account = ->
