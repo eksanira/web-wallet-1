@@ -22,7 +22,7 @@ module.exports = (store, web3t, wallets, wallet, wallets-groups, group-name)->
     return null if not store? or not wallet?
     
     get-plugin = (token, cb)->
-        load-coins = require("../web3t/load-coins.ls")
+        load-coins = require("../web3t/load-coins.js")
         err, $web3t-tokens <- load-coins {plugins:[]}
         console.error err if err?
         return cb null if not $web3t-tokens?

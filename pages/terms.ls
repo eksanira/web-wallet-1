@@ -6,7 +6,7 @@ require! {
     \../get-lang.ls
     \../icons.ls
     \../components/button.ls
-    \../../web3t/providers/superagent.ls : { get }
+    \../../web3t/providers/superagent.js : { get }
 }
 .terms
     @import scheme
