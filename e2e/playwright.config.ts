@@ -49,7 +49,7 @@ const config: PlaywrightTestConfig = {
   // repeatEach: 5,
   // reporter: 'list',
   retries: globalConfig.CI ? 1 : 0,
-  timeout: 120000,
+  timeout: 130000,
   workers: 2,
 };
 

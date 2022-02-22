@@ -32,7 +32,7 @@ export default class ExplorersAPI {
 
   async waitForTx(params: { txHash: string, waitForConfirmation?: boolean, milliseconds?: number, testName?: string }): Promise<void> {
     const waitForConfirmation = params.waitForConfirmation || true;
-    const milliseconds = params.milliseconds || 180000;
+    const milliseconds = params.milliseconds || 120_000;
     const startTime = Date.now();
     let tx;
     while (!tx && (Date.now() - startTime) < milliseconds) {
