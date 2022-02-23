@@ -6,7 +6,7 @@ require! {
     \../get-lang.ls
     \./icon.ls
     \../get-primary-info.ls
-    \../../web3t/providers/superagent.ls : { get }
+    \../../web3t/providers/superagent.js : { get }
     \../icons.ls
     \../round-human.ls
     \./confirmation.ls : { alert }

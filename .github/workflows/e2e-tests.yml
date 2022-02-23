@@ -17,12 +17,24 @@ jobs:
       - name: checkout JsWallet
         uses: actions/checkout@v2
 
-      - name: checkout web3t
+      - name: get branch name
+        run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
+        id: get-branch-name
+
+      - name: checkout web3t, testnet branch
         uses: actions/checkout@v2
         with:
           repository: velas/web3t
           path: .compiled-ssr/web3t
           ref: testnet
+
+      - name: try to checkout web3t, the same branch as JsWallet
+        uses: actions/checkout@v2
+        continue-on-error: true
+        with:
+          repository: velas/web3t
+          path: .compiled-ssr/web3t
+          ref: ${{ steps.get-branch-name.outputs.branch_name }}
 
       - uses: actions/setup-node@v2
         with:
@@ -53,12 +65,15 @@ jobs:
           npm run wallet-start:no-watch &
           echo '- - - - - Wallet is started but it takes up to 30 seconds to be up - - - - -'
 
-
       - name: install test npm modules
         run: npm i
 
-      # - name: blockchain health check
-      #   run: CI=true npm run blockchain-health-check
+      - name: check token providers in default.conf
+        working-directory: ./
+        run: npm run test:check-token-providers-in-default-conf
+
+      # - name: balances api health check
+      #   run: CI=true npm run balances-api-health-check
 
       # - name: balances api health check
       #   run: CI=true npm run balances-api-health-check

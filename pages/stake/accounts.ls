@@ -55,7 +55,7 @@ as-callback = (p, cb)->
     .notification-entity
         @media(max-width: 540px)
             display: block
-            margin-top: 20px !important 
+            margin-top: 20px !important
     .hint
         .tooltip
             position: absolute
@@ -247,18 +247,22 @@ staking-accounts-content = (store, web3t)->
             return alert store, err.toString! if err?
             <- notify store, lang.fundsUndelegated
             store.staking.getAccountsFromCashe = no
-            #navigate store, web3t, \validators
+            if store.staking.webSocketAvailable is no
+                navigate store, web3t, \validators
 
         choose = ->
             store.staking.chosen-account = item
             navigate store, web3t, \poolchoosing
             cb null
 
-        remove-stake-acc = ->
-            index = store.staking.accounts
-                |> sort-by (.seed-index)
-                |> findIndex (-> it.pubkey is item.key)
-            console.log "index to remove"
+        remove-stake-acc = (public_key)->
+            index = store.staking.accounts |> findIndex (-> it.pubkey is public_key)
+            if index > -1
+                store.staking.accounts.splice(index,1)
+            accountIndex = store.current.accountIndex
+            index2 = (store.staking.accountsCached[accountIndex] ? []) |> findIndex (-> it.pubkey is public_key)
+            if index2 > -1
+                (store.staking.accountsCached[accountIndex] ? []).splice(index2,1)
 
 
         withdraw = ->
@@ -266,7 +270,7 @@ staking-accounts-content = (store, web3t)->
                 return
             agree <- confirm store, lang.areYouSureToWithdraw
             return if agree is no
-            { balanceRaw, rent, address, account } = item
+            { balanceRaw, rent, address, account, pubkey } = item
             amount = lamports `plus` rent
             err, result <- as-callback web3t.velas.NativeStaking.withdraw(address, amount)
             err-message = get-error-message(err, result)
@@ -275,7 +279,7 @@ staking-accounts-content = (store, web3t)->
             <- notify store, lang.fundsWithdrawn
             store.staking.getAccountsFromCashe = no
             store.current.page = \validators
-            remove-stake-acc()
+            remove-stake-acc(pubkey)
 
         now = moment!.unix!        
         locked-and-can-withdraw = unixTimestamp? and (unixTimestamp <= now)
@@ -287,17 +291,17 @@ staking-accounts-content = (store, web3t)->
         
         $button =
             | can-delegate =>
-                button { store, text: lang.to_delegate, on-click: choose, type: \secondary , icon : \arrowRight }
+                button { classes: "action-delegate", store, text: lang.to_delegate, on-click: choose, type: \secondary , icon : \arrowRight }
             | (not-locked or locked-and-can-withdraw) and (+deactivationEpoch isnt +max-epoch) and (+store.staking.current-epoch >= +deactivationEpoch) =>
                 disabled =
                     | (deactivationEpoch? and activationEpoch?) and +deactivationEpoch >= +store.staking.current-epoch => yes
                     | _ => no
-                button { store, text: lang.withdraw, on-click: withdraw, type: \secondary , icon : \arrowLeft, makeDisabled:disabled }
-            | _ => 
+                button { classes: "action-withdraw", store, text: lang.withdraw, on-click: withdraw, type: \secondary , icon : \arrowLeft, makeDisabled:disabled }
+            | _ =>
                 disabled = item.status in <[ deactivating ]>
                 if activationEpoch? and deactivationEpoch? and (activationEpoch !== deactivationEpoch)
                     if +activationEpoch < +deactivationEpoch and +deactivationEpoch isnt +max-epoch
-                        disabled = yes     
+                        disabled = yes
                 button { store, classes: "action-undelegate" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon : \arrowLeft, makeDisabled: disabled }
         highlighted = if highlight is yes then "highlight" else ""
 
@@ -312,7 +316,8 @@ staking-accounts-content = (store, web3t)->
                     address-holder-popup { store, wallet: wallet-validator, item }
                 else
                     "---"
-            td.pug #{seed}
+            td.pug
+                .pug.seed #{seed}
             if no
                 td.pug(class="account-status #{status}") #{$status}
             td.pug
@@ -342,9 +347,11 @@ staking-accounts-content = (store, web3t)->
 
     create-staking-account = ->
         cb = console.log
+        buffer = {}
         amount <- prompt2 store, lang.howMuchToDeposit
         return if not amount?
         return if amount+"".trim!.length is 0
+        buffer.amount = amount
         create-staking-account.InProcess = yes
         store.staking.creating-staking-account = yes
         min_stake = web3t.velas.NativeStaking.min_stake
@@ -364,7 +371,7 @@ staking-accounts-content = (store, web3t)->
             store.staking.creating-staking-account = no
             create-staking-account.InProcess = no
             return alert store, lang.balanceIsNotEnoughToSpend + " #{(amount)} VLX"
-        amount = amount * 10^9
+        amount = buffer.amount * 10^9
         err, result <- as-callback web3t.velas.NativeStaking.createAccount(amount)
         if err?
             create-staking-account.InProcess = no
@@ -380,12 +387,14 @@ staking-accounts-content = (store, web3t)->
         signature = result
         err <- creation-account-subscribe({ store, web3t, signature, acc_type: "create", inProcess: create-staking-account.InProcess })
         if err?
+            console.log "creation-account-subscribe err"
             create-staking-account.InProcess = no
             store.staking.creating-staking-account = no
             return alert store, err, cb
         create-staking-account.InProcess = no
         store.staking.creating-staking-account = no
-        #<- notify store, lang.accountCreatedAndFundsDeposited
+        if store.staking.webSocketAvailable is no
+            <- notify store, lang.accountCreatedAndFundsDeposited
 
     totalOwnStakingAccounts = store.staking.totalOwnStakingAccounts ? 0
     loadingAccountIndex = Math.min(totalOwnStakingAccounts, store.staking.loadingAccountIndex)
@@ -402,6 +411,7 @@ staking-accounts-content = (store, web3t)->
                     path.pug(xmlns="http://www.w3.org/2000/svg" d="M1796 2907C 1749 2827 1701 2743 1515 2420C 1407 2230 1275 2001 1222 1910C 1170 1819 1110 1716 1090 1680C 950 1438 891 1334 845 1255C 816 1206 747 1084 690 985C 633 886 554 749 514 680L514 680L441 555L1130 552C 1510 551 2130 551 2508 552L2508 552L3197 555L3102 720C 3050 811 2991 914 2970 950C 2950 986 2856 1150 2761 1315C 2665 1480 2510 1750 2415 1915C 1758 3060 1827 2940 1820 2940C 1817 2940 1806 2925 1796 2907z" stroke="none" fill="rgb(255 215 0)" fill-rule="nonzero")
 
     .pug.staking-accounts-content
+        loader { loading: store.staking.creating-staking-account, text: "Creating staking account..." }
         .pug
             .form-group.pug(id="create-staking-account")
                 .pug.section.create-staking-account 
@@ -423,10 +433,11 @@ staking-accounts-content = (store, web3t)->
                 .pug.section
                     .title.pug
                         h3.pug.section-title #{lang.yourStakingAccounts} 
-                            span.pug.amount (#{store.staking.accounts.length}) 
-                        .pug
-                            .loader.pug(on-click=refresh style=icon-style title="refresh" class="#{isSpinned}")
-                                icon \Sync, 25
+                            span.pug.amount (#{store.staking.accounts.length})
+                        if not store.staking.webSocketAvailable or fetch-error-occurred or (store.errors.fetchValidators? and store.staking.pools-are-loading is no)
+                            .pug
+                                .loader.pug(on-click=refresh style=icon-style title="refresh" class="#{isSpinned}")
+                                    icon \Sync, 25
                         if fetch-error-occurred
                             .pug.pointer-container
                                 svg-icon
@@ -449,7 +460,7 @@ staking-accounts-content = (store, web3t)->
                                                     td.pug(width="40%" style=staker-pool-style title="Your Staking Account") #{lang.account} (?)
                                                     td.pug(width="10%" style=stats title="Your Deposited Balance") #{lang.balance} (?)
                                                     td.pug(width="30%" style=stats title="Where you staked") #{lang.validator} (?)
-                                                    td.pug(width="7%" style=stats title="The ID of your stake. This is made to simplify the search of your stake in validator list") #{lang.seed} (?)
+                                                    td.pug(width="7%" style=stats title="The ID of your stake. This is made to simplify the search of your stake in validator list") ID (?)
                                                     if no
                                                         td.pug(width="10%" style=stats title="Current staking status. Please notice that you cannot stake / unstake immediately. You need to go through the waiting period. This is made to reduce attacks by staking and unstaking spam.") #{lang.status} (?)
                                                     td.pug(width="10%" style=stats) #{(lang.action ? "Action")}

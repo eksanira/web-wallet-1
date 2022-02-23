@@ -73,6 +73,8 @@ require! {
             opacity: 1
         100%
             opacity: 0
+    .main-sections
+        margin-bottom: 50px
     .blink
         animation: 1s linear blink-animation  infinite
         -webkit-animation: 1s linear blink-animation  infinite
@@ -217,11 +219,9 @@ require! {
                 margin: 5px 0
                 outline: none
             .section
-                &:last-of-type
-                    margin-bottom: 50px
                 border-bottom: 1px solid rgba(240, 237, 237, 0.16)
                 padding: 30px 20px
-                display: flex
+
                 .chosen-pool
                     .buttons
                         text-align: left
@@ -264,8 +264,7 @@ require! {
                     @media(max-width: 540px)
                         background-image: none
                 .title
-                    padding: 0px 10px 0 0
-                    width: 17%
+                    padding: 0px 10px 10px 0
                     min-width: 150px
                     text-align: left
                     text-transform: uppercase
@@ -280,7 +279,7 @@ require! {
                 .description
                     padding: 0px
                     font-size: 14px
-                    width: 80%
+                    width: 100%
                     text-align: left
                     hr
                         margin: 15px auto
@@ -310,6 +309,7 @@ require! {
                         -web-kit-transition: breathe 3s ease-in infinite
                         position: relative
                         max-height: 80vh
+                        background: rgba(255, 255, 255, 0.04)
                         .stake-pointer
                             background: rgb(37, 87, 127)
                         &.lockup
@@ -338,11 +338,10 @@ require! {
                             &.with-stake
                                 filter: saturate(6.5)
                         tr
+                            border-bottom: 1px solid rgba(255, 255, 255, 0.07)
                             animation: appear .1s ease-in
                             &.activating, &.active
                                 color: var(--color-td)
-                            &.inactive
-                                color: orange
                             &.banned
                                 color: red
                             .inner-address-holder
@@ -372,13 +371,7 @@ require! {
                                 color: white
                                 line-height: 1.6
                                 border-radius: 4px
-                                background: gray
-                                &.active, &.activating
-                                    background: rgb(38, 219, 85)
-                                &.inactive
-                                    background: orange
-                                &.banned
-                                    background: red
+
                         button
                             width: 100%
                             height: 36px
@@ -387,8 +380,7 @@ require! {
                         width: 100%
                         border-collapse: collapse
                         margin: 0px auto
-                    tr:nth-of-type(odd)
-                        background: rgba(gray, 0.2)
+
                     th
                         font-weight: 400
                         &:first-child
@@ -852,7 +844,7 @@ staking-content = (store, web3t)->
                 .title.pug
                     h2.pug #{lang.balance}
                 .description.pug
-                    span.pug #{your-balance} VLX
+                    span.pug(id="vlx-native-balance") #{your-balance} VLX
             stake-accounts {store, web3t}
             .form-group.pug(id="pools")
                 alert-txn { store }
@@ -904,6 +896,12 @@ validators = ({ store, web3t })->
     style=
         background: info.app.wallet
         color: info.app.text
+    title-style =
+        z-index: 3
+        color: info.app.text
+        border-bottom: "1px solid #{info.app.border}"
+        background: info.app.background
+        background-color: info.app.bgspare
     border-style =
         color: info.app.text
         border-bottom: "1px solid #{info.app.border}"
@@ -926,7 +924,7 @@ validators = ({ store, web3t })->
     show-class =
         if store.current.open-menu then \hide else \ ""
     .pug.staking
-        .pug.title(style=border-style)
+        .pug.title(style=title-style)
             .pug.header(class="#{show-class}") #{lang.delegateStake}
             .pug.close(on-click=go-back)
                 img.icon-svg.pug(src="#{icons.arrow-left}" style=icon-color)
@@ -971,6 +969,19 @@ validators.init = ({ store, web3t }, cb)!->
     store.staking.loadingValidatorIndex = 0
     store.staking.splitting-staking-account = no
     store.staking.creating-staking-account = no
+    store.staking.subscribedAccounts = {}
+
+    wallet = store.current.account.wallets |> find (-> it.coin.token is \vlx_native)
+    try
+        publicKey = new velasWeb3.PublicKey(wallet.publicKey)
+        callback = (res)->
+        commitment = 'finalized'
+        id = web3t.velas.NativeStaking.connection.onAccountChange(publicKey, callback, commitment)
+        store.staking.webSocketAvailable = yes
+    catch err
+        console.log "ws onAccountChange err: " err
+        store.staking.webSocketAvailable = no
+
 
     index-is-different = store.current.accountIndex isnt store.staking.accountIndex
     if store.staking.pools-network is store.current.network then
@@ -978,18 +989,17 @@ validators.init = ({ store, web3t }, cb)!->
             return cb null
     else
         store.staking.pools-network = store.current.network
-        
     err, epochInfo <- as-callback web3t.velas.NativeStaking.getCurrentEpochInfo()
     console.error err if err?
-    { epoch, blockHeight, slotIndex, slotsInEpoch, transactionCount } = epochInfo
-    store.staking.current-epoch = epochInfo.epoch
+    epoch = epochInfo?epoch
+    store.staking.current-epoch = epoch
 
     store.staking.pools = []
     err, rent <- as-callback web3t.velas.NativeStaking.connection.getMinimumBalanceForRentExemption(200)
     rent = 2282880 if err?
     rent = rent `div` (10^9)
     store.staking.rent = rent   
-    wallet = store.current.account.wallets |> find (-> it.coin.token is \vlx_native)
+
     return cb null if not wallet?
     web3t.velas.NativeStaking.setAccountPublicKey(wallet.publicKey)
     web3t.velas.NativeStaking.setAccountSecretKey(wallet.secretKey)
@@ -1005,11 +1015,13 @@ validators.init = ({ store, web3t }, cb)!->
         store.errors.fetchAccounts = { message: err }
     #store.staking.accounts = convert-accounts-to-view-model(result)
     store.staking.accounts = result
-
-
-    store.staking.accounts |> each (account)->
-        publicKey  = account.pubKey
-        subscribe-to-stake-account({store, web3t, account, publicKey})
+    try
+        store.staking.accounts |> each (account)->
+            publicKey  = account.pubKey
+            subscribe-to-stake-account({store, web3t, account, publicKey})
+    catch err
+        console.log "err" err
+        store.staking.webSocketAvailable = no
 
     # Normalize current page for accounts in pagination
     type = "accounts"

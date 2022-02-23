@@ -865,15 +865,16 @@ staking-content = (store, web3t)->
         cb null, \done
 
     remove-stake-acc = (public_key)->
-
-        index = store.staking.accounts |> findIndex (-> down(it.pubkey) is down(public_key))
+        console.log "pubKey to remove" public_key
+        index = store.staking.accounts |> findIndex (-> it.pubkey is public_key)
         if index > -1
             store.staking.accounts.splice(index,1)
-        console.log "index" index
+        console.log "index to remove" index
 
         accountIndex = store.current.accountIndex
-        index2 = (store.staking.accountsCached[accountIndex] ? []) |> findIndex (-> it.pubkey is pubkey)
-        console.log "index cached" index2
+        index2 = (store.staking.accountsCached[accountIndex] ? []) |> findIndex (-> it.pubkey is public_key)
+        console.log "index cache to remove" index2
+
         if index2 > -1
             (store.staking.accountsCached[accountIndex] ? []).splice(index2,1)
 
@@ -884,13 +885,12 @@ staking-content = (store, web3t)->
         err, result <- as-callback web3t.velas.NativeStaking.withdraw(address, amount)
         err-message = get-error-message(err, result)
         return alert store, err-message if err-message?
-        #<- set-timeout _, 1000
         <- notify store, lang.fundsWithdrawn
-        store.staking.getAccountsFromCashe = no
-        #store.staking.fetchAccounts = yes
-        remove-stake-acc(pubkey)
-        #store.current.page = \validators
-        navigate store, web3t, \validators
+        store.staking.getAccountsFromCashe = yes
+        remove-stake-acc(account.pubkey)
+        if store.staking.webSocketAvailable is no
+            return navigate store, web3t, \validators
+        store.current.page = \validators
 
     delegate = ->
         navigate store, web3t, \poolchoosing
@@ -905,16 +905,33 @@ staking-content = (store, web3t)->
         <- set-timeout _, 1000
         <- notify store, lang.fundsUndelegated
         #store.staking.getAccountsFromCashe = no
+        if store.staking.webSocketAvailable is no
+            return navigate store, web3t, \validators
         store.current.page = \validators
-        #navigate store, web3t, \validators
 
     split-account = ->
         cb = console.log
+        buffer = {}
+        amount <- prompt3 store, lang.howMuchToSplit
+        buffer.amount = amount
+        if amount+"".trim!.length is 0
+            store.staking.splitting-staking-account = no
+            return
+        min_stake = web3t.velas.NativeStaking.min_stake
+        balance = balanceRaw `div` (10^9)
+        if +buffer.amount > +balance
+            store.staking.splitting-staking-account = no
+            return alert store, lang.balanceIsNotEnoughToSpend + " #{buffer.amount} VLX"
+        if +min_stake > +balance
+            threshold-amount = min_stake `plus` 0.00228288
+            store.staking.splitting-staking-account = no
+            return alert store, lang.balanceIsNotEnoughToCreateStakingAccount + " (#{threshold-amount} VLX)"
+        if +(min_stake) > +buffer.amount
+            store.staking.splitting-staking-account = no
+            return alert store, lang.minimalStakeMustBe + " #{min_stake} VLX"
 
-        /* Comment?? */
         err <- as-callback web3t.velas.NativeStaking.getStakingAccounts(store.staking.parsedProgramAccounts)
         return cb err if err?
-        /* Comment?? */
 
         store.staking.splitting-staking-account = yes
         /* Get next account seed */
@@ -923,24 +940,8 @@ staking-content = (store, web3t)->
         if err-message?
             store.staking.splitting-staking-account = no
             return alert store, err-message
-        /**/
-        amount <- prompt3 store, lang.howMuchToSplit
-        if amount+"".trim!.length is 0
-            store.staking.splitting-staking-account = no
-            return
-        min_stake = web3t.velas.NativeStaking.min_stake
-        balance = balanceRaw `div` (10^9)
-        if +amount > +balance
-            store.staking.splitting-staking-account = no
-            return alert store, lang.balanceIsNotEnoughToSpend + " #{amount} VLX"
-        if +min_stake > +balance
-            threshold-amount = min_stake `plus` 0.00228288
-            store.staking.splitting-staking-account = no
-            return alert store, lang.balanceIsNotEnoughToCreateStakingAccount + " (#{threshold-amount} VLX)"
-        if +(min_stake) > +amount
-            store.staking.splitting-staking-account = no
-            return alert store, lang.minimalStakeMustBe + " #{min_stake} VLX"
-        amount = amount * 10^9
+
+        amount = buffer.amount * 10^9
         /* Create new account */
         fromPubkey$ = store.staking.chosenAccount.address
         err, splitStakePubkey <- as-callback web3t.velas.NativeStaking.createNewStakeAccountWithSeed()
@@ -1069,7 +1070,7 @@ staking-content = (store, web3t)->
                             img.pug.check(src="#{icons.img-check}")
             .pug.section
                 .title.pug
-                    h3.pug #{lang.seed}
+                    h3.pug ID
                 .description.pug
                     span.pug(style=seed-style)
                         | #{store.staking.chosenAccount.seed}
@@ -1365,10 +1366,14 @@ try-get-extra-slot = (default-response, new-slot, cb)->
     err, result <- as-callback(web3t.velas.NativeStaking.getConfirmedBlocksWithLimit(new-slot, limit))
     cb null, result?result?0
 #    
-get_confirmed_block_with_encoding = (slot, cb)->    
-    err, confirmedBlock <- as-callback(web3t.velas.NativeStaking.getConfirmedBlock(slot))
-    console.error err if err?
-    cb null, confirmedBlock 
+get_confirmed_block_with_encoding = (slot, cb)->
+    try
+        err, confirmedBlock <- as-callback(web3t.velas.NativeStaking.getConfirmedBlock(slot))
+        console.error err if err?
+        return cb err if err?
+        cb null, confirmedBlock
+    catch err
+        return cb err
 #    
 retrieveRewardData = (firstSlotInEpoch, firstNormalSlot, slotsPerEpoch, slotsInEpoch, firstAvailableBlock, firstNormalEpoch, epoch, cb)->
     if firstSlotInEpoch < firstAvailableBlock

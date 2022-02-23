@@ -7,7 +7,7 @@ require! {
     \../get-lang.ls
     \./icon.ls
     \../icons.ls
-    \../../web3t/providers/superagent.ls : { get }
+    \../../web3t/providers/superagent.js : { get }
     \../components/button.ls
     \./custom-token.ls : \CustomToken
     \../components/popups/loader.ls    

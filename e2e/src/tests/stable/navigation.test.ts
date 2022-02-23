@@ -55,7 +55,7 @@ test.describe.parallel('Navigation', () => {
 
         case 'swap':
           await wallets.openMenu('wallets');
-          await wallets.swapButton.click({ timeout: 20000 });
+          await wallets.swapButton.click({ timeout: 25000 });
           await wallets.swapForm.networkSelector.waitFor();
           break;
 

@@ -7,7 +7,7 @@ require! {
     \../math.ls : { plus }
     \./icon.ls
     \../get-primary-info.ls
-    \../../web3t/providers/superagent.ls : { get }
+    \../../web3t/providers/superagent.js : { get }
     \../icons.ls
     \../round-human.ls
     \./confirmation.ls : { alert }
@@ -166,15 +166,15 @@ module.exports = (store, web3t, wallets, wallet)-->
     wallet-style=
         color: style.app.text3
     if (not wallets? or not wallet?)
-        no-result-text = 
+        no-result-text =
             font-size: "25px"
             text-transform: "initial"
             color: "white"
-        msg-txt-style = 
+        msg-txt-style =
             font-size: "20px"
             color: "white"
             opacity: 0.3
-        return 
+        return
             .wallet-detailed.pug(key="no-details" style=wallet-style)
                 .wallet-part.center.pug(style=text)
                     .wallet-header.pug
@@ -182,28 +182,28 @@ module.exports = (store, web3t, wallets, wallet)-->
                             if store.loading-wallet is yes
                                 loading(store.loading-wallet)
                             else
-                                h3.text-message.pug(style=msg-txt-style) No wallet found   
-                          
+                                h3.text-message.pug(style=msg-txt-style) No wallet found
+
 
     { wallet-icon, uninstall, wallet, balance, balance-usd, pending, send, receive, swap, usd-rate } = wallet-funcs store, web3t, wallets, wallet
     lang = get-lang store
-    
+
     label-uninstall =
         | store.current.refreshing => \...
         | _ => "#{lang.hide}"
-    
+
     placeholder =
         | store.current.refreshing => "placeholder"
         | _ => ""
     placeholder-coin =
         | store.current.refreshing => "placeholder-coin"
         | _ => ""
-    
-    is-custom = wallet?coin?custom is yes    
+
+    is-custom = wallet?coin?custom is yes
     wallet-is-disabled = isNaN(wallet?balance)
     is-loading = store.current.refreshing is yes
     send-swap-disabled = wallet-is-disabled or is-loading
-        
+
     name = wallet?coin?name ? wallet?coin?token
     receive-click = receive(wallet)
     send-click = send(wallet)
@@ -234,21 +234,21 @@ module.exports = (store, web3t, wallets, wallet)-->
             |> round-human
     total-sent = get-total \OUT, wallet.address
     total-received = get-total \IN, wallet.address
-    
+
     installed-networks = store.coins |> map (.token)
-    available-networks = 
-        (wallet?network?networks ? []) 
+    available-networks =
+        (wallet?network?networks ? [])
             |> obj-to-pairs
             |> map (-> it.1 )
             |> filter (-> it.disabled isnt yes and it.referTo in installed-networks)
-            
+
     uninstall-action = (e)->
         if is-custom isnt yes
-            return uninstall(e) 
+            return uninstall(e)
         agree <- confirm store, "You can add this token back in the future by going to “Add custom token”."
         return if not agree
-        uninstall(e)    
-    
+        uninstall(e)
+
     wallet-style=
         color: style.app.text3
         background: style.app.wallet
@@ -294,7 +294,7 @@ module.exports = (store, web3t, wallets, wallet)-->
                             button { store, on-click=buy, text: \buy , icon: \buy  , id: "wallet-buy", classes="wallet-swap" }
                         if wallet?coin?token is "vlx_evm"
                             button { store, on-click=buy, text: \buy , icon: \buy  , id: "wallet-buy", classes="wallet-swap" }
-                        button { store, on-click=swap-click, text: \swap , icon: \swap  , id: "wallet-swap", classes="wallet-swap", makeDisabled=send-swap-disabled  }                       
+                        button { store, on-click=swap-click, text: \swap , icon: \swap  , id: "wallet-swap", classes="wallet-swap", makeDisabled=send-swap-disabled  }
 
 
             else
