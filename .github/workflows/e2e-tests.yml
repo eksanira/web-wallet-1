@@ -65,12 +65,15 @@ jobs:
           npm run wallet-start:no-watch &
           echo '- - - - - Wallet is started but it takes up to 30 seconds to be up - - - - -'
 
-
       - name: install test npm modules
         run: npm i
 
-      - name: blockchain health check
-        run: CI=true npm run blockchain-health-check
+      - name: check token providers in default.conf
+        working-directory: ./
+        run: npm run test:check-token-providers-in-default-conf
+
+      # - name: balances api health check
+      #   run: CI=true npm run balances-api-health-check
 
       # - name: balances api health check
       #   run: CI=true npm run balances-api-health-check
