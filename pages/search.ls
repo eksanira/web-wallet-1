@@ -329,7 +329,7 @@ dapps = (store, web3t)->
     .pug.panel-content
         .pug.section
             .source.pug(on-click=goto-staking)
-                .pug.address Staking
+                .pug.address Advanced Staking
                 .pug.header Velas Staking
             .pug.description
         .pug.section
