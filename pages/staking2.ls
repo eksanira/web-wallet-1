@@ -34,6 +34,8 @@ require! {
     padding: 0px
     background: transparent
     text-align: left
+    @media(max-width:$mobile)
+        background: #14183b
     @media(max-width:$ipad)
         width: 100%
         margin: 0
@@ -45,11 +47,12 @@ require! {
         @media(max-width: $mobile)
             height: 460px !important
     .index-style-box
+        width: 50% !important
         @media(max-width:800px)
             width: 600px
         @media(max-width: $mobile)
-            width: 90%
-            top: 43%
+            width: 95%
+            display: contents
             background: transparent
             border: none
     .style-container
@@ -84,6 +87,53 @@ require! {
         color: #fff !important
     .css-1mxz8qt-MuiPaper-root
         background-color: transparent !important
+    .section-item-container
+        background-color: #1F2853 !important
+        border-top: 1px solid #151839 !important
+        border-bottom: 1px solid #151839 !important
+        @media(max-width:$mobile)
+            display: inline-block
+            width: 95%
+            margin-inline: 10px
+    .sectionlist-container
+        padding-top: 30px !important
+        @media(max-width:$mobile)
+            overflow: inherit !important
+            height: auto !important
+    .search-container
+        @media(max-width:$mobile)
+            padding-inline: 10px
+    .search-table
+        @media(max-width:$mobile)
+            height: 1000px !important
+    .search-container
+        margin-top: 0px !important
+        @media(max-width:$mobile)
+            margin-top: 10px !important
+    .index-title-row-staked
+        position: fixed !important
+        z-index: 11 !important
+        left: 0px !important
+        right: 0px !important
+        @media(max-width:$mobile)
+            background-color: rgb(21, 24, 57)
+            margin: 0 !important
+            padding-top: 5px !important
+            padding-inline: 3px !important
+    .section-header, .section-description
+        display: flex
+        padding: 15px 0 !important
+        color: #fff !important
+        font-size: 15px
+        @media(max-width:$mobile)
+            margin-left: 10px !important
+    div.section-item
+        display: flex
+        align-items: center
+        height: 90px !important
+        padding-block: 5px !important
+        padding: 0 !important
+        border-bottom: 2px solid #151839 !important
     >.title
         position: sticky
         position: -webkit-sticky
@@ -132,10 +182,7 @@ staking2 = ({ store, web3t })->
     .pug.staking2
         .pug.title(style=border-style)
             .pug.header(class="#{show-class}") Staking
-            .pug.close(on-click=goto-search)
-                img.icon-svg.pug(src="#{icons.arrow-left}")
             burger store, web3t
-            switch-account store, web3t
         .container.pug
             Staking.pug(stakingStore=store.stakingStore)
 
