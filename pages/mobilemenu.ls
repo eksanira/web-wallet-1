@@ -357,10 +357,8 @@ module.exports = (store, web3)->
         navigate store, web3t, \wallets
         store.menu.show = no
     goto-staking = ->
-        navigate store, web3t, \staking
+        navigate store, web3t, \staking2
         store.menu.show = no
-    goto-choose-staker = ->
-        navigate store, web3t, \validators
         store.menu.show = no
     goto-info = ->
         navigate store, web3t, \info
@@ -393,14 +391,14 @@ module.exports = (store, web3)->
                         label.pug #{lang.your-wallets}
             if store.preference.settings-visible is yes
                 if store.current.device is \mobile
-                    .menu-item.pug(on-click=goto-choose-staker style=icon-style class="#{staking}")
+                    .menu-item.pug(on-click=goto-staking style=icon-style class="#{staking}")
                         img.pug(src="#{icons.staking}")
                         label.pug #{lang.staking}
             if store.preference.settings-visible is yes
                 if store.current.device is \mobile
                     .menu-item.pug(on-click=goto-search style=icon-style class="#{search}")
                         img.pug(src="#{icons.search}")
-                        label.pug #{lang.search}
+                        label.pug #{lang.apps}
             if store.preference.settings-visible is yes
                 if store.current.device is \mobile
                     .menu-item.pug(on-click=goto-settings style=icon-style class="#{settings}")
