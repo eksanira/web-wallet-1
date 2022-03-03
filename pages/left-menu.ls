@@ -253,9 +253,8 @@ module.exports = (store, web3t)->
     settings = if store.current.page is \settings then \active else \not-active
     filestorage = if store.current.page is \filestorage then \active else \not-active
     staking = if store.current.page is \staking then \active else \not-active
-    staking-active = if store.current.page is \validators then \active else \not-active
+    staking-active = if store.current.page is \staking2 then \active else \not-active
     info-active = if store.current.page is \info then \active else \not-active
-    staking2-active = if store.current.page is \staking2 then \active else \not-active
     resources = if store.current.page is \resources then \active else \not-active
     faq = if store.current.page is \faq then \active else \not-active
     notice = if store.current.page is \notification then \active else \not-active
@@ -318,7 +317,7 @@ module.exports = (store, web3t)->
     goto-file-storage = ->
         navigate store, web3t, \filestorage
     goto-staking = ->
-        navigate store, web3t, \staking
+        navigate store, web3t, \staking2
         store.menu.show = no
     goto-choose-staker2 = ->
         navigate store, web3t, \staking2
@@ -379,7 +378,7 @@ module.exports = (store, web3t)->
                     img.pug(src="#{icons.staking}"style=icon-color)
             if store.preference.settings-visible is yes
                 .menu-item.pug(on-click=goto-search style=icon-style class="#{search}" id="menu-search")
-                    span.arrow_box.pug #{lang.search}
+                    span.arrow_box.pug #{lang.apps}
                     img.pug(src="#{icons.search}" style=icon-color)
             if store.preference.settings-visible is yes
                 .menu-item.pug(on-click=goto-settings style=icon-style class="#{settings}" id="menu-settings")
@@ -397,7 +396,3 @@ module.exports = (store, web3t)->
                 .menu-item.pug.testnet(on-click=goto-mainnet style=icon-style class="#{settings}" id="menu-testnet")
                     span.arrow_box.pug Testnet
                     img.pug(src="#{icons.test}" style=icon-color)
-            if store.preference.settings-visible is yes
-                .menu-item.pug(on-click=goto-choose-staker2 style=icon-style class="#{staking2-active}" id="menu-delegate")
-                    span.arrow_box.pug Staking 2.0
-                    img.pug(src="#{icons.staking}"style=icon-color)

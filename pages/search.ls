@@ -327,80 +327,22 @@ dapps = (store, web3t)->
     goto-util = ->
         navigate store, web3t, \util
     .pug.panel-content
-        p.results.pug
-            | #{lang.estimated-results}:
-            | 2,000
-            | (0.30
-            | #{lang.sec}
-            | )
         .pug.section
-            .source.pug(on-click=goto-file-storage)
-                .pug.address #{lang.velas-sphere}
-                .pug.header #{lang.storage-dapp}
-            .pug.description #{lang.storage-description}
-            ul.pug.links
-                li.pug(key="video-storage")
-                    span.pug(on-click=goto-videostorage) #{lang.video-storage}
-                li.pug(key="hide-sound" on-click=goto-soundstorage style=hide-sound)
-                    span.pug Sound Storage    
-        .pug.section
-            .source.pug(on-click=goto-resources)
-                .pug.address #{lang.velas-sphere}
-                .pug.header #{lang.velas-cpu}
-            .pug.description #{lang.cpu-description}
-            ul.pug.links
-                li.pug(key="about" )
-                    span.pug About
-                li.pug(key="faqs" )
-                    span.pug FAQs
+            .source.pug(on-click=goto-staking)
+                .pug.address Staking
+                .pug.header Velas Staking
+            .pug.description
         .pug.section
             .source.pug(on-click=goto-wallets)
                 .pug.address Download Velas Wallets
                 .pug.header Velas Wallets
             .pug.description For mac, windows, ios, android devices
         .pug.section
-            .source.pug(on-click=goto-staking)
-                .pug.address #{lang.velas-blockchain}
-                .pug.header #{lang.staking-dapp}
-            .pug.description #{lang.staking-description}
-            ul.pug.links
-                li.pug(key="choose-staker" )
-                    span.pug(on-click=goto-choose-staker) #{lang.delegate-stake}
-        .pug.section
-            .source.pug(on-click=goto-notice)
-                .pug.address #{lang.velas-sphere}
-                .pug.header #{lang.velas-messenger}
-            .pug.description
-        .pug.section
             .source.pug(on-click=goto-util)
                 .pug.address #{lang.velas-sphere}
                 .pug.header Convert VLX2ETH
             .pug.description
-        .pug.section.developing
-            .source.pug
-                .pug.address wallet.velas.com
-                .pug.header Coinrace Dapp | This page is under development.
-            .pug.description Bet on a price of popular cryptocurrencies (BTC, ETH, EOS, ZEC, etc.) and win RACE tokens. The game engine is powered by a set of smart contracts written in ...
-        .pug.section.developing
-            .source.pug
-                .pug.address wallet.velas.com
-                .pug.header DeFi Dapp | This page is under development.
-            .pug.description With many of the playlists we have assembled, the parameters have been clear. To be considered decentralized finance, or DeFi, we can argue endlessly about ...
-            ul.pug.links
-                li.pug(key="learn-more" )
-                    span.pug Learn More
-                li.pug(key="defi" )
-                    span.pug About DeFi
-        .pug.section.developing
-            .source.pug
-                .pug.address wallet.velas.com
-                .pug.header DEXX Dapp | This page is under development.
-            .pug.description QuikNode provides reliable dedicated endpoints for your Ethereum applications. Geth & Parity. Full & Archive Nodes. HTTP & WebSocket Support. Fast RPC. 8 Locations. Types: MainNet (ETH), Classic (ETC), Kovan/Ropsten/Rinkeby.
-            ul.pug.links
-                li.pug(key="about") 
-                    span.pug About
-                li.pug(key="faqs-2") 
-                    span.pug FAQs
+
 web = (store, web3t)->
     lang = get-lang store
     .pug.panel-content
@@ -482,7 +424,7 @@ search = ({ store, web3t })->
     .pug.search
         alert-demo store, web3t
         .pug.title(style=border-style)
-            .pug.header(class="#{show-class}") #{lang.search}
+            .pug.header(class="#{show-class}") #{lang.apps}
             .pug.close(on-click=go-back)
                 img.icon-svg.pug(src="#{icons.arrow-left}")
             burger store, web3t
