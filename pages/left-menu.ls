@@ -377,7 +377,7 @@ module.exports = (store, web3t)->
                         span.arrow_box.pug #{lang.staking}
                         img.pug(src="#{icons.staking}"style=icon-color)
                     .menu-item.pug(on-click=goto-search style=icon-style class="#{search}" id="menu-search")
-                        span.arrow_box.pug #{lang.apps}
+                        span.arrow_box.pug #{lang.dapps}
                         img.pug(src="#{icons.search}" style=icon-color)
                     .menu-item.pug(on-click=goto-settings style=icon-style class="#{settings}" id="menu-settings")
                         span.arrow_box.pug #{lang.settings}

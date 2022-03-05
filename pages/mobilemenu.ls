@@ -398,7 +398,7 @@ module.exports = (store, web3)->
                 if store.current.device is \mobile
                     .menu-item.pug(on-click=goto-search style=icon-style class="#{search}")
                         img.pug(src="#{icons.search}")
-                        label.pug #{lang.apps}
+                        label.pug #{lang.dapps}
             if store.preference.settings-visible is yes
                 if store.current.device is \mobile
                     .menu-item.pug(on-click=goto-settings style=icon-style class="#{settings}")
