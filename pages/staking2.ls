@@ -58,7 +58,7 @@ require! {
     .style-container
         @media(max-width:$mobile)
             width: 90%
-            top: 45%
+            top: 50%
     .css-5o0em1
         @media(max-width:$mobile)
             min-width: 90%
