@@ -55,7 +55,6 @@ require! {
         display: inline-block;
         margin: 0;
         font-size: 13px;
-  
         .warn-label-text
             background: #191919 
             border: 1px solid #cc932c
@@ -63,7 +62,6 @@ require! {
             z-index: 3;
             padding: 10px;
             left: 10px;
-
     .question-mark
         display: inline-block
         .label
@@ -78,7 +76,6 @@ require! {
             cursor: pointer
             display: inline-block
             font-size: 10px
-        
         &:hover
             .question-mark-text
                 display: block
@@ -111,8 +108,6 @@ require! {
             padding: 10px
             position: absolute
             right: 0
-            
-                
     label
         padding-top: 5px
         padding-left: 3px
@@ -145,27 +140,21 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
     decimalsLimit = 9
     { choose-custom-gas-price, choose-auto-gas-price, has-send-error} = send-funcs store, web3t
     disabled-class = if has-send-error! then "disabled" else ""
-    
     select-custom-gas-price = ->
         return if has-send-error!
         choose-custom-gas-price send.gas-price-custom-amount
-    
     get-number = (val)->
         number = (val ? "").toString!
         return \0 if number is ""
         val
-    
     value-without-decimal-with-dot = (value)->
         value = (value ? "").toString()
         res = value.split(DECIMAL_SEPARATOR)
         value.index-of(DECIMAL_SEPARATOR) > -1 and (res.length > 1 and res[1] is "")
-    
     on-change-internal = (it)->
         console.log "[on-change-internal]"
         value = it
         value = get-number(value)
-        
-        
         # Restrictions check #
         result = value.toString!.split(DECIMAL_SEPARATOR)
         groups = result.0
@@ -196,14 +185,10 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
         if send.gas-price-type is \custom then
             send.gas-price-custom-amount = value 
             choose-custom-gas-price value 
-#            if ((send.amount-buffer.gas-price ? "").toString() isnt \0) and (send.amount-buffer.gas-price ? "").toString() is (send.gasPriceCustomAmount ? "").toString()
-#                return  
         else
             send.gas-price-auto = value    
         #choose-custom-gas-price value
         send.amount-buffer.gas-price = send.gasPriceCustomAmount 
-    
-    
     border-style = border: "1px solid #{style.app.border}"
     text = color: "#{style.app.icon}"
     icon-style = color: "rgb(38 98 145)"
@@ -211,11 +196,9 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
         background: style.app.input
         border: "1px solid #{style.app.border}"
         color: style.app.text
-        
     gas-price-custom-amount_GWEI = send.gas-price-custom-amount
     gas-price-custom-amount = round-human(gas-price-custom-amount_GWEI)
     auto-gas-price =  round-human((send.gas-price-auto ? 0) `div` (10^9))
-
     custom-option = ->
         td.pug(on-click=select-custom-gas-price class="#{active-class \custom}")
             .pug.field.type #{lang.custom}
@@ -227,7 +210,6 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
         td.pug(on-click=choose-auto-gas-price class="#{active-class \auto}")
             .pug.field.type #{lang.auto}
             .pug.field.coin(class="#{auto-fee-display-field-class}") #{auto-gas-price  + " GWEI"}
-    
     fee-payer = 
         | wallet.network.tx-fee-in? =>
             tx-fee-in-wallet = store.current.account.wallets |> find (-> it.coin.token is wallet.network.tx-fee-in)           
@@ -243,8 +225,6 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
         .warn-label.pug
             if send.gas-price-type is \custom and gas-price-islower 
                 .warn-label-text.pug #{low-gas-warn}
-                
-            
     .pug.trx-custom-gas-price(class="#{disabled-class}")
         .pug
             label.pug(style=text) Gas Price
@@ -259,7 +239,6 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
                 tr.pug
                     custom-option!
                     auto-option! 
-      
         if store.current.send.gas-price-type is \custom             
             CurrencyInput.pug(class="textfield tx-fee" key="tx-fee-input" allowNegativeValue=no style=input-style defaultValue="0" allowDecimals=yes value="#{gas-price-custom-amount_GWEI}" decimalsLimit=decimalsLimit label="Send" decimalSeparator=DECIMAL_SEPARATOR groupSeparator="," onValueChange=on-change-internal)
 module.exports = trx-fee

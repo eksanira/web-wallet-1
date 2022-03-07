@@ -266,13 +266,11 @@ mobile = ({ store, web3t })->
                 icon "X", 20
     chosen-account-template =
         if store.current.edit-account-name is "" then view-account-template! else edit-account-template!
-
     wallets-groups =
         ^^wallets
             |> filter (?)
             |> filter ({coin, network}) -> ((coin.name + coin.token).to-lower-case!.index-of store.current.search.to-lower-case!) != -1 and (network.disabled isnt yes)
             |> group-by (.network.group)
-
     groups = wallets-groups |> keys
     group-index = store.current.group-index
     groups-wallets =
@@ -284,7 +282,6 @@ mobile = ({ store, web3t })->
     group-wallets = [] if not group-wallets?
     wallet-detail = group-wallets |> find (-> group-wallets.index-of(it) is store.current.wallet-index)
     #return null if not wallet-detail?
-
     .wallets-container.pug(key="wallets")
         header store, web3t
         .pug.left-side(style=row)

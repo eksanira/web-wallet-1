@@ -59,7 +59,7 @@ module.exports = (store, web3t)->
             .pug.balance
                 span.color.pug #{int}
             if dec? then
-               span.gray-color.pug(style=gray-style)\.#{dec}     
+                span.gray-color.pug(style=gray-style)\.#{dec}     
     is-active = (value)->
         types = store.current.filter-txs-types
         if value in types then \active else ''

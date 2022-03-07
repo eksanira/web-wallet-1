@@ -40,8 +40,6 @@ require! {
         &:after
             left: ($base-line-height / 2)
             animation-delay: ($pulse-duration / 1.5)
-    
-    
 module.exports = (isLoading)->
     return null if not isLoading
     .loading-page.pug(key="loading")
