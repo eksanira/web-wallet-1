@@ -202,7 +202,6 @@ require! {
                                     vertical-align: middle
                 &.legacy-tokens
                     margin-top: 10px
-
 create-item = ({ store, web3t }, item)-->
     add = ->
         store.current.add-coin = no
@@ -218,11 +217,11 @@ create-item = ({ store, web3t }, item)-->
     menu-style=
         color: style.app.text
     .pug.outer-item
-      .item.pug(style=background, id="add-token-#{item.token}")
-          img.pug(src="#{item.image}")
-          span.pug.title(style=menu-style) #{title}
-          button.pug(on-click=add style=button-style)
-              icon \Plus, 20
+        .item.pug(style=background, id="add-token-#{item.token}")
+            img.pug(src="#{item.image}")
+            span.pug.title(style=menu-style) #{title}
+            button.pug(on-click=add style=button-style)
+                icon \Plus, 20
 filter-item = (store)-> (item)->
     return yes if (store.current.filter-plugins ? "").length is 0
     (item.token ? "").index-of(store.current.filter-plugins) > -1
@@ -284,8 +283,6 @@ add-by-vlxaddress = (store, web3t)->
         input.search.pug(placeholder="V...." value="#{store.contract-vlxaddress}" on-change=coin-contract style=input-style)
         button.pug(on-click=add style=button-style)
             icon \Plus, 20
-            
-            
 module.exports = ({ store, web3t } )->
     return null if store.current.add-coin isnt yes
     current-network = store.current.network   
@@ -315,10 +312,7 @@ module.exports = ({ store, web3t } )->
         background: style.app.input
         border: "0"
         width: "calc(100%) - 100"    
-
     plugins = store.registry
-          
-    
     groups =    
         plugins
             |> filter (it)->
@@ -327,24 +321,20 @@ module.exports = ({ store, web3t } )->
                 (it[current-network]?disabled is no) or (not it[current-network]?disabled?)
             |> filter filter-item store
             |> group-by (-> it[current-network].group)
-    
     velas-group = 
         | groups.Velas? => { groups.Velas } 
         | _ => null   
     delete groups.Velas    
-    
     create-group = ({ store, web3t }, item)--> 
         group-name =
             | item?0? => item.0
             | _ => ''
         wallets = item.1
-        
         .wallet-group.pug(id="wallet-group-add-#{group-name}")
             .pug.group-name #{group-name} Network
             .pug.network-wallets
                 .pug         
                     wallets |> map create-item { store, web3t }  
-    
     add-custom-token = ->
         store.custom-token.add = yes
         store.custom-token.network = null  
@@ -361,10 +351,8 @@ module.exports = ({ store, web3t } )->
     title-style = 
         font-weight: "bold"
         opacity: ".9"    
- 
     go-back-from-custom-token = ->
         store.custom-token.add = no   
-    
     .pug.manage-account
         if not store.custom-token.add    
             .account-body.pug(style=account-body-style)
@@ -378,10 +366,8 @@ module.exports = ({ store, web3t } )->
                             input.search.pug(placeholder="#{lang.search}" on-change=filter-registery style=input-style)
                             .pug.icon
                                 icon \Search, 15
-                        
                     .pug.add-custom-token
                         button { store, on-click=add-custom-token, text: "Add custom token" , icon: \plus , type: \secondary, id: "add-custom-token", makeDisabled=no }                 
-                                 
                 .pug.settings
                     if store.registry.length > 0
                         .pug.section
@@ -393,8 +379,6 @@ module.exports = ({ store, web3t } )->
                                 groups
                                     |> obj-to-pairs
                                     |> map create-group { store, web3t }
-    
-                    
         else
             .account-body.pug(style=account-body-style-custom)
                 loader { loading: store.custom-token.isLoading }
