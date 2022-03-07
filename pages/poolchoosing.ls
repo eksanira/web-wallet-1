@@ -281,7 +281,6 @@ require! {
                         width: 100%
                         border-collapse: collapse
                         margin: 0px auto
-
                     th
                         font-weight: 400
                         &:first-child
@@ -648,7 +647,6 @@ staking-content = (store, web3t)->
             store.staking.getAccountsFromCashe = no
             return navigate store, web3t, \validators
         store.current.page = \validators
-
     change-address = ->
         store.staking.add.add-validator = it.target.value
     change-stake = !->
@@ -767,7 +765,6 @@ staking-content = (store, web3t)->
             agree <- confirm store, confirmText
             return if agree is no
             delegate!
-             
         cancel-pool = ->
             store.staking.chosen-pool = null
         to-eth = ->
@@ -805,7 +802,6 @@ staking-content = (store, web3t)->
             td.pug #{item.stakers}
             td.pug
                 button { store, on-click: choose-pull , type: \secondary , icon : \arrowRight }
-    
     activate = (step)-> ->
         store.current.step = step
     activate-first = activate \first

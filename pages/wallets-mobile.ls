@@ -27,8 +27,6 @@ require! {
     button.btn
         min-width: auto
         margin: 0
-
-
     .wallet-group
         .group-name
             text-align: left
@@ -40,7 +38,6 @@ require! {
             position: sticky
             top: 0
             z-index: 1
-
     .wallet
         @import scheme
         $cards-height: 324px
@@ -245,7 +242,6 @@ require! {
                         width: 34px
                         @media screen and (max-width: 480px)
                             width: auto
-
     .your-account
         position: relative
         display: block
@@ -414,7 +410,6 @@ require! {
                 div
                     a
                         padding: 0 10px 0 30px
-
             .buttons
                 margin-top: 10px
                 display: flex
@@ -427,7 +422,6 @@ require! {
                         color: #71f4b4
                         img
                             filter: invert(99%) sepia(33%) saturate(5822%) hue-rotate(64deg) brightness(87%) contrast(153%)
-
 cb = console~log
 wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
     lang = get-lang store
@@ -463,17 +457,13 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
         | store.current.refreshing => "placeholder-coin"
         | _ => ""
     is-loading = store.current.refreshing is yes
-
     group-name =
         | wallets-group?0? => wallets-group.0
         | _ => ''
     wallets = wallets-group.1
-
     .wallet-group.pug
         .pug.group-name #{group-name} Network
-
         wallets |> map (wallet)->
-
             { button-style, uninstall, wallet, active, big, balance, balance-usd, pending, send, receive, swap, expand, usd-rate, last } = wallet-funcs store, web3t, wallets, wallet, wallets-groups, group-name
             name = wallet.coin.name ? wallet.coin.token
             receive-click = receive(wallet)
@@ -499,12 +489,10 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
             prev = historyPrices[1]
             last-price = last?v?0
             prev-price = prev?v?0
-
             /* Line color */
             borderColor =
                 | last-price < prev-price => 'rgba(255, 0, 80, 0.9)'
                 | _ => 'rgb(108, 253, 73)'
-
             percent =
                 | not prev-price? or not last-price? => ""
                 | _ => ((last-price `minus` prev-price ) `times` 100) `div` prev-price
@@ -516,7 +504,6 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
             percent-class =
                 | percent < 0 => "negative"
                 | _ => "positive"
-
             /* get gradient */
             getGradient = (ctx, chartArea)->
                 chartWidth = chartArea.right - chartArea.left
@@ -536,8 +523,6 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
                         gradient.addColorStop(0.7, "rgba(30, 255, 6, 0.11)")
                         gradient.addColorStop(1, "rgba(4, 255, 14, 0.14)")
                 gradient
-
-
             /* History Prices Linear Graph */
             build-data = (items)->
                 data = items
@@ -547,12 +532,12 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
                 datasets: [{
                     data
                     backgroundColor: (context)->
-                         chart = context.chart
-                         {ctx, chartArea} = chart
-                         if (!chartArea)
-                             #This case happens on initial chart load
-                             return null;
-                         return getGradient(ctx, chartArea)
+                        chart = context.chart
+                        {ctx, chartArea} = chart
+                        if (!chartArea)
+                            #This case happens on initial chart load
+                            return null;
+                        return getGradient(ctx, chartArea)
                     borderColor
                     borderWidth: 1
                     lineTension: 0.3
@@ -563,7 +548,6 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
                     pointRadius: 0
                 }]
                 labels: data
-
             data = build-data historyPrices
             fn-cb = (tooltipItem)->
                 tooltipItem.yLabel
@@ -573,7 +557,7 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
                 }
                 tooltips: {
                     callbacks: {
-                       label: fn-cb
+                        label: fn-cb
                     }
                 }
                 scales: {
@@ -595,7 +579,6 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
             }
             legend =
                 display: false
-
             installed-networks = store.coins |> map (.token)
             available-networks =
                 (wallet.network.networks ? [])
@@ -610,7 +593,6 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
                 | _ => uri-prod
             buy = ->
                 window.open(uri_simplex)
-
             /* Render */
             .wallet.wallet-mobile.pug.wallet-item(class="#{big} #{disabled-class}" key="#{token}" style=border-style)
                 .wallet-top.pug(on-click=expand)
@@ -654,8 +636,6 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
                         address-holder { store, wallet, type: \bg }
                         if token not in <[ btc vlx vlx_native vlx2 eth vlx_evm ]>
                             .pug.uninstall(on-click=uninstall style=wallet-style) #{label-uninstall}
-
-
 mobile = ({ store, web3t })->
     return null if not store.current.account?
     { wallets, go-up, can-up, go-down, can-down } = wallets-funcs store, web3t
@@ -706,12 +686,10 @@ mobile = ({ store, web3t })->
     account-name = current-account-name!
     rotate-class =
         if store.current.switch-account then \rotate else \ ""
-
     wallets-groups =
         wallets
             |> filter ({coin, network}) -> ((coin.name + coin.token).to-lower-case!.index-of store.current.search.to-lower-case!) != -1 and (network.disabled isnt yes)
             |> group-by (.network.group)
-
     groups = wallets-groups |> keys
     group-index = store.current.group-index
     groups-wallets =
@@ -722,7 +700,6 @@ mobile = ({ store, web3t })->
     #return null if not group-wallets?
     wallet-detail = (group-wallets ? []) |> find (-> group-wallets.index-of(it) is store.current.wallet-index)
     #return null if not wallet-detail?
-
     view-account-template = ->
         .pug.switch-account.h1
             span.name.pug(on-click=open-account) #{account-name}
@@ -753,5 +730,4 @@ mobile = ({ store, web3t })->
                     |> group-by (.network.group)
                     |> obj-to-pairs
                     |> map wallet-group store, web3t, wallets, groups
-
 module.exports = mobile

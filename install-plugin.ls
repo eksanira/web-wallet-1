@@ -27,7 +27,6 @@ require! {
     \../web3t/plugins/usdt_erc20_legacy-coin.json : usdt_erc20_legacy
     \../web3t/plugins/bsc-vlx-coin.js : bsc_vlx 
     \../web3t/plugins/vlx-evm-legacy-coin.js : vlx_evm_legacy   
-      
 }
 current-configs = { vlx_eth, eth_legacy, syx, syx2, usdt, usdt_erc20, ltc, vlx_erc20, bnb, vlx_busd, busd, huobi, vlx_huobi, vlx_usdt,  usdt_erc20_legacy, usdc, vlx_usdc, bsc_vlx, vlx_evm_legacy }
 plugin-pairs = {
@@ -94,7 +93,6 @@ remove-from-registry = (name, cb)->
     save-registry registry
     cb null
 build-name = (token)-> "plugin-#{token}"
-
 install-plugins = (plugin, cb)->
     result-plugins = 
         | plugin-pairs[plugin.token]? and typeof! plugin-pairs[plugin.token] is \Array =>
@@ -110,7 +108,6 @@ install-plugins = (plugin, cb)->
     err <- install-all-plugins result-plugins
     return cb err if err?
     cb null 
- 
 install-all-plugins = ([plugin, ...rest], cb)->
     return cb null if not plugin?
     err <- install-plugin(plugin)
@@ -118,7 +115,6 @@ install-all-plugins = ([plugin, ...rest], cb)->
     err <- install-all-plugins(rest)
     return cb err if err?
     cb null   
-      
 export install-plugin = (plugin, cb)->
     err <- verify-plugin plugin
     return cb err if err?

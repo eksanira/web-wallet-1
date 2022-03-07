@@ -196,7 +196,6 @@ require! {
             @media screen and (max-width: 800px)
                 padding: 7px 0
                 text-align: center
-
 subtitle-notify-msg = (store)->
     | store.staking.webSocketAvailable is no =>
         if store.current.page in <[ validators account_details poolchoosing ]>
@@ -204,7 +203,6 @@ subtitle-notify-msg = (store)->
         else
             null
     | _ => null
-
 alert-modal = (store)->
     return null if typeof! store.current.alert isnt \String
     cancel = ->
@@ -264,12 +262,10 @@ notification-modal = (store)->
         color: style.app.text
         border-bottom: "1px solid #{style.app.border}"
     lang = get-lang store
-
     subtitle-msg = subtitle-notify-msg(store)
     subtitle-style =
         opacity: 0.3
         font-size: "13px"
-
     .pug.confirmation
         .pug.confirmation-body(style=confirmation)
             .pug.header(style=confirmation-style) Alert
@@ -340,7 +336,6 @@ confirmation-modal = (store)->
                     span.cancel.pug
                         img.icon-svg-cancel.pug(src="#{icons.close}")
                         | #{lang.cancel}
-
 swap-confirmation-modal = (store)->
     return null if typeof! store.current.swap-confirmation isnt \String
     confirm = ->
@@ -385,8 +380,6 @@ swap-confirmation-modal = (store)->
                 span.pug.token #{tokenTo}
                 span.pug on
                 span.pug.network #{toNetwork}
-
-
             .pug.buttons
                 button.pug.button(on-click=confirm style=button-style id="confirmation-confirm")
                     span.apply.pug
@@ -396,7 +389,6 @@ swap-confirmation-modal = (store)->
                     span.cancel.pug
                         img.icon-svg-cancel.pug(src="#{icons.close}")
                         | #{lang.cancel}
-
 prompt-modal = (store)->
     return null if typeof! store.current.prompt isnt \String
     confirm = ->
@@ -797,12 +789,10 @@ prompt-password-modal = (store)->
                     span.cancel.pug
                         img.icon-svg-cancel.pug(src="#{icons.close}")
                         | #{lang.cancel}
-
 $network-details-modal = (store)->
     return null if store.current.current-network-details.show isnt yes
     cancel = ->
         store.current.current-network-details.show = no
-
     style = get-primary-info store
     table-item-style-title=
         flex: 1
@@ -841,7 +831,6 @@ $network-details-modal = (store)->
     maxPerTx   = round-human(maxPerTx,   {decimals: 2})
     remaining  = round-human(remainingDailyLimit,   {decimals: 2})
     currency = (nickname ? "").to-upper-case!
-
     from-network = (name ? "").to-upper-case!
     to-network   = (wallet-to.coin.name ? "").to-upper-case!
     title = "Swap from #{from-network} to #{to-network}"
@@ -872,9 +861,6 @@ $network-details-modal = (store)->
                     .table-item.pug(style=table-item-style)
                         .title.h5.pug(style=table-item-style-title) Bridge fee
                         .value.pug(style=bridge-fee-style) #{bridgeFeePercent} %
-
-
-
 export confirmation-control = (store)->
     #for situation when we ask peen before action. this window should be hidden
     return null if store.current.page-pin?
@@ -920,5 +906,4 @@ export alert = (store, text, cb)->
     state.callback = cb
 export network-details-modal = ->
     store.current.current-network-details.show = yes
-
 window.confirm-state = state
