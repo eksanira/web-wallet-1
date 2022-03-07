@@ -108,7 +108,6 @@ require! {
         70%
             transform: translateX(0px)
             opacity: 1
-     
     @keyframes animate-arrow-2  
         0%
             transform: translateX(-20px)
@@ -116,7 +115,6 @@ require! {
         70%,100%
             transform: translateX(0px)
             opacity: 0.5
-     
     @keyframes animate-arrow-3  
         0%
             transform: translateX(-10px)
@@ -124,7 +122,6 @@ require! {
         70%,100%
             transform: translateX(0px)
             opacity: 0.3
-     
     @-webkit-keyframes blink
         0%     
             opacity: 0
@@ -153,13 +150,10 @@ require! {
         text-transform: uppercase
         top: 30px
         z-index: 2
- 
         @media(max-width: 600px)
             font-size: 10px    
         &.network-from
             left: 10px
-            
-          
         &.network-to
             right: 0  
             color: #ce942c 
@@ -167,8 +161,6 @@ require! {
             text-align: center
     .default-network-input
         position: relative
-        
-            
     .arrow-right
         font-size: 15px
         font-weight: bold
@@ -194,8 +186,6 @@ require! {
             animation-delay: 1.3s
         &:nth-child(5)
             animation-delay: 1.4s
-        
-            
     .navigation-button
         transition: opacity 0.2
         z-index: 2
@@ -218,12 +208,10 @@ module.exports = ({ web3t, wallet, store, id, on-change })->
     return null if not (store.current.send.isSwap? and store.current.send.isSwap is yes)
     return null if not wallet.network.networks? or Object.keys(wallet.network.networks).length is 0
     { getHomeFee } = send-funcs store, web3t
-    
     is-not-bridge = ->
         { token } = store.current.send.wallet.coin  
         { chosen-network } = store.current.send
         chosen-network.refer-to in <[ vlx_evm vlx2 vlx_native ]> and token in <[ vlx_evm vlx2 vlx_native ]> 
-    
     wallets = store.current.account.wallets |> map (-> [it.coin.token, it]) |> pairs-to-obj 
     available-networks = 
         wallet.network.networks 
@@ -267,12 +255,10 @@ module.exports = ({ web3t, wallet, store, id, on-change })->
         margin-top: "-1px"
         float: "revert"
         display: "block"
-        
     tooltip-style =
         position: "absolute"
         right: "0"
         bottom: "-21px"        
-        
     limits-label-style =
         font-size: "11px"
         color: "rgb(206, 148, 44)" 
@@ -290,10 +276,7 @@ module.exports = ({ web3t, wallet, store, id, on-change })->
             cursor: "default"
             min-height: "36px"
     input-style2 <<<< pointer-style        
-    
-    
     display-value = store.current.send.chosen-network.name.to-upper-case!
-      
     go = (inc)-> ->
         current = network-labels.index-of(store.current.send.chosen-network.id)
         lenght = network-labels.length
@@ -309,33 +292,27 @@ module.exports = ({ web3t, wallet, store, id, on-change })->
         store.current.send.error = ''
         store.current.send.data = null
         err <- on-change!
-    
     dropdown-click = ->
         return if network-labels.length <= 1
         store.current.switch-network = !store.current.switch-network
-    
     { name, referTo } = store.current.send.chosen-network
     wallet2 = store.current.account.wallets |> find (-> (it?coin?token ? "").to-lower-case! is (referTo ? "").to-lower-case!)
     network-from = (wallet?coin?name ? "") 
     network-to   = (name ? "")  
-    
     network-to-details = ->
         return if is-not-bridge!
         store.current.current-network-details = store.current.foreign-network-details <<<< { wallet: wallet2 }
         network-details-modal!
-          
     network-from-details = ->
         return if is-not-bridge!
         store.current.current-network-details = store.current.network-details <<<< { wallet }
         network-details-modal!
-        
     create-network-position = (it)->
         details = it?1
         return if not details?
         { referTo, name } = details
         net-wallet = store.current.account.wallets |> find (-> it.coin.token is referTo)
         return if not net-wallet?
-        
         change-network = ->
             return if store.current.refreshing is yes
             if store.current.send.chosenNetwork.refer-to is referTo
@@ -348,21 +325,17 @@ module.exports = ({ web3t, wallet, store, id, on-change })->
             err <- on-change!
             store.current.refreshing = no
             store.current.switch-network = no
-        
         position-style =
             color: if store.current.send.chosenNetwork.refer-to is referTo then '#3cd5af' else ''
         .pug.table-row-menu(on-click=change-network key="account#{referTo}" style=position-style class="")
             .col.folder-menu.pug
                 .pug #{name}
-    
     dropdown-class = 
         | network-labels.length > 1 => ""
         | _ => "inactive"           
-                
     rotate-class =
         | store.current.switch-network is yes => \rotate 
         | _ => ""
-    
     /* Render */
     .pug.network-slider 
         label.pug.control-label(style=style2) Choose Network
@@ -372,25 +345,20 @@ module.exports = ({ web3t, wallet, store, id, on-change })->
         if no
             span.pug.chosen-network.network-to(style=choose-network-style)
                 | #{network-to}
-                            
         .pug
             span.pug.bold.default-network-input(style=pointer-style on-click=dropdown-click)
                 input.pug.change-network(value="#{network-to}" style=input-style2 disabled=true)
-            
             span.pug.button.navigation-button.right(on-click=dropdown-click class="#{dropdown-class}")
                 .pug.button-inner
                     img.icon-svg.pug(src="#{icons.arrow-down}" style=img-icon-style class="#{rotate-class}")
-            
             if store.current.switch-network and network-labels.length > 1
                 .pug.switch-menu(style=filter-body)
                     .pug.middle.account
                         available-networks  
                             |> obj-to-pairs 
                             |> map create-network-position
-                            
         if not is-not-bridge!
             .pug.limits-tooltip(style=tooltip-style on-click=network-from-details)
                 span.pug 
                     img.icon-svg.pug(src="#{icons.info}" style=info-style)
                     span.pug(style=limits-label-style) limits  
-                        

@@ -393,7 +393,6 @@ require! {
             line-height: initial;
             margin-top: 7px;
             max-height: initial;
-
             &.visible
                 height: auto
                 padding-top: 2.5px !important
@@ -516,10 +515,8 @@ send = ({ store, web3t })->
     token-display =
         | is-custom is yes => (wallet.coin.name ? "").to-upper-case!
         | _ => (wallet.coin.nickname ? "").to-upper-case!
-
     down = (it)->
         (it ? "").to-lower-case!
-
     fee-token-display = fee-token.to-upper-case!
     fee-coin-image =
         | send.fee-coin-image? => send.fee-coin-image
@@ -540,17 +537,14 @@ send = ({ store, web3t })->
     recipient = get-recipient(send.to)
     title = if store.current.send.is-swap isnt yes then \send else \swap
     homeFeePercent = send.homeFeePercent `times` 100
-
     is-not-bridge = ->
         { token } = store.current.send.wallet.coin
         { chosen-network } = store.current.send
         chosen-network.refer-to in <[ vlx_evm vlx2 vlx_native ]> and token in <[ vlx_evm vlx2 vlx_native ]>
-
     is-swap-pair = ({from, to})->
         { chosen-network, coin, wallet } = store.current.send
         token = coin.token
         token is from and chosen-network.refer-to is to
-
     network-on-change = (cb)->
         err <- getBridgeInfo!
         if err?
@@ -561,7 +555,6 @@ send = ({ store, web3t })->
             store.current.send.error = err
             return cb err
         cb null
-
     before-amount-change = (e)->
         { TYPING_THRESHOLD_MS, typing-amount-time-ms, fee-calculating } = send
         fee-calculating = yes
@@ -574,7 +567,6 @@ send = ({ store, web3t })->
         #before-amount-change.timer = set-timeout check-stop(e), 50
         #store.current.send.typing-amount-time-ms = moment!.valueOf!
         amount-change(e)
-
     check-stop = (e)->
         ->
             { TYPING_THRESHOLD_MS, typing-amount-time-ms, fee-calculating } = send
@@ -583,14 +575,12 @@ send = ({ store, web3t })->
             if timeout > TYPING_THRESHOLD_MS then
                 console.log "run amount-change"
                 amount-change(e)
-
     input-wrapper-style =
         | is-custom is yes => input-custom-style
         | _ => input-style
     inline-style =
         display: "inline"
         min-width: "30px"
-
     /* Render */
     .pug.content
         loader {loading: store.current.send.checking-allowed, text: "Please wait, approving bridge contract..."}
@@ -704,7 +694,6 @@ send = ({ store, web3t })->
                     if not is-not-bridge!
                         .pug.swap-notification
                             p.pug #{lang.swapNotification}
-
 module.exports = send
 module.exports.init = ({ store, web3t }, cb)->
     return cb null if not store? or not web3t?
@@ -721,7 +710,6 @@ module.exports.init = ({ store, web3t }, cb)->
     store.current.send.gasPriceAuto = null
     store.current.send.gas-price-type = \auto
     store.current.send.gas-price-custom-amount = \0
-
     store.current.send.amount-buffer.val = \0
     store.current.send.amount-buffer.usdVal = \0
     store.current.send.error = ''
@@ -752,14 +740,11 @@ module.exports.init = ({ store, web3t }, cb)->
             store.current.send.to = token-networks.get-default-recipient-address(store)
         else
             console.error "networks prop in #{store.current.send.token} wallet is defined but is empty"
-
     err <- contract-data({store}).form-contract-data!
     console.log "form-contract-data err: " err if err?
     #return cb err if err?
-
     err <- getBridgeInfo!
     return cb err if err?
-
     { wallets } = wallets-funcs store, web3t
     current-wallet =
         wallets |> find (-> it.coin.token is wallet.coin.token)
@@ -777,24 +762,19 @@ module.exports.init = ({ store, web3t }, cb)->
         #bridge-fee-token = wallet.network.txBridgeFeeIn
         #second-wallet = wallets |> find (-> it.coin.token is bridge-fee-token)
         #store.current.send.fee-coin-image = second-wallet?coin?image if second-wallet?coin?image?
-
     { send } = store.current
     account = { wallet.address, wallet.private-key, wallet.balance }
     query = { store, token: wallet.coin.token, to: wallet.address, send.data, send.network, amount: 0, fee-type: \auto, account }
-
     err, result <- calc-fee-before-send { store, query, fast: yes }
     return cb err if err?
-
     #{ calced-fee, gas-price, gas-estimate } = result
     send.gas-price-auto = result?gas-price ? 0
     send.gas-price-custom-amount = +((result?gas-price ? 0) `div` (10^9))
     send.amount-send-fee = +(result?calced-fee ? 0)
-
     return cb null if current-wallet.address is wallet.address
     return cb null if not wallet?
     return cb null if not web3t[wallet.coin.token]?
     { send-transaction } = web3t[wallet.coin.token]
     err <- send-transaction { to: "", value: 0 }
     send.sending = false
-
     cb null
