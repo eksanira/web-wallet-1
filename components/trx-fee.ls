@@ -127,7 +127,6 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
     fee-currency = wallet.network.tx-fee-in ? (wallet.coin.nickname ? "").to-upper-case!
     is-custom = wallet?coin?custom is yes 
     token-display = fee-token.to-upper-case!
-    
     border-style = border: "1px solid #{style.app.border}"
     text = color: "#{style.app.icon}"
     input-style=
@@ -144,7 +143,6 @@ trx-fee = ({ store, web3t, wallet, fee-token })->
         td.pug(on-click=choose-cheap class="#{active-class \cheap}")
             .pug.field.type #{lang.cheap}
             .pug.field.coin #{if send.amount-send-fee-options.cheap then send.amount-send-fee-options.cheap + " " + token-display else ""}
-    
     custom-option = ->
         disabled = 
             | custom-is-disabled => yes

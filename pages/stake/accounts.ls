@@ -209,7 +209,6 @@ staking-accounts-content = (store, web3t)->
             unixTimestamp,
             inactive_stake
         } = item
-
         balance = if rent? then (Math.round((lamports `minus` rent) `div` (10^9)) `times` 100) `div` 100  else "-"
         balanceRaw = if rent? then lamports `minus` rent else lamports
         highlight = item.highlight
@@ -249,12 +248,10 @@ staking-accounts-content = (store, web3t)->
             store.staking.getAccountsFromCashe = no
             if store.staking.webSocketAvailable is no
                 navigate store, web3t, \validators
-
         choose = ->
             store.staking.chosen-account = item
             navigate store, web3t, \poolchoosing
             cb null
-
         remove-stake-acc = (public_key)->
             index = store.staking.accounts |> findIndex (-> it.pubkey is public_key)
             if index > -1
@@ -263,8 +260,6 @@ staking-accounts-content = (store, web3t)->
             index2 = (store.staking.accountsCached[accountIndex] ? []) |> findIndex (-> it.pubkey is public_key)
             if index2 > -1
                 (store.staking.accountsCached[accountIndex] ? []).splice(index2,1)
-
-
         withdraw = ->
             if (deactivationEpoch? and activationEpoch?) and +deactivationEpoch >= +store.staking.current-epoch
                 return
@@ -280,15 +275,12 @@ staking-accounts-content = (store, web3t)->
             store.staking.getAccountsFromCashe = no
             store.current.page = \validators
             remove-stake-acc(pubkey)
-
         now = moment!.unix!        
         locked-and-can-withdraw = unixTimestamp? and (unixTimestamp <= now)
         not-locked = not unixTimestamp?
-
         can-delegate =
             | has-validator => no
             | _ => yes
-        
         $button =
             | can-delegate =>
                 button { classes: "action-delegate", store, text: lang.to_delegate, on-click: choose, type: \secondary , icon : \arrowRight }
@@ -304,7 +296,6 @@ staking-accounts-content = (store, web3t)->
                         disabled = yes
                 button { store, classes: "action-undelegate" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon : \arrowLeft, makeDisabled: disabled }
         highlighted = if highlight is yes then "highlight" else ""
-
         tr.pug(class="stake-account-item #{item.status} #{highlighted}" key="#{address}")
             td.pug
                 span.pug.circle(class="#{item.status}") #{index}
@@ -342,9 +333,6 @@ staking-accounts-content = (store, web3t)->
         margin: "10px 20px 0"
     block-style = 
         display: "block"
-
-
-
     create-staking-account = ->
         cb = console.log
         buffer = {}
@@ -395,7 +383,6 @@ staking-accounts-content = (store, web3t)->
         store.staking.creating-staking-account = no
         if store.staking.webSocketAvailable is no
             <- notify store, lang.accountCreatedAndFundsDeposited
-
     totalOwnStakingAccounts = store.staking.totalOwnStakingAccounts ? 0
     loadingAccountIndex = Math.min(totalOwnStakingAccounts, store.staking.loadingAccountIndex)
     perPage =  store.staking.accounts_per_page
@@ -409,7 +396,6 @@ staking-accounts-content = (store, web3t)->
             g.pug(xmlns="http://www.w3.org/2000/svg" transform="matrix(0.026385223 0 0 0.026385223 -0 0.029023906)")
                 g.pug(xmlns="http://www.w3.org/2000/svg" transform="matrix(0.1 0 -0 -0.1 0 340)")
                     path.pug(xmlns="http://www.w3.org/2000/svg" d="M1796 2907C 1749 2827 1701 2743 1515 2420C 1407 2230 1275 2001 1222 1910C 1170 1819 1110 1716 1090 1680C 950 1438 891 1334 845 1255C 816 1206 747 1084 690 985C 633 886 554 749 514 680L514 680L441 555L1130 552C 1510 551 2130 551 2508 552L2508 552L3197 555L3102 720C 3050 811 2991 914 2970 950C 2950 986 2856 1150 2761 1315C 2665 1480 2510 1750 2415 1915C 1758 3060 1827 2940 1820 2940C 1817 2940 1806 2925 1796 2907z" stroke="none" fill="rgb(255 215 0)" fill-rule="nonzero")
-
     .pug.staking-accounts-content
         loader { loading: store.staking.creating-staking-account, text: "Creating staking account..." }
         .pug
@@ -442,8 +428,6 @@ staking-accounts-content = (store, web3t)->
                             .pug.pointer-container
                                 svg-icon
                                 .shadow-icon.pug
-
-
                     .description.pug
                         if store.errors.fetchAccounts?
                             .pug.error
@@ -469,7 +453,6 @@ staking-accounts-content = (store, web3t)->
                                                     |> map build store, web3t
                                 if store.staking.accounts-are-loading is no then
                                     pagination {store, type: \accounts, disabled: pagination-disabled, config: {array: store.staking.accounts }}
-
                                 else
                                     .pug.table-scroll
                                         span.pug.entities-loader

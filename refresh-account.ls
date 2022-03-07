@@ -10,7 +10,6 @@ require! {
     \./refresh-txs.ls : \refreshWaletTxs
 }
 export set-account = (web3, store, cb)->
-    
     err, account <- new-account store, seedmem.mnemonic
     return cb err if err?
     store.current.account = account

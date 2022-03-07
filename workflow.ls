@@ -55,7 +55,6 @@ class Parallel
                 go array, val
             catch err
                 @errors-cb err    
-        
 max = 50
 #create the parallel process from the object 
 make-parallel = (o, val, success)->

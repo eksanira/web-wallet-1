@@ -122,9 +122,6 @@ require! {
         animation: MoveUpDown 1s linear, showAndHide 3s linear
         animation-iteration-count: 4, 1
         animation-delay: 1s
-
-
-
     .entities-loader
         display: block
         padding: 40px
@@ -221,7 +218,6 @@ require! {
             .section
                 border-bottom: 1px solid rgba(240, 237, 237, 0.16)
                 padding: 30px 20px
-
                 .chosen-pool
                     .buttons
                         text-align: left
@@ -371,7 +367,6 @@ require! {
                                 color: white
                                 line-height: 1.6
                                 border-radius: 4px
-
                         button
                             width: 100%
                             height: 36px
@@ -380,7 +375,6 @@ require! {
                         width: 100%
                         border-collapse: collapse
                         margin: 0px auto
-
                     th
                         font-weight: 400
                         &:first-child
@@ -884,7 +878,6 @@ staking-content = (store, web3t)->
                                                         span.pug.item  #{store.staking.loadingValidatorIndex}
                                                         span.pug.item of
                                                         span.pug.item  #{totalValidators}
-
 validators = ({ store, web3t })->
     lang = get-lang store
     { go-back } = history-funcs store, web3t
@@ -937,16 +930,12 @@ stringify = (value) ->
         round-human(parse-float value `div` (10^18))
     else
         '..'
-
-
 validators.init = ({ store, web3t }, cb)!->
     err <- calc-wallet(store)
     #return cb null if store.staking.pools-are-loading is yes
-
     if store.staking.fetchAccounts is no then
         store.staking.fetchAccounts = yes
         return cb null
-
     store.staking.max-withdraw = 0
     random = ->
         Math.random!
@@ -970,7 +959,6 @@ validators.init = ({ store, web3t }, cb)!->
     store.staking.splitting-staking-account = no
     store.staking.creating-staking-account = no
     store.staking.subscribedAccounts = {}
-
     wallet = store.current.account.wallets |> find (-> it.coin.token is \vlx_native)
     try
         publicKey = new velasWeb3.PublicKey(wallet.publicKey)
@@ -981,8 +969,6 @@ validators.init = ({ store, web3t }, cb)!->
     catch err
         console.log "ws onAccountChange err: " err
         store.staking.webSocketAvailable = no
-
-
     index-is-different = store.current.accountIndex isnt store.staking.accountIndex
     if store.staking.pools-network is store.current.network then
         if (store.staking.all-pools-loaded? and store.staking.all-pools-loaded is yes and not index-is-different)
@@ -993,17 +979,14 @@ validators.init = ({ store, web3t }, cb)!->
     console.error err if err?
     epoch = epochInfo?epoch
     store.staking.current-epoch = epoch
-
     store.staking.pools = []
     err, rent <- as-callback web3t.velas.NativeStaking.connection.getMinimumBalanceForRentExemption(200)
     rent = 2282880 if err?
     rent = rent `div` (10^9)
     store.staking.rent = rent   
-
     return cb null if not wallet?
     web3t.velas.NativeStaking.setAccountPublicKey(wallet.publicKey)
     web3t.velas.NativeStaking.setAccountSecretKey(wallet.secretKey)
-
     on-progress = ->
         #store.staking.accounts = convert-accounts-to-view-model [...it]
     err, result <- query-accounts store, web3t, on-progress
@@ -1022,14 +1005,12 @@ validators.init = ({ store, web3t }, cb)!->
     catch err
         console.log "err" err
         store.staking.webSocketAvailable = no
-
     # Normalize current page for accounts in pagination
     type = "accounts"
     page = store.staking["current_#{type}_page"] ? 1
     per-page = store.staking["#{type}_per_page"]
     if +(page `times` per-page) >= store.staking.accounts.length
         store.staking["current_#{type}_page"] = 1 
-
     on-progress = ->
         store.staking.pools = convert-pools-to-view-model [...it]
     err, pools <- query-pools {store, web3t, on-progress}
@@ -1040,7 +1021,6 @@ validators.init = ({ store, web3t }, cb)!->
         pools = [] if err?
         store.errors.fetchValidators = { message: err }
     filter-pools(pools)
-
     store.staking.poolsFiltered = store.staking.pools
     store.staking.getAccountsFromCashe = no
     #err <- calc-certain-wallet(store, "vlx_native")
