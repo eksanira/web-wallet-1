@@ -34,6 +34,7 @@ test.describe.parallel('Settings', () => {
 
     const copiedKey = await page.evaluate(async () => await navigator.clipboard.readText());
     log.info(copiedKey);
+    if (!copiedKey) throw new Error(`Clipboard is empty :/`)
     assert.equal(copiedKey, 'WnexSzUPFb258nLxGC1jiCShUZC1DbTpaRC2kizKxnpKNuvsqAhegBUCVgoULDxog19CjxfYaijS5Cpe78EFKqQ');
   });
 
