@@ -11,7 +11,6 @@ calc-wallet = (store, cb)->
     return cb "Store is required" if not store?
     { wallets } = store.current.account
     { rates } = store
-
     build-loader = (wallet)-> task (cb)->
         { token } = wallet.coin
         #wallet.balance = \..

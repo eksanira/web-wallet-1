@@ -79,7 +79,7 @@ test.describe('Swap', () => {
     test('ERC-20 > EVM', async () => {
       await wallets.swapTokens('token-vlx_erc20', 'token-vlx_evm', 0.01);
       const txHash = await wallets.getTxHashFromTxlink();
-      transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: false }));
     });
 
     // TODO: fix VLWA-904 (bsc network issue)

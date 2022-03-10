@@ -6,7 +6,7 @@ require! {
     \../get-lang.ls
     \./icon.ls
     \../get-primary-info.ls
-    \../../web3t/providers/superagent.ls : { get }
+    \../../web3t/providers/superagent.js : { get }
     \../icons.ls
     \../round-human.ls
     \./confirmation.ls : { alert }
@@ -26,7 +26,6 @@ require! {
         position: sticky
         top: 0
         z-index: 1
-
     .wallet
         @import scheme
         $cards-height: 324px
@@ -306,17 +305,13 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
         | store.current.refreshing => "placeholder-coin"
         | _ => ""
     is-loading = store.current.refreshing is yes
-
     group-name =
         | wallets-group?0? => wallets-group.0
         | _ => ''
     wallets = wallets-group.1
-
     .wallet-group.pug(id="wallet-group-switch-#{(group-name)}")
         .pug.group-name #{group-name} Network
-
         wallets |> map (wallet)->
-
             { wallet-icon, button-style, uninstall, wallet, active, big, balance, balance-usd, pending, send, receive, swap, expand, usd-rate, last } = wallet-funcs store, web3t, wallets, wallet, wallets-groups, group-name
             name = wallet.coin.name ? wallet.coin.token
             receive-click = receive(wallet)
@@ -333,7 +328,6 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
             wallet-is-disabled = isNaN(wallet.balance)
             send-swap-disabled = wallet-is-disabled or is-loading
             is-custom = wallet.coin.custom is yes
-
             /* Render */
             .wallet.pug.wallet-item(class="#{big} #{disabled-class}" key="#{token}" style=border-style id="token-#{token}")
                 .wallet-top.pug(on-click=expand)

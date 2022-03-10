@@ -7,7 +7,7 @@ require! {
     \./api.ls : { get-transaction-info }
 }
 down = (it)->
-  (it ? "").toLowerCase!
+    (it ? "").toLowerCase!
 SIMULATION_COUNT = 14600
 EPOCHS_PER_YEAR = 1460
 VALIDATOR_COUNT = 19
@@ -86,13 +86,11 @@ query-pools = ({store, web3t, on-progress}, on-finish) ->
 fill-delegators = (store, web3t)->
     accounts = store.staking.parsedProgramAccounts
     Array.from(accounts, fill-delegator(store, web3t))
-
 fill-delegator = (store, web3t, acc)-->
     return if not acc?
     { voter, activationEpoch, deactivationEpoch } = acc
     if (voter and (Number(deactivationEpoch) > Number(activationEpoch) or activationEpoch is web3t.velas.NativeStaking.max_epoch))
         store.staking.delegators[down(voter)] = if store.staking.delegators[down(voter)]? then (store.staking.delegators[down(voter)] + 1) else 1
-
 # Accounts
 query-accounts = (store, web3t, on-progress, on-finish) ->
     accountIndex = store.current.accountIndex
@@ -109,8 +107,6 @@ query-accounts = (store, web3t, on-progress, on-finish) ->
     store.staking.accountsCached[accountIndex] = accounts
     store.staking.cachedAccountsNetwork = network
     on-finish err, accounts
-
-
 update-loader-var = (store, config, value)!->
     return if value not in <[ yes no ]>
     return if not config?
@@ -119,48 +115,37 @@ update-loader-var = (store, config, value)!->
         store.staking.splitting-staking-account = value
     if  config.acc_type is \create
         store.staking.creating-staking-account = value
-
 add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
     console.log "[add-stake-account]"
     accounts = store.staking.accounts
     acc_type = config.acc_type
     if acc_type not in <[ split create ]>
         return on-finish "Unknown type for acc_type"
-
     update-loader-var(store, config, yes)
-
     { instructions } = tx-info?data?transaction?message
-
     if instructions[0]?parsed?type isnt "createAccountWithSeed" then
         update-loader-var(store, config, no)
         return on-finish "Not expected transaction type. Expected 'createAccountWithSeed' type."
-
     seed = instructions?0?parsed?info?seed
-
     info =
         | acc_type is \split => instructions?1?parsed?info
         | _ => instructions?0?parsed?info
-
     stakeAccount =
         | acc_type is \split => info?newSplitAccount
         | _ => info?newAccount
-
     /* Avoid duplicates of stake accounts on UI */
     already-exists = store.staking.parsedProgramAccounts |> find (-> it.pubkey is stakeAccount)
     if already-exists?
         console.error "acc already exists"
         return
-
     staker =
         | acc_type is \split => info?stakeAuthority
         | _ => info?source
-
     lamports     = info?lamports
     custodian    = staker
     { activationEpoch, deactivationEpoch } = config
     balanceRaw = lamports `minus` '2282880'
     pubKey = new velasWeb3.PublicKey(stakeAccount)
-
     account = {
         activationEpoch: activationEpoch
         address: stakeAccount
@@ -187,17 +172,14 @@ add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
         withdrawer: staker
         highlight: yes
     }
-
     store.staking.parsedProgramAccounts.push(account)
     err, accs <- as-callback web3t.velas.NativeStaking.getOwnStakingAccounts(store.staking.parsedProgramAccounts)
     if err?
         update-loader-var(store, config, no)
         return on-finish err
     web3t.velas.NativeStaking.setAccounts(accs);
-
     store.staking.accounts.push(account)
     update-loader-var(store, config, no)
-
     /* Subscribe to the changes of created stake account */
     store.staking.accounts
         |> filter (a)->
@@ -207,8 +189,6 @@ add-stake-account = (store, web3t, tx-info, config, on-progress, on-finish) ->
             subscribe-to-stake-account({store, web3t, account: it, publicKey: pubKey})
     search-new-account(store, stakeAccount)
     on-finish null
-
-
 filter-pools = (pools)->
     store.staking.pools = convert-pools-to-view-model pools
         |> sort-by (-> it.myStake.length )
@@ -218,7 +198,6 @@ filter-pools = (pools)->
             delinquent.index-of(it) < 0
         |> reverse
     store.staking.pools = running ++ delinquent
-
 updateStakeAccount = ({ store, account, updatedAccount, cb })->
     updateStakeAccount[account.pubkey] = account.pubkey
     console.log "updateStakeAccount" {account, updatedAccount}
@@ -236,21 +215,17 @@ updateStakeAccount = ({ store, account, updatedAccount, cb })->
         { lockup, rentExemptReserve, authorized } = meta
         creditsObserved = stake?creditsObserved
         delegation = stake?delegation
-
         activationEpoch = delegation?activationEpoch ? 0
         deactivationEpoch = delegation?deactivationEpoch ? 0
         stake = delegation?stake ? 0
         voter = delegation?voter ? null
-
         updates = { lamports: updatedAccount.lamports, stake, validator: voter, voter, rentExemptReserve, creditsObserved, activationEpoch, deactivationEpoch }
         account <<<< updates
-
     on-progress = ->
         store.staking.pools = convert-pools-to-view-model [...it]
     err, pools <- query-pools { store, web3t, on-progress }
     return cb err if err?
     filter-pools(pools)
-
 /* If find set to true, then we first found account from store.staking.accounts by publicKey */
 subscribe-to-stake-account = ({store, web3t, account, publicKey, find, cb})->
     if account.subscriptionID?
@@ -263,12 +238,10 @@ subscribe-to-stake-account = ({store, web3t, account, publicKey, find, cb})->
     subscriptionID = web3t.velas.NativeStaking.connection.onAccountChange(publicKey, callback, commitment)
     account.subscriptionID = subscriptionID
     store.staking.subscribedAccounts[account.pubkey] = yes
-
 highlight = (store, AccountIndex)->
     return if not store.staking.accounts[AccountIndex]?
     <- set-timeout _, 6500
     store.staking.accounts[AccountIndex].highlight = no
-
 query-accounts-web3t = (store, web3t, on-progress, on-finish) ->
     native-wallet = store.current.account.wallets |> find(-> it.coin.token is "vlx_native")
     validatorsBackend = native-wallet.network.api.validatorsBackend + \/v1/staking-accounts
@@ -278,17 +251,14 @@ query-accounts-web3t = (store, web3t, on-progress, on-finish) ->
     nativeAccountsFromBackendResult = data?body?stakingAccounts ? []
     console.error "[query-accounts-web3t] get parsedProgramAccounts err:", err if err?
     parsedProgramAccounts = nativeAccountsFromBackendResult ? []
-
     store.staking.parsedProgramAccounts = parsedProgramAccounts
     err, accs <- as-callback web3t.velas.NativeStaking.getOwnStakingAccounts(parsedProgramAccounts)
     accs = [] if err?
     web3t.velas.NativeStaking.setAccounts(accs);
-
     store.staking.totalOwnStakingAccounts = accs.length
     return on-finish err if err?
     store.staking.accounts-are-loading = yes
     fill-accounts { store, web3t, on-progress, on-finish }, accs
-
 fill-accounts = ({ store, web3t, on-progress, on-finish }, [item, ...rest]) ->
     if not item? then
         store.staking.all-accounts-loaded = yes
@@ -300,7 +270,6 @@ fill-accounts = ({ store, web3t, on-progress, on-finish }, [item, ...rest]) ->
         return on-finish null, []
     store.staking.loadingAccountIndex += 1
     rent = item?rentExemptReserve
-
     #TODO: in future change seed with address and do not display this field
     err, seed <- as-callback web3t.velas.NativeStaking.checkSeed(item.pubkey)
     item.seed    = seed
@@ -320,7 +289,6 @@ fill-accounts = ({ store, web3t, on-progress, on-finish }, [item, ...rest]) ->
         if (Number(deactivationEpoch) > Number(activationEpoch) or Number(activationEpoch) is web3t.velas.NativeStaking.max_epoch) then
             item.status    = "loading"
             item.validator = voter
-
     on-progress [item, ...rest] if on-progress?
     on-finish-local = (err, pools) ->
         on-finish err, [item, ...pools]
@@ -368,7 +336,6 @@ convert-pools-to-view-model = (pools) ->
             my-stake: if it?stakes then it.stakes else []
             credits_observed : it.credits_observed
         }
-
 check-tx-confirmation = ({start, network, tx}, cb)->
     ->
         if Date.now! > (start + 60000)
@@ -376,14 +343,11 @@ check-tx-confirmation = ({start, network, tx}, cb)->
         err, more-info <- get-transaction-info { token: "vlx_native", network, tx }
         if more-info?status is \confirmed or more-info?info?status is "0x1"
             cb null, more-info
-
 check-tx = ({start, network, tx}, cb)->
     timer-cb = (err, res)->
         clearInterval(check-tx.timer)
         return cb err, res
     check-tx.timer = set-interval check-tx-confirmation({start, network, tx}, timer-cb), 1000
-
-
 creation-account-subscribe = ({ store, web3t, signature, timeout, acc_type, activationEpoch, deactivationEpoch, voter, inProcess }, cb)->
     return cb "[Creation-account-subscribe] error: Signature is required" if not signature?
     commitment = 'confirmed'
@@ -393,18 +357,15 @@ creation-account-subscribe = ({ store, web3t, signature, timeout, acc_type, acti
         if data.err? then
             store.staking.creating-staking-account = no
             return cb "An error occurred during stake account creation."
-
         store.staking.getAccountsFromCashe = yes
-
         wallet = store.current.account.wallets |> find -> it.coin.token is \vlx_native
         if not wallet?
             store.staking.creating-staking-account = no
             return cb "Velas Native wallet not found!"
-
         err, info <- check-tx({network: wallet.network, tx: signature, start: Date.now()})
         if info?status is "pending" then
-           store.staking.creating-staking-account = no
-           return cb "Split transaction still in process. It may take several minutes"
+            store.staking.creating-staking-account = no
+            return cb "Split transaction still in process. It may take several minutes"
         if err?
             store.staking.creating-staking-account = no
             return cb "An error occurred during stake account creation: " + err
@@ -414,28 +375,22 @@ creation-account-subscribe = ({ store, web3t, signature, timeout, acc_type, acti
             store.staking.creating-staking-account = no
             return cb err
         store.staking.creating-staking-account = no
-
         info-data = info?data?transaction?message?instructions?0?parsed?info
         return cb null if not info-data?
         pubkey = info-data?newAccount
         search-new-account(store, pubkey)
-
         return cb null if acc_type isnt \split
-
         on-progress = ->
             store.staking.pools = convert-pools-to-view-model [...it]
         err, pools <- query-pools {store, web3t, on-progress}
         filter-pools(pools)
-
         cb null
-
     try
         web3t.velas.NativeStaking.connection.onSignature(signature, callback, commitment)
     catch err
         store.staking.creating-staking-account = no
         console.log "Account creation error: ", err
         return cb "An error occurred during stake account creation."
-
 search-new-account = (store, pubkey)->
     index = store.staking.accounts
         |> sort-by (.seed-index)
@@ -445,6 +400,4 @@ search-new-account = (store, pubkey)->
     perPage =  store.staking.accounts_per_page
     store.staking.current_accounts_page = Math.ceil((index + 1) `div` perPage)
     highlight(store, index)
-
-
 module.exports = { creation-account-subscribe, add-stake-account, filter-pools, subscribe-to-stake-account, query-pools, query-accounts, convert-accounts-to-view-model, convert-pools-to-view-model }

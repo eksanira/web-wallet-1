@@ -20,15 +20,13 @@ module.exports = (store, web3t, wallets, wallet, wallets-groups, group-name)->
     #    | index + 1 is wallets.length => \bottom
     #    | _ => \middle
     return null if not store? or not wallet?
-    
     get-plugin = (token, cb)->
-        load-coins = require("../web3t/load-coins.ls")
+        load-coins = require("../web3t/load-coins.js")
         err, $web3t-tokens <- load-coins {plugins:[]}
         console.error err if err?
         return cb null if not $web3t-tokens?
         found = $web3t-tokens[token]
         return cb null, found
-    
     add-fee-payer-coin = (cb)->
         { coin, network } = wallet
         { txFeeIn } = network
@@ -42,7 +40,6 @@ module.exports = (store, web3t, wallets, wallet, wallets-groups, group-name)->
         return cb err if err?
         console.log "Fee payer plugin was installed succesfully"
         cb null
-    
     send = (wallet, event)-->
         #event.stop-propagation!
         return alert "Not yet loaded" if not wallet?

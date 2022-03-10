@@ -92,6 +92,7 @@ jobs:
     name: Deploy to prod via Helmfile
     runs-on: deployer
     needs: [e2e-tests-local, docker-build-push]
+    # needs: [docker-build-push]
     container:
       image: quay.io/roboll/helmfile:v0.142.0
     steps:

@@ -85,7 +85,7 @@ export class StakingScreen extends BaseScreen {
     const startTime = new Date().getTime();
     await this.creatingStakingAccountLoader.waitFor();
     let accountCreationIsInProgress = await this.creatingStakingAccountLoader.isVisible();
-    while (accountCreationIsInProgress && (new Date().getTime() - startTime < 15000)) {
+    while (accountCreationIsInProgress && (new Date().getTime() - startTime < 25000)) {
       await this.page.waitForTimeout(100);
       accountCreationIsInProgress = await this.creatingStakingAccountLoader.isVisible();
     };
@@ -134,7 +134,7 @@ export class StakingScreen extends BaseScreen {
 
     let finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);
     const startTime = new Date().getTime();
-    while (finalAmountOfStakingAccounts === initialStakesAmount && (new Date().getTime() - startTime < 10000)) {
+    while (finalAmountOfStakingAccounts === initialStakesAmount && (new Date().getTime() - startTime < 11000)) {
       log.debug(`Amount of stake accounts still the same - ${finalAmountOfStakingAccounts}. Wait for WS message...`);
       await this.page.waitForTimeout(500);
       finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);

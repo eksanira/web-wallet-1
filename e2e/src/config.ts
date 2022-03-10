@@ -6,7 +6,7 @@ export const environment: Environment = process.env.ENVIRONMENT as Environment |
 export const network: Network = process.env.NETWORK as Network || 'testnet';
 
 export const config = {
-  CI: process.env.CI === 'true',
+  CI: !!process.env.CI,
   environment,
   logLevel: process.env.LOG_LEVEL || 'debug',
   network,
