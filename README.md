@@ -20,7 +20,10 @@ Tested with `node --version` v11.10.1
 
 
 ### Install and run wallet locally
-(Works on node 14.16)
+**Requirements:**
+node version 14.16+
+npm version 7+
+
 1. `npm i lsxc -g`
 2. `git clone https://github.com/velas/JsWallet`
 #### Prepare web3t

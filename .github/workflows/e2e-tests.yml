@@ -40,6 +40,14 @@ jobs:
         with:
           node-version: '14.x'
 
+      - name: install latest npm
+        run: npm install -g npm@latest
+
+      - name: get node version
+        run: node -v
+      - name: get npm version
+        run: npm -v
+
       # - uses: joschi/setup-jdk@v2
       #   with:
       #     java-version: '8'
