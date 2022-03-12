@@ -4,3 +4,4 @@ export { SearchScreen } from './search';
 export { SettingsScreen } from './settings';
 export { StakingScreen } from './staking';
 export { WalletsScreen, Currency } from './wallets';
+export { DAppsScreen } from './dapps';
