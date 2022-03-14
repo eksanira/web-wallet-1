@@ -26,7 +26,7 @@ test.describe('Staking', () => {
   // don't remove "serial". tests in this suite depend on each other
   test.describe.serial('Actions >', () => {
     const stakingAmount = 5;
-    test.only('Cleanup beforeall', async ({ page }) => {
+    test('Cleanup beforeall', async ({ page }) => {
       if (await page.isVisible('button[disabled]')) {
         throw new Error(`There are stakes in warm up or cool down perios. Test suite could not be continued.`);
       }
