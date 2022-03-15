@@ -41,8 +41,6 @@ const config: PlaywrightTestConfig = {
   ],
   reporter: [
     ['list'],
-    ['junit', { outputFile: 'test-results/test-results.xml' }],
-    ['allure-playwright'],
     ['html', { outputFolder: 'test-report', open: 'never' }]
   ],
   reportSlowTests: { threshold: 120000, max: 0 },
