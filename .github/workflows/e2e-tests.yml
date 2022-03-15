@@ -97,36 +97,6 @@ jobs:
             e2e/test-report-swap/
           retention-days: 7
 
-      # - name: generate allure report
-      #   if: always()
-      #   run: npm run allure:generate
-
-      # - uses: actions/upload-artifact@master
-      #   if: always()
-      #   with:
-      #     name: allure-results
-      #     path: e2e/allure-results
-      #     retention-days: 7
-
-      # - name: get allure history
-      #   uses: actions/checkout@v2
-      #   if: always()
-      #   continue-on-error: true
-      #   with:
-      #     ref: gh-pages
-      #     path: gh-pages
-
-      # - name: generates allure report with history
-      #   uses: simple-elf/allure-report-action@master
-      #   if: always()
-      #   id: allure-report
-      #   with:
-      #     allure_results: e2e/allure-results
-      #     gh_pages: gh-pages
-      #     allure_report: allure-report
-      #     allure_history: allure-history
-      #     keep_reports: 20
-
       # - name: deploy report to Github pages
       #   if: always()
       #   uses: peaceiris/actions-gh-pages@v2
