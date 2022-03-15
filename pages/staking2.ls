@@ -47,7 +47,7 @@ require! {
         @media(max-width: $mobile)
             height: 460px !important
     .index-style-box
-        width: 50% !important
+        width: 70% !important
         @media(max-width:800px)
             width: 600px
         @media(max-width: $mobile)
@@ -58,16 +58,39 @@ require! {
     .style-container
         @media(max-width:$mobile)
             width: 90%
-            top: 50%
+            top: 45%
     .css-5o0em1
         @media(max-width:$mobile)
             min-width: 90%
+            position: relative
+            top: 0px
+            left: 0px
+            -webkit-transform: none
+            -moz-transform: none
+            -ms-transform: none
+            transform: none
+            height: auto
+        position: relative
+        top: 20px
+        left: 0px
+        -webkit-transform: none
+        -moz-transform: none
+        -ms-transform: none
+        transform: none
+        height: auto
+        min-height: 600px
     .index-container-details
         @media(max-width:800px)
             margin: auto
     .index-width-container
+        margin: 0 auto
         @media(max-width:800px)
             margin: auto
+    .full-width
+        @media(min-width: $mobile)
+            width: 100% !important
+            display: flex !important
+            justify-content: center !important
     .button-block-style-btn-green
         @media(max-width:$mobile)
             width: 45% !important
@@ -96,7 +119,6 @@ require! {
             width: 95%
             margin-inline: 10px
     .sectionlist-container
-        padding-top: 30px !important
         @media(max-width:$mobile)
             overflow: inherit !important
             height: auto !important
@@ -111,10 +133,8 @@ require! {
         @media(max-width:$mobile)
             margin-top: 10px !important
     .index-title-row-staked
-        position: fixed !important
-        z-index: 11 !important
-        left: 0px !important
-        right: 0px !important
+        padding-inline: 0px !important
+        margin-top: -5px !important
         @media(max-width:$mobile)
             background-color: rgb(21, 24, 57)
             margin: 0 !important
@@ -127,29 +147,31 @@ require! {
         font-size: 15px
         @media(max-width:$mobile)
             margin-left: 10px !important
+    button
+        font-size: 11px !important
     div.section-item
         display: flex
         align-items: center
         height: 90px !important
         padding-block: 5px !important
-        padding: 0 !important
-        border-bottom: 2px solid #151839 !important
-    >.title
-        position: sticky
-        position: -webkit-sticky
-        z-index: 1
-        background: var(--background)
-        box-sizing: border-box
-        top: 0
-        width: 100%
-        color: gray
-        font-size: 22px
-        padding: 10px
-        height: 60px
-        >.header
-            margin: 5px
-            @media(max-width:800px)
-                text-align: center
+            padding: 0 !important
+            border-bottom: 2px solid #151839 !important
+        >.title
+            position: sticky
+            position: -webkit-sticky
+            z-index: 1
+            background: var(--background)
+            box-sizing: border-box
+            top: 0
+            width: 100%
+            color: gray
+            font-size: 22px
+            padding: 10px
+            height: 60px
+            >.header
+                margin: 5px
+                @media(max-width:800px)
+                    text-align: center
 
 staking2 = ({ store, web3t })->
     lang = get-lang store
