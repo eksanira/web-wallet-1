@@ -50,9 +50,6 @@ test.describe('Staking', () => {
     staking = new Staking2Screen(page);
     dApps = new DAppsScreen(page);
     await page.goto(walletURL);
-    await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
-    await wallets.openMenu('staking');
-    // await staking.waitForLoaded();
   });
 
   // don't remove "serial". tests in this suite depend on each other
@@ -63,17 +60,40 @@ test.describe('Staking', () => {
       // staked
       // not staked
     });
-    
+
     test('refresh list', async ({ page }) => {
     });
 
-    test('epoch info', async ({ page }) => {
-    });
+    // test('epoch info', async ({ page }) => {
+    // });
 
+    // name, address
+    // identity - only on prod
     test('search', async ({ page }) => {
     });
 
     test('stake', async ({ page }) => {
+    });
+
+    // stake with conversion - gets from EVM
+    test.only('stake more', async ({ page }) => {
+      // arrange
+      await auth.loginByRestoringSeed(data.wallets.staking.withActiveStake.seed);
+      await wallets.openMenu('staking');
+      await staking.waitForLoaded();
+
+      await staking.validatorsList.stakedValidatorsAmountIsVisible(1);
+      await staking.validatorsList.validator.first().click();
+      await staking.validator.staked.stakeMoreButton.click();
+      await staking.stakeForm.amountInput.type('0.01');
+      await staking.stakeForm.nextButton.click();
+      await staking.stakeForm.confirmButton.click();
+      await page.locator('"Stake account has been created successfully"').waitFor();
+      await staking.stakeForm.okButton.click();
+    });
+
+    test('withdraw 2 or more stakes from one validator', async ({ page }) => {
+      // stake 1 vlx, stake 1 vlx again, withdraw 2 vlx
     });
 
     test('request withdrawal', async ({ page }) => {
@@ -82,13 +102,19 @@ test.describe('Staking', () => {
     test('withdraw', async ({ page }) => {
     });
 
-    test('stake more', async ({ page }) => {
-    });
-
     test('rewards', async ({ page }) => {
     });
 
-    test.only('sorting', async ({ page }) => {
+    test('use max', async ({ page }) => {
+    });
+
+    test('copy validator address', async ({ page }) => {
+      // 3g3bs7co7NKChsSQeqkPYcPJMyKdQbwJ3qoT1EQBUdj2
+    });
+
+    // пополнять акк на рандомное значение баланса
+
+    test('sorting', async ({ page }) => {
       // await staking.validatorsList.sortBy('apr');
       await staking.validatorsList.sortBy('total staked');
       await staking.validatorsList.reload();

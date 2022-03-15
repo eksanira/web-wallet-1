@@ -12,8 +12,13 @@ export class Staking2Screen extends BaseScreen {
     super(page);
   }
 
+  waitForLoaded = async (): Promise<void> => {
+    await this.validatorsList.loader.waitFor({ state: 'detached' });
+  }
+
   validatorsList = {
-    epochInfoButton: this.page.locator(''),
+    epochInfoButton: this.page.locator('#on-click-epoch'),
+
     sortBy: async (sortBy: 'apr' | 'total staked'): Promise<void> => {
       const selectValues = {
         'apr': 'apr',
@@ -26,7 +31,7 @@ export class Staking2Screen extends BaseScreen {
     reloadListButton: this.page.locator('#on-press-reload'),
     reload: async (): Promise<void> => {
       await this.validatorsList.reloadListButton.click();
-      await this.validatorsList.waitForLoaded();
+      await this.waitForLoaded();
     },
 
     searchButton: this.page.locator(''),
@@ -35,13 +40,36 @@ export class Staking2Screen extends BaseScreen {
       // todo
     },
 
-    waitForLoaded: async (): Promise<void> => {
-      await this.validatorsList.loader.waitFor({ state: 'detached' });
-    },
+    validator: this.page.locator('#on-click-validator'),
+
+    stakedValidatorsAmountIsVisible: async (amount: number): Promise<boolean> => {
+      return await this.page.locator(`"Staked Validators (${amount})"`).isVisible();
+    }
   }
 
   validator = {
-    stakeButton: this.page.locator('.button-block-style-btn-green:text("Stake")')
+    copyAddress: async (): Promise<string> => {
+      await this.page.locator('[data-testid="ContentCopyIcon"]').click();
+      const copiedAddress = await this.page.evaluate(async () => await navigator.clipboard.readText());
+      log.info(`Clipboard: ${copiedAddress}`);
+      return copiedAddress;
+    },
+    notStaked: {
+      stakeButton: this.page.locator('#on-click-stake'),
+    },
+    staked: {
+      stakeMoreButton: this.page.locator('#on-click-stake-more'),
+      requestWithdrawButton: this.page.locator('#on-click-request'),
+    },
+    refresh: this.page.locator('[data-testid="CachedIcon"]'),
+  }
+
+  stakeForm = {
+    amountInput: this.page.locator('#filled-adornment-amount'),
+    useMaxButton: this.page.locator('#on-click-max'),
+    nextButton: this.page.locator('"Next"'),
+    confirmButton: this.page.locator('"Confirm"'),
+    okButton: this.page.locator('"Ok"'),
   }
 
   async refreshStakes() {
