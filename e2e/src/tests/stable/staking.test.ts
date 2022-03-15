@@ -2,11 +2,12 @@ import { velasNative } from '@velas/velas-chain-test-wrapper';
 import {
   assert, data, expect, helpers, test, walletURL,
 } from '../../common-test-exports';
-import { AuthScreen, StakingScreen, WalletsScreen } from '../../screens';
+import { AuthScreen, DAppsScreen, StakingScreen, WalletsScreen } from '../../screens';
 
 let auth: AuthScreen;
 let wallets: WalletsScreen;
 let staking: StakingScreen;
+let dApps: DAppsScreen;
 
 // TODO: validators loading takes too much time
 test.describe('Staking', () => {
@@ -14,9 +15,11 @@ test.describe('Staking', () => {
     auth = new AuthScreen(page);
     wallets = new WalletsScreen(page);
     staking = new StakingScreen(page);
+    dApps = new DAppsScreen(page);
     await page.goto(walletURL);
     await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
-    await wallets.openMenu('staking');
+    await wallets.openMenu('dApps');
+    await dApps.oldStaking.click();
     await staking.waitForLoaded();
   });
 

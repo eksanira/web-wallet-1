@@ -8,5 +8,3 @@ export {
 export { config, walletURL, type Environment, type Network } from './config';
 export { data } from './test-data';
 export { helpers } from './tools/helpers';
-
-

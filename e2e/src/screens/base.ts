@@ -1,7 +1,7 @@
 import { Locator } from '@playwright/test';
 import { Browser, BrowserContext, Page } from '../common-test-exports';
 
-type MenuItem = 'wallets' | 'staking' | 'search' | 'settings' | 'support' | 'testnet';
+type MenuItem = 'wallets' | 'staking' | 'dApps' | 'settings' | 'support' | 'testnet';
 
 export abstract class BaseScreen {
   context: BrowserContext;
@@ -35,8 +35,9 @@ export abstract class BaseScreen {
 
   async openMenu(item: MenuItem): Promise<void> {
     // add new type property to correspond html classname (staking menu item has class "delegate")
-    let menuItemName: MenuItem | 'delegate' = item;
+    let menuItemName: MenuItem | 'delegate' | 'search' = item;
     if (item === 'staking') menuItemName = 'delegate';
+    if (item === 'dApps') menuItemName = 'search';
     await this.page.click(`#menu-${menuItemName}`);
   }
 
