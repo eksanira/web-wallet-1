@@ -28,20 +28,27 @@ export const data = {
     },
     staking: {
       staker: {
-        publicKey: '59vpQgPoDEhux1G84jk6dbbARQqfUwYtohLU4fgdxFKG',
-        seed: 'occur memory armor lemon wide slush risk gauge answer work small pluck inform hawk away zone robot flock flash owner fall about curve note',
-      },
-      stakerNew: {
-        publicKey: 'D4k7p4AB5j3hiLgbUS164wAufBefVagVLX2oRJQQhbpK',
-        seed: 'horse valley hub funny photo raw tragic final update stable method split pond absurd tray organ pink vocal joy cook monkey nerve street copy',
-      },
-      withoutStakeAccounts: {
         publicKey: '5Rv7YBtPikC15gHrfpdYBhn1nhpieqrGusbrKhAshYXW',
         seed: 'chase excite tomato luxury trash foster swamp scene dismiss one huge save lottery awesome throw hungry three correct door rib rib repair modify grass',
       },
-      withActiveStake: {
+      staker2: {
+        publicKey: 'D4k7p4AB5j3hiLgbUS164wAufBefVagVLX2oRJQQhbpK',
+        seed: 'horse valley hub funny photo raw tragic final update stable method split pond absurd tray organ pink vocal joy cook monkey nerve street copy',
+      },
+      staker2_1: {
+        publicKey: '5uGmgxE5ia4dYmeffAM4bbx9ZUMrCUR6obZbL7VZ7svW',
+        seed: 'gallery runway scissors faculty grocery spatial business judge ball lobster pitch sock stand marble degree alert once away festival reunion logic coach rural license',
+      },
+      withoutStakeAccounts: {
+        publicKey: '59vpQgPoDEhux1G84jk6dbbARQqfUwYtohLU4fgdxFKG',
+        seed: 'occur memory armor lemon wide slush risk gauge answer work small pluck inform hawk away zone robot flock flash owner fall about curve note',
+      },
+      rewards: {
         address: 'D25HT9pVmScZjz3DfNUFRb6Ci786DxSsjqyEYGA7nm1f',
         seed: 'eye still focus olive brass know echo element industry tumble gloom harvest lens allow genuine fee crash raise approve scrub cattle magic either portion',
+      },
+      useMax: {
+        seed: 'angry tennis album example festival angry priority eight pride please snack rigid lonely badge stem tattoo mother ring pole draft gauge install junk polar',
       },
     },
     swap: {
