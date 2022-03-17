@@ -64,4 +64,10 @@ export abstract class BaseScreen {
 
     if (isElementVisible) throw new Error(`Element with selector "${selector}" has not disappeared in ${totalWaitTime / 1000} seconds`);
   }
+
+  async setSeedToLocalStorage(encryptedSeed: string): Promise<void> {
+    await this.page.evaluate((encryptedSeed) => {
+      localStorage.setItem('sseed', encryptedSeed);
+    }, encryptedSeed);
+  }
 }
