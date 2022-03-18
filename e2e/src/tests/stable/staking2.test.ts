@@ -98,17 +98,17 @@ test.describe('Staking', () => {
       await expect(staking.search.getSearchResultItemWithText("Velas Validator Node")).toBeVisible();
       await staking.search.cancel.click();
 
-      // name
+      // name (case insensitive)
       await staking.search.open.click();
       await expect(staking.search.getSearchResultItemWithText("BlueZilla.vc")).not.toBeVisible();
-      await staking.search.input.fill('5XWD2WQ53unzEmYWGKBV27eGQ8JsWkPqcwdLvBVZ8tb2');
+      await staking.search.input.fill('BlueZilla.vc');
       await expect(staking.search.getSearchResultItemWithText("BlueZilla.vc")).toBeVisible();
       await staking.search.cancel.click();
 
-      // identity
+      // identity (type only part of string)
       await staking.search.open.click();
       await expect(staking.search.getSearchResultItemWithText("VelasPad.io")).not.toBeVisible();
-      await staking.search.input.fill('HdCn5cV2Cugcb2XgpCR3Uu6FcdTAyJwcUYLu87Cig7xP');
+      await staking.search.input.fill('HdCn5cV2Cugcb2XgpCR3Uu6FcdTAyJw');
       await expect(staking.search.getSearchResultItemWithText("VelasPad.io")).toBeVisible();
       await staking.search.cancel.click();
     });
