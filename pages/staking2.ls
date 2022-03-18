@@ -71,13 +71,12 @@ require! {
             transform: none
             height: auto
         position: relative
-        top: 20px
+        top: 35px
         left: 0px
         -webkit-transform: none
         -moz-transform: none
         -ms-transform: none
         transform: none
-        height: auto
         min-height: 600px
     .index-container-details
         @media(max-width:800px)
@@ -154,24 +153,24 @@ require! {
         align-items: center
         height: 90px !important
         padding-block: 5px !important
-            padding: 0 !important
-            border-bottom: 2px solid #151839 !important
-        >.title
-            position: sticky
-            position: -webkit-sticky
-            z-index: 1
-            background: var(--background)
-            box-sizing: border-box
-            top: 0
-            width: 100%
-            color: gray
-            font-size: 22px
-            padding: 10px
-            height: 60px
-            >.header
-                margin: 5px
-                @media(max-width:800px)
-                    text-align: center
+        padding: 0 !important
+        border-bottom: 2px solid #151839 !important
+    >.title
+        position: sticky
+        position: -webkit-sticky
+        z-index: 1
+        background: var(--background)
+        box-sizing: border-box
+        top: 0
+        width: 100%
+        color: gray
+        font-size: 22px
+        padding: 10px
+        height: 60px
+        >.header
+            margin: 5px
+            @media(max-width:800px)
+                text-align: center
 
 staking2 = ({ store, web3t })->
     lang = get-lang store
