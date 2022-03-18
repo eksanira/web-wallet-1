@@ -6,6 +6,7 @@ RUN apk add --no-cache --update \
       build-base \
       git \
       sudo
+RUN npm i -g npm@latest
 WORKDIR /app
 
 RUN git clone https://github.com/velas/web3t.git web3t
