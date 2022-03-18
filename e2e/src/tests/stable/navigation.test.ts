@@ -50,7 +50,7 @@ test.describe.parallel('Navigation', () => {
         case 'staking':
           await wallets.openMenu('wallets');
           await wallets.openMenu('staking');
-          await staking.createStakingAccountButton.waitFor();
+          await staking.waitForLoaded();
           break;
 
         case 'swap':

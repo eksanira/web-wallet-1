@@ -682,19 +682,20 @@ prompt-choose-token-modal = (store)->
         {image, name, token} = item.coin
         wallet = wallets |> find (-> it.coin.token is token)
         return null if not wallet?
-        #on-click = ->
-            #store.current.prompt-answer = token
-            #data.token = name
-            #copy-to-clipboard wallet.private-key
-            #notify store, "Your Private KEY is copied into your clipboard", cb
         token-network = item?network?group
         active-class = if store.current.prompt-answer is token then "active" else ""
         token = (wallet?coin?name ? "").to-upper-case!
+        elId = "cpc-wallet-#{token}"
+        onCopy = (event) ->
+            # fixes the issue with no copied value after one click https://github.com/nkbt/react-copy-to-clipboard/issues/100#issuecomment-524057405
+            el = document.getElementById elId
+            el.click!
+            copied-pk-inform(store)(event)
         li.pug.lang-item(style=optionStyle class="#{active-class}")
             .pug
-                CopyToClipboard.pug(text="#{wallet.private-key}" on-copy=copied-pk-inform(store) style=icon2-style)
+                CopyToClipboard.pug(text="#{wallet.private-key}" on-copy=onCopy style=icon2-style)
                     .pug
-                        img.pug(src="#{image}" style=imgStyle)
+                        img.pug(id="#{elId}" src="#{image}" style=imgStyle)
                         span.token-name.pug #{name}
                         span.pug.network #{token-network} Network
     input-style =
