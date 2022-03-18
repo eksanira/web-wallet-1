@@ -1,34 +1,10 @@
 // Tables load
 
-// [🚗 ] staking accounts 
-
-// [🚗 ] validators
-
-// [🚗 ] 'use max' button
-
-// [🚗 ] create staking account
-
-// [🚗 ] delegate
-
-// [🚗 ] undelegate
-
-// [🚗 ] withdraw
-
 // [🚗 ] split
 
-// update stakes list
-// search
-// epoch info
-
-// validators list
-// no staked validators
-
-// validator info
 // stake
 // withdrawals
 // rewards
-
-
 
 
 import { velasNative } from '@velas/velas-chain-test-wrapper';
@@ -59,7 +35,6 @@ test.describe('Staking', () => {
     }
   });
 
-
   test.beforeEach(async ({ page }) => {
     auth = new AuthScreen(page);
     wallets = new WalletsScreen(page);
@@ -68,10 +43,81 @@ test.describe('Staking', () => {
     await page.goto(walletURL);
   });
 
+  test.describe('validators list', () => {
+    test('validator item info: active/inactive, name', async () => {
+      await auth.fastLogin(data.wallets.staking.withoutStakeAccounts);
+      await wallets.openMenu('staking');
+      await staking.waitForLoaded();
+
+      await staking.validatorsList.validator.first().waitFor();
+
+      // status: active/inactive
+      await expect(staking.validatorsList.activeStatus.first()).toBeVisible();
+      await expect(staking.validatorsList.inactiveStatus.first()).toBeVisible();
+
+      // name
+      await expect(staking.validatorsList.validatorName.first()).toBeVisible();
+    });
+
+
+    test('sorting', async () => {
+      await auth.fastLogin(data.wallets.staking.withoutStakeAccounts);
+      await wallets.openMenu('staking');
+      await staking.waitForLoaded();
+
+      await staking.validatorsList.sortBy('apr');
+      await staking.validatorsList.apr.first().waitFor();
+      const aprs = await staking.validatorsList.apr.allInnerTexts();
+      expect(aprs).toEqual([...aprs].sort().reverse());
+
+      await staking.validatorsList.sortBy('total staked');
+      await staking.validatorsList.totalStaked.first().waitFor();
+      let totalStakes = await staking.validatorsList.totalStaked.allInnerTexts();
+      totalStakes = totalStakes.map(stake => stake.split(' VLX')[0]);
+      expect(totalStakes).toEqual([...totalStakes].sort(function (a, b) { return Number(a) - Number(b) }));
+    });
+
+    // name, address
+    // identity - only on prod
+    test.only('search', async ({ page }) => {
+      await staking.goto({ network: 'mainnet' });
+      await auth.fastLogin(data.wallets.staking.withoutStakeAccounts);
+      await wallets.openMenu('staking');
+      await staking.waitForLoaded();
+
+      // nothing found
+      await staking.search.open.click();
+      await staking.search.input.type('none');
+      await expect(staking.search.noResults).toBeVisible();
+      await staking.search.cancel.click();
+
+      // address
+      await staking.search.open.click();
+      await expect(staking.search.getSearchResultItemWithText("Velas Validator Node")).not.toBeVisible();
+      await staking.search.input.fill('DgmRwYK5tNLKeCSk6a4zpnwXSw3RdgMDTfAU1x6iqL3g');
+      await expect(staking.search.getSearchResultItemWithText("Velas Validator Node")).toBeVisible();
+      await staking.search.cancel.click();
+
+      // name
+      await staking.search.open.click();
+      await expect(staking.search.getSearchResultItemWithText("BlueZilla.vc")).not.toBeVisible();
+      await staking.search.input.fill('5XWD2WQ53unzEmYWGKBV27eGQ8JsWkPqcwdLvBVZ8tb2');
+      await expect(staking.search.getSearchResultItemWithText("BlueZilla.vc")).toBeVisible();
+      await staking.search.cancel.click();
+
+      // identity
+      await staking.search.open.click();
+      await expect(staking.search.getSearchResultItemWithText("VelasPad.io")).not.toBeVisible();
+      await staking.search.input.fill('HdCn5cV2Cugcb2XgpCR3Uu6FcdTAyJwcUYLu87Cig7xP');
+      await expect(staking.search.getSearchResultItemWithText("VelasPad.io")).toBeVisible();
+      await staking.search.cancel.click();
+    });
+  });
+
   test.describe.serial('stake > stake more > withdraw', () => {
     let allTestsPassed = false;
 
-    test('cleanup', async () => {
+    test('cleanup on start', async () => {
       await auth.loginByRestoringSeed(data.wallets.staking.staker2_1.seed);
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
@@ -147,7 +193,7 @@ test.describe('Staking', () => {
       allTestsPassed = true;
     });
 
-    test('cleanup', async () => {
+    test('cleanup on teardown', async () => {
       test.skip(allTestsPassed);
 
       await auth.loginByRestoringSeed(data.wallets.staking.staker2_1.seed);
@@ -158,70 +204,36 @@ test.describe('Staking', () => {
     });
   });
 
-  test('rewards', async () => {
-    await auth.fastLogin(data.wallets.staking.rewards);
-    await wallets.openMenu('staking');
-    await staking.waitForLoaded();
+  test.describe('validator', () => {
+    test('rewards', async () => {
+      await auth.fastLogin(data.wallets.staking.rewards);
+      await wallets.openMenu('staking');
+      await staking.waitForLoaded();
 
-    await staking.validatorsList.stakedValidatorsAmountIsVisible(1);
-    await staking.validatorsList.validator.first().click();
-    await staking.validator.tab.rewards.click();
+      await staking.validatorsList.stakedValidatorsAmountIsVisible(1);
+      await staking.validatorsList.validator.first().click();
+      await staking.validator.tab.rewards.click();
 
-    await expect(staking.validator.rewards.rewardItem).toBeVisible();
-    const lastRewardEpoch = Number(await staking.validator.rewards.epochNumber.textContent());
-    const epochNumberFromBlockchain = (await velasNative.getEpochInfo()).epoch;
-    expect(lastRewardEpoch).toEqual(epochNumberFromBlockchain - 1);
+      await expect(staking.validator.rewards.rewardItem).toBeVisible();
+      const lastRewardEpoch = Number(await staking.validator.rewards.epochNumber.textContent());
+      const epochNumberFromBlockchain = (await velasNative.getEpochInfo()).epoch;
+      expect(lastRewardEpoch).toEqual(epochNumberFromBlockchain - 1);
+    });
+
+    test('use max', async () => {
+      await auth.loginByRestoringSeed(data.wallets.staking.useMax.seed);
+      await wallets.openMenu('staking');
+      await staking.waitForLoaded();
+
+      await staking.validatorsList.validator.first().click();
+      await staking.validator.notStaked.stakeButton.click();
+      const availableForStakingAmount = await staking.stakeForm.getAvailableForStakingAmount();
+      await staking.stakeForm.useMaxButton.click();
+      const inputValue = await staking.stakeForm.amountInput.inputValue();
+
+      expect(Number(inputValue)).toEqual(availableForStakingAmount - 1);
+    });
   });
-
-  test('sorting', async () => {
-    await auth.fastLogin(data.wallets.staking.withoutStakeAccounts);
-    await wallets.openMenu('staking');
-    await staking.waitForLoaded();
-
-    await staking.validatorsList.sortBy('apr');
-    await staking.validatorsList.apr.first().waitFor();
-    const aprs = await staking.validatorsList.apr.allInnerTexts();
-    expect(aprs).toEqual([...aprs].sort().reverse());
-
-    await staking.validatorsList.sortBy('total staked');
-    await staking.validatorsList.totalStaked.first().waitFor();
-    let totalStakes = await staking.validatorsList.totalStaked.allInnerTexts();
-    totalStakes = totalStakes.map(stake => stake.split(' VLX')[0]);
-    expect(totalStakes).toEqual([...totalStakes].sort(function (a, b) { return Number(a) - Number(b) }));
-  });
-
-  test('use max', async () => {
-    await auth.loginByRestoringSeed(data.wallets.staking.useMax.seed);
-    await wallets.openMenu('staking');
-    await staking.waitForLoaded();
-
-    await staking.validatorsList.validator.first().click();
-    await staking.validator.notStaked.stakeButton.click();
-    const availableForStakingAmount = await staking.stakeForm.getAvailableForStakingAmount();
-    await staking.stakeForm.useMaxButton.click();
-    const inputValue = await staking.stakeForm.amountInput.inputValue();
-
-    expect(Number(inputValue)).toEqual(availableForStakingAmount - 1);
-  });
-
-
-
-  // test('validators list', async ({ page }) => {
-  //   await page.pause();
-  //   // staked
-  //   // not staked
-  // });
-
-  // test('refresh list', async ({ page }) => {
-  // });
-
-  // test('epoch info', async ({ page }) => {
-  // });
-
-  // name, address
-  // identity - only on prod
-  // test('search', async ({ page }) => {
-  // });
 
   // test.only('EPOCH', async () => {
   //   const epochinfo = await velasNative.getEpochInfo();

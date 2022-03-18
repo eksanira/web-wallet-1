@@ -13,8 +13,19 @@ export class Staking2Screen extends BaseScreen {
   }
 
   waitForLoaded = async (): Promise<void> => {
-    await this.validatorsList.loader.waitFor({ state: 'detached', timeout: 15000 });
+    await this.validatorsList.loader.waitFor({ state: 'detached', timeout: 20000 });
     await this.validatorsList.validator.first().waitFor();
+  }
+
+  search = {
+    open: this.page.locator('#open-search'),
+    cancel: this.page.locator('#on-close'),
+    input: this.page.locator('input[type="search"]'),
+    noResults: this.page.locator('"Nothing to see here!"'),
+    searchResultItem: this.page.locator('.search-table #on-click-validator'),
+    getSearchResultItemWithText: (text: string): Locator => {
+      return this.page.locator(`.search-table #on-click-validator :text("${text}")`);
+    }
   }
 
   validatorsList = {
@@ -37,13 +48,10 @@ export class Staking2Screen extends BaseScreen {
       await this.waitForLoaded();
     },
 
-    searchButton: this.page.locator(''),
-    search: async (text: string) => {
-      await this.page.type('input[type="search"]:text("Search..")', text);
-      // todo
-    },
-
     validator: this.page.locator('#on-click-validator'),
+    validatorName: this.page.locator('#on-click-validator #name-validator'),
+    activeStatus: this.page.locator('#on-click-validator #active-status'),
+    inactiveStatus: this.page.locator('#on-click-validator #inactive-status'),
 
     stakedValidatorsAmountIsVisible: async (amount: number): Promise<boolean> => {
       return await this.page.locator(`"Staked Validators (${amount})"`).isVisible();
