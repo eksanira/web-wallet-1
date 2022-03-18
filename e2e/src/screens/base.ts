@@ -1,5 +1,6 @@
 import { Locator } from '@playwright/test';
 import { Browser, BrowserContext, Page } from '../common-test-exports';
+import { Environment, getWalletURL, Network } from '../config';
 
 type MenuItem = 'wallets' | 'staking' | 'dApps' | 'settings' | 'support' | 'testnet';
 
@@ -63,5 +64,15 @@ export abstract class BaseScreen {
     }
 
     if (isElementVisible) throw new Error(`Element with selector "${selector}" has not disappeared in ${totalWaitTime / 1000} seconds`);
+  }
+
+  async setSeedToLocalStorage(encryptedSeed: string): Promise<void> {
+    await this.page.evaluate((encryptedSeed) => {
+      localStorage.setItem('sseed', encryptedSeed);
+    }, encryptedSeed);
+  }
+
+  async goto(params?: { environment?: Environment, network?: Network, host?: string }): Promise<void> {
+    await this.page.goto(getWalletURL({ environment: params?.environment, network: params?.network }));
   }
 }
