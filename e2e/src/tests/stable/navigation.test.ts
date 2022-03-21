@@ -1,5 +1,5 @@
 import {
-  AuthScreen, SearchScreen, SettingsScreen, StakingScreen, WalletsScreen,
+  AuthScreen, SearchScreen, SettingsScreen, Staking2Screen, WalletsScreen,
 } from '../../screens';
 import {
   assert, data, test, walletURL,
@@ -9,7 +9,7 @@ let wallets: WalletsScreen;
 let auth: AuthScreen;
 let settings: SettingsScreen;
 let search: SearchScreen;
-let staking: StakingScreen;
+let staking: Staking2Screen;
 
 test.describe.parallel('Navigation', () => {
   test.beforeEach(async ({ page }) => {
@@ -17,7 +17,7 @@ test.describe.parallel('Navigation', () => {
     settings = new SettingsScreen(page);
     auth = new AuthScreen(page);
     search = new SearchScreen(page);
-    staking = new StakingScreen(page);
+    staking = new Staking2Screen(page);
     await page.goto(walletURL, { waitUntil: 'networkidle' });
     await auth.loginByRestoringSeed(data.wallets.login.seed);
   });
@@ -43,14 +43,14 @@ test.describe.parallel('Navigation', () => {
 
         case 'search':
           await wallets.openMenu('wallets');
-          await wallets.openMenu('search');
+          await wallets.openMenu('dApps');
           await search.dapps.waitFor();
           break;
 
         case 'staking':
           await wallets.openMenu('wallets');
           await wallets.openMenu('staking');
-          await staking.createStakingAccountButton.waitFor();
+          await staking.container.waitFor();
           break;
 
         case 'swap':
