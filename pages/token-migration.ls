@@ -12,7 +12,7 @@ require! {
     \../copied-inform.ls
     \../copy.ls
     \../math.ls : { minus }
-    \../send-funcs.ls
+    \../send-funcs.js
     \../icons.ls
 }
 .manage-account
