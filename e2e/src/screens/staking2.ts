@@ -5,12 +5,12 @@ import { helpers } from '../tools/helpers';
 import { log } from '../tools/logger';
 import { BaseScreen } from './base';
 
-type Stake = 'Delegate' | 'Undelegate' | 'Withdraw';
-
 export class Staking2Screen extends BaseScreen {
   constructor(public page: Page) {
     super(page);
   }
+
+  container = this.page.locator('.staking2 .staking');
 
   waitForLoaded = async (): Promise<void> => {
     await this.validatorsList.loader.waitFor({ state: 'detached', timeout: 20000 });
