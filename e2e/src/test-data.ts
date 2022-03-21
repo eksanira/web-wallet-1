@@ -31,7 +31,7 @@ export const data = {
         publicKey: '5Rv7YBtPikC15gHrfpdYBhn1nhpieqrGusbrKhAshYXW',
         seed: 'chase excite tomato luxury trash foster swamp scene dismiss one huge save lottery awesome throw hungry three correct door rib rib repair modify grass',
       },
-      staker2: {
+      stakerEVM: {
         publicKey: 'D4k7p4AB5j3hiLgbUS164wAufBefVagVLX2oRJQQhbpK',
         seed: 'horse valley hub funny photo raw tragic final update stable method split pond absurd tray organ pink vocal joy cook monkey nerve street copy',
       },

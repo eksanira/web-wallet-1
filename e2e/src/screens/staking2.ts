@@ -13,7 +13,7 @@ export class Staking2Screen extends BaseScreen {
   container = this.page.locator('.staking2 .staking');
 
   waitForLoaded = async (): Promise<void> => {
-    await this.validatorsList.loader.waitFor({ state: 'detached', timeout: 20000 });
+    await this.validatorsList.loader.waitFor({ state: 'detached', timeout: 15000 });
     await this.validatorsList.validator.first().waitFor();
   }
 

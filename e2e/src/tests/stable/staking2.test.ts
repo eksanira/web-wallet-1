@@ -8,9 +8,7 @@
 
 
 import { velasNative } from '@velas/velas-chain-test-wrapper';
-import {
-  assert, data, expect, helpers, test, walletURL,
-} from '../../common-test-exports';
+import { data, expect, helpers, test, walletURL } from '../../common-test-exports';
 import { AuthScreen, DAppsScreen, Staking2Screen, WalletsScreen } from '../../screens';
 import { log } from '../../tools/logger';
 
@@ -77,9 +75,7 @@ test.describe('Staking', () => {
       expect(totalStakes).toEqual([...totalStakes].sort(function (a, b) { return Number(a) - Number(b) }));
     });
 
-    // name, address
-    // identity - only on prod
-    test.only('search', async ({ page }) => {
+    test('search', async () => {
       await staking.goto({ network: 'mainnet' });
       await auth.fastLogin(data.wallets.staking.withoutStakeAccounts);
       await wallets.openMenu('staking');
@@ -161,7 +157,7 @@ test.describe('Staking', () => {
       await staking.validator.waitForStakeValueUpdate({ fromValue: '1.10', toValue: '1.30' });
     });
 
-    test('request withdraw', async () => {
+    test('request withdraw (2 stakes from one validator)', async () => {
       await auth.loginByRestoringSeed(data.wallets.staking.staker2_1.seed);
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
@@ -235,33 +231,21 @@ test.describe('Staking', () => {
     });
   });
 
-  // test.only('EPOCH', async () => {
-  //   const epochinfo = await velasNative.getEpochInfo();
-  //   log.warn(epochinfo);
-  // });
-
   // stake with conversion - gets from EVM
 
-  // test('withdraw 2 or more stakes from one validator', async ({ page }) => {
-  //   // stake 1 vlx, stake 1 vlx again, withdraw 2 vlx
-  // });
+  test.only('stake with conversion (ENV > Native)', async ({ page }) => {
+    await auth.loginByRestoringSeed(data.wallets.staking.stakerEVM.seed);
+    await wallets.openMenu('staking');
+    await staking.waitForLoaded();
 
-  // test('withdraw', async ({ page }) => {
-  // });
-
+    await staking.validatorsList.validator.first().click();
+    await staking.validator.notStaked.stakeButton.click();
+    await staking.stakeForm.amountInput.fill('13.13');
+    await staking.stakeForm.nextButton.click();
+    await expect(page.locator('"Convert 11.13 VLX to VLX Native"')).toBeVisible();
+  });
 
   // test('copy validator address', async ({ page }) => {
   //   // 3g3bs7co7NKChsSQeqkPYcPJMyKdQbwJ3qoT1EQBUdj2
   // });
-
-  // пополнять акк на рандомное значение баланса
-
-
-
-  // test('', async ({ page }) => {
-  // });
-
-  // test('', async ({ page }) => {
-  // });
-
 });
