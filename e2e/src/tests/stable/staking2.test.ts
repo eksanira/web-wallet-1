@@ -1,12 +1,3 @@
-// Tables load
-
-// [🚗 ] split
-
-// stake
-// withdrawals
-// rewards
-
-
 import { velasNative } from '@velas/velas-chain-test-wrapper';
 import { data, expect, helpers, test, walletURL } from '../../common-test-exports';
 import { AuthScreen, DAppsScreen, Staking2Screen, WalletsScreen } from '../../screens';
@@ -15,7 +6,6 @@ import { log } from '../../tools/logger';
 let auth: AuthScreen;
 let wallets: WalletsScreen;
 let staking: Staking2Screen;
-let dApps: DAppsScreen;
 
 test.describe('Staking', () => {
   test.beforeAll(async () => {
@@ -37,7 +27,6 @@ test.describe('Staking', () => {
     auth = new AuthScreen(page);
     wallets = new WalletsScreen(page);
     staking = new Staking2Screen(page);
-    dApps = new DAppsScreen(page);
     await page.goto(walletURL);
   });
 
@@ -229,11 +218,22 @@ test.describe('Staking', () => {
 
       expect(Number(inputValue)).toEqual(availableForStakingAmount - 1);
     });
+
+    test('copy validator address', async ({ page }) => {
+      await auth.loginByRestoringSeed(data.wallets.staking.withoutStakeAccounts.seed);
+      await wallets.openMenu('staking');
+      await staking.waitForLoaded();
+
+      await staking.validatorsList.validator.first().click();
+
+      const copiedAddress = await staking.validator.copyAddress();
+
+      expect(copiedAddress).toHaveLength(44);
+      await expect(page.locator('#message', { hasText: 'Copied' })).toBeVisible();
+    });
   });
 
-  // stake with conversion - gets from EVM
-
-  test.only('stake with conversion (ENV > Native)', async ({ page }) => {
+  test('stake with conversion (ENM > Native)', async ({ page }) => {
     await auth.loginByRestoringSeed(data.wallets.staking.stakerEVM.seed);
     await wallets.openMenu('staking');
     await staking.waitForLoaded();
@@ -242,10 +242,7 @@ test.describe('Staking', () => {
     await staking.validator.notStaked.stakeButton.click();
     await staking.stakeForm.amountInput.fill('13.13');
     await staking.stakeForm.nextButton.click();
-    await expect(page.locator('"Convert 11.13 VLX to VLX Native"')).toBeVisible();
-  });
 
-  // test('copy validator address', async ({ page }) => {
-  //   // 3g3bs7co7NKChsSQeqkPYcPJMyKdQbwJ3qoT1EQBUdj2
-  // });
+    await expect(page.locator('"Convert 11.13 VLX EVM to VLX Native"')).toBeVisible();
+  });
 });

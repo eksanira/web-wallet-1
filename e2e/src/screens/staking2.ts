@@ -1,5 +1,4 @@
 import { Locator } from '@playwright/test';
-import { velasNative } from '@velas/velas-chain-test-wrapper/lib/velas-native';
 import { Page } from '../common-test-exports';
 import { helpers } from '../tools/helpers';
 import { log } from '../tools/logger';
@@ -15,6 +14,7 @@ export class Staking2Screen extends BaseScreen {
   waitForLoaded = async (): Promise<void> => {
     await this.validatorsList.loader.waitFor({ state: 'detached', timeout: 15000 });
     await this.validatorsList.validator.first().waitFor();
+    await this.page.waitForTimeout(250);
   }
 
   search = {
@@ -78,6 +78,7 @@ export class Staking2Screen extends BaseScreen {
 
   validator = {
     copyAddress: async (): Promise<string> => {
+      await this.page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
       await this.page.locator('[data-testid="ContentCopyIcon"]').click();
       const copiedAddress = await this.page.evaluate(async () => await navigator.clipboard.readText());
       log.info(`Clipboard: ${copiedAddress}`);
