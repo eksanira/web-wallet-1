@@ -1,6 +1,8 @@
 import { velasNative } from '@velas/velas-chain-test-wrapper';
-import { data, expect, helpers, test, walletURL } from '../../common-test-exports';
-import { AuthScreen, DAppsScreen, Staking2Screen, WalletsScreen } from '../../screens';
+import {
+  data, expect, helpers, test, walletURL,
+} from '../../common-test-exports';
+import { AuthScreen, Staking2Screen, WalletsScreen } from '../../screens';
 import { log } from '../../tools/logger';
 
 let auth: AuthScreen;
@@ -46,7 +48,6 @@ test.describe('Staking', () => {
       await expect(staking.validatorsList.validatorName.first()).toBeVisible();
     });
 
-
     test('sorting', async () => {
       await auth.fastLogin(data.wallets.staking.withoutStakeAccounts);
       await wallets.openMenu('staking');
@@ -60,8 +61,8 @@ test.describe('Staking', () => {
       await staking.validatorsList.sortBy('total staked');
       await staking.validatorsList.totalStaked.first().waitFor();
       let totalStakes = await staking.validatorsList.totalStaked.allInnerTexts();
-      totalStakes = totalStakes.map(stake => stake.split(' VLX')[0]);
-      expect(totalStakes).toEqual([...totalStakes].sort(function (a, b) { return Number(a) - Number(b) }));
+      totalStakes = totalStakes.map((stake) => stake.split(' VLX')[0]);
+      expect(totalStakes).toEqual([...totalStakes].sort((a, b) => Number(a) - Number(b)));
     });
 
     test('search', async () => {
@@ -78,23 +79,23 @@ test.describe('Staking', () => {
 
       // address
       await staking.search.open.click();
-      await expect(staking.search.getSearchResultItemWithText("Velas Validator Node")).not.toBeVisible();
+      await expect(staking.search.getSearchResultItemWithText('Velas Validator Node')).not.toBeVisible();
       await staking.search.input.fill('DgmRwYK5tNLKeCSk6a4zpnwXSw3RdgMDTfAU1x6iqL3g');
-      await expect(staking.search.getSearchResultItemWithText("Velas Validator Node")).toBeVisible();
+      await expect(staking.search.getSearchResultItemWithText('Velas Validator Node')).toBeVisible();
       await staking.search.cancel.click();
 
       // name (case insensitive)
       await staking.search.open.click();
-      await expect(staking.search.getSearchResultItemWithText("BlueZilla.vc")).not.toBeVisible();
+      await expect(staking.search.getSearchResultItemWithText('BlueZilla.vc')).not.toBeVisible();
       await staking.search.input.fill('BlueZilla.vc');
-      await expect(staking.search.getSearchResultItemWithText("BlueZilla.vc")).toBeVisible();
+      await expect(staking.search.getSearchResultItemWithText('BlueZilla.vc')).toBeVisible();
       await staking.search.cancel.click();
 
       // identity (type only part of string)
       await staking.search.open.click();
-      await expect(staking.search.getSearchResultItemWithText("VelasPad.io")).not.toBeVisible();
+      await expect(staking.search.getSearchResultItemWithText('VelasPad.io')).not.toBeVisible();
       await staking.search.input.fill('HdCn5cV2Cugcb2XgpCR3Uu6FcdTAyJw');
-      await expect(staking.search.getSearchResultItemWithText("VelasPad.io")).toBeVisible();
+      await expect(staking.search.getSearchResultItemWithText('VelasPad.io')).toBeVisible();
       await staking.search.cancel.click();
     });
   });

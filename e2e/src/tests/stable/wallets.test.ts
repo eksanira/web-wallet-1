@@ -1,5 +1,5 @@
 import {
-  assert, config, data, test, walletURL
+  assert, config, data, test, walletURL,
 } from '../../common-test-exports';
 import { AuthScreen, WalletsScreen } from '../../screens';
 
