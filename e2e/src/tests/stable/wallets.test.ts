@@ -29,7 +29,7 @@ test.describe.parallel('Wallets screen', () => {
     });
   });
 
-  test.describe(' > ', () => {
+  test.describe('Main', () => {
     test.beforeEach(async () => {
       await auth.loginByRestoringSeed(data.wallets.login.seed);
       await wallets.waitForWalletsDataLoaded();
