@@ -1,5 +1,4 @@
 import { Locator } from '@playwright/test';
-import { velasNative } from '@velas/velas-chain-test-wrapper/lib/velas-native';
 import { Page } from '../common-test-exports';
 import { helpers } from '../tools/helpers';
 import { log } from '../tools/logger';
@@ -13,8 +12,9 @@ export class Staking2Screen extends BaseScreen {
   container = this.page.locator('.staking2 .staking');
 
   waitForLoaded = async (): Promise<void> => {
-    await this.validatorsList.loader.waitFor({ state: 'detached', timeout: 20000 });
+    await this.validatorsList.loader.waitFor({ state: 'detached', timeout: 15000 });
     await this.validatorsList.validator.first().waitFor();
+    await this.page.waitForTimeout(250);
   }
 
   search = {
@@ -23,9 +23,7 @@ export class Staking2Screen extends BaseScreen {
     input: this.page.locator('input[type="search"]'),
     noResults: this.page.locator('"Nothing to see here!"'),
     searchResultItem: this.page.locator('.search-table #on-click-validator'),
-    getSearchResultItemWithText: (text: string): Locator => {
-      return this.page.locator(`.search-table #on-click-validator :text("${text}")`);
-    }
+    getSearchResultItemWithText: (text: string): Locator => this.page.locator(`.search-table #on-click-validator :text("${text}")`),
   }
 
   validatorsList = {
@@ -35,9 +33,9 @@ export class Staking2Screen extends BaseScreen {
 
     sortBy: async (sortBy: 'apr' | 'total staked'): Promise<void> => {
       const selectValues = {
-        'apr': 'apr',
-        'total staked': 'activeStake'
-      }
+        apr: 'apr',
+        'total staked': 'activeStake',
+      };
       await this.page.locator('.index-title-row-staked select').selectOption(selectValues[sortBy]);
     },
 
@@ -53,9 +51,7 @@ export class Staking2Screen extends BaseScreen {
     activeStatus: this.page.locator('#on-click-validator #active-status'),
     inactiveStatus: this.page.locator('#on-click-validator #inactive-status'),
 
-    stakedValidatorsAmountIsVisible: async (amount: number): Promise<boolean> => {
-      return await this.page.locator(`"Staked Validators (${amount})"`).isVisible();
-    },
+    stakedValidatorsAmountIsVisible: async (amount: number): Promise<boolean> => await this.page.locator(`"Staked Validators (${amount})"`).isVisible(),
 
     refreshStakesUntilStakedValidatorAppears: async (timeout: number = 30000): Promise<void> => {
       const startTime = new Date().getTime();
@@ -78,6 +74,7 @@ export class Staking2Screen extends BaseScreen {
 
   validator = {
     copyAddress: async (): Promise<string> => {
+      await this.page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
       await this.page.locator('[data-testid="ContentCopyIcon"]').click();
       const copiedAddress = await this.page.evaluate(async () => await navigator.clipboard.readText());
       log.info(`Clipboard: ${copiedAddress}`);
@@ -90,7 +87,7 @@ export class Staking2Screen extends BaseScreen {
 
     getStakeValue: async (): Promise<string> => {
       const textContainingStakeValue = await this.page.locator('.info-block-column2 #value1').textContent();
-      if (!textContainingStakeValue) throw new Error(`Cant get text containing stake value. It equals: ${textContainingStakeValue}`)
+      if (!textContainingStakeValue) throw new Error(`Cant get text containing stake value. It equals: ${textContainingStakeValue}`);
       return textContainingStakeValue.split(' VLX')[0];
     },
 
@@ -120,7 +117,7 @@ export class Staking2Screen extends BaseScreen {
           throw new Error(`Stake amount was updated: from ${startStakeValue} to ${currentStakeValue}. But we expect change to value ${params.toValue}`);
         }
 
-        // if we expect stake amount change to any value 
+        // if we expect stake amount change to any value
         if (!params.toValue && startStakeValue !== startStakeValue) {
           log.info(`Stake amount was updated: from ${startStakeValue} to ${currentStakeValue}`);
           return currentStakeValue;
@@ -130,8 +127,8 @@ export class Staking2Screen extends BaseScreen {
         await this.validator.reload();
       }
 
-      log.debug(`IF YOU SEE THIS TEXT LOOKS LIKE SOME CASES WERE MISSED DURING THIS METHOD DEVELOPMENT. PLEASE FIX`);
-      if (await this.validator.getStakeValue() === startStakeValue) throw new Error(`Stake amount was not updated during ${timeout / 1000} seconds and equals to ${startStakeValue} VLX.`)
+      log.debug('IF YOU SEE THIS TEXT LOOKS LIKE SOME CASES WERE MISSED DURING THIS METHOD DEVELOPMENT. PLEASE FIX');
+      if (await this.validator.getStakeValue() === startStakeValue) throw new Error(`Stake amount was not updated during ${timeout / 1000} seconds and equals to ${startStakeValue} VLX.`);
       return await this.validator.getStakeValue();
     },
 
@@ -161,7 +158,7 @@ export class Staking2Screen extends BaseScreen {
     },
     withdrawals: {
       withdrawButton: this.page.locator('#withdraw'),
-    }
+    },
   }
 
   stakeForm = {
@@ -176,9 +173,9 @@ export class Staking2Screen extends BaseScreen {
 
     getAvailableForStakingAmount: async (): Promise<number> => {
       const textContainingAvailableForStakingAmount = await this.stakeForm._availableForStaking.textContent();
-      if (!textContainingAvailableForStakingAmount) throw new Error(`Cannot find available for staking amount hint`);
-      return Number(textContainingAvailableForStakingAmount.replace(/[^0-9.]/g, ""));
-    }
+      if (!textContainingAvailableForStakingAmount) throw new Error('Cannot find available for staking amount hint');
+      return Number(textContainingAvailableForStakingAmount.replace(/[^0-9.]/g, ''));
+    },
   }
 
   cleanup = async (): Promise<void> => {
@@ -202,5 +199,4 @@ export class Staking2Screen extends BaseScreen {
       await this.stakeForm.successfulWithdrawMessage.waitFor();
     }
   }
-
 }

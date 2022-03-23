@@ -1,23 +1,13 @@
-// Tables load
-
-// [🚗 ] split
-
-// stake
-// withdrawals
-// rewards
-
-
 import { velasNative } from '@velas/velas-chain-test-wrapper';
 import {
-  assert, data, expect, helpers, test, walletURL,
+  data, expect, helpers, test, walletURL,
 } from '../../common-test-exports';
-import { AuthScreen, DAppsScreen, Staking2Screen, WalletsScreen } from '../../screens';
+import { AuthScreen, Staking2Screen, WalletsScreen } from '../../screens';
 import { log } from '../../tools/logger';
 
 let auth: AuthScreen;
 let wallets: WalletsScreen;
 let staking: Staking2Screen;
-let dApps: DAppsScreen;
 
 test.describe('Staking', () => {
   test.beforeAll(async () => {
@@ -39,7 +29,6 @@ test.describe('Staking', () => {
     auth = new AuthScreen(page);
     wallets = new WalletsScreen(page);
     staking = new Staking2Screen(page);
-    dApps = new DAppsScreen(page);
     await page.goto(walletURL);
   });
 
@@ -59,7 +48,6 @@ test.describe('Staking', () => {
       await expect(staking.validatorsList.validatorName.first()).toBeVisible();
     });
 
-
     test('sorting', async () => {
       await auth.fastLogin(data.wallets.staking.withoutStakeAccounts);
       await wallets.openMenu('staking');
@@ -73,13 +61,11 @@ test.describe('Staking', () => {
       await staking.validatorsList.sortBy('total staked');
       await staking.validatorsList.totalStaked.first().waitFor();
       let totalStakes = await staking.validatorsList.totalStaked.allInnerTexts();
-      totalStakes = totalStakes.map(stake => stake.split(' VLX')[0]);
-      expect(totalStakes).toEqual([...totalStakes].sort(function (a, b) { return Number(a) - Number(b) }));
+      totalStakes = totalStakes.map((stake) => stake.split(' VLX')[0]);
+      expect(totalStakes).toEqual([...totalStakes].sort((a, b) => Number(a) - Number(b)));
     });
 
-    // name, address
-    // identity - only on prod
-    test.only('search', async ({ page }) => {
+    test('search', async () => {
       await staking.goto({ network: 'mainnet' });
       await auth.fastLogin(data.wallets.staking.withoutStakeAccounts);
       await wallets.openMenu('staking');
@@ -93,23 +79,23 @@ test.describe('Staking', () => {
 
       // address
       await staking.search.open.click();
-      await expect(staking.search.getSearchResultItemWithText("Velas Validator Node")).not.toBeVisible();
+      await expect(staking.search.getSearchResultItemWithText('Velas Validator Node')).not.toBeVisible();
       await staking.search.input.fill('DgmRwYK5tNLKeCSk6a4zpnwXSw3RdgMDTfAU1x6iqL3g');
-      await expect(staking.search.getSearchResultItemWithText("Velas Validator Node")).toBeVisible();
+      await expect(staking.search.getSearchResultItemWithText('Velas Validator Node')).toBeVisible();
       await staking.search.cancel.click();
 
       // name (case insensitive)
       await staking.search.open.click();
-      await expect(staking.search.getSearchResultItemWithText("BlueZilla.vc")).not.toBeVisible();
+      await expect(staking.search.getSearchResultItemWithText('BlueZilla.vc')).not.toBeVisible();
       await staking.search.input.fill('BlueZilla.vc');
-      await expect(staking.search.getSearchResultItemWithText("BlueZilla.vc")).toBeVisible();
+      await expect(staking.search.getSearchResultItemWithText('BlueZilla.vc')).toBeVisible();
       await staking.search.cancel.click();
 
       // identity (type only part of string)
       await staking.search.open.click();
-      await expect(staking.search.getSearchResultItemWithText("VelasPad.io")).not.toBeVisible();
+      await expect(staking.search.getSearchResultItemWithText('VelasPad.io')).not.toBeVisible();
       await staking.search.input.fill('HdCn5cV2Cugcb2XgpCR3Uu6FcdTAyJw');
-      await expect(staking.search.getSearchResultItemWithText("VelasPad.io")).toBeVisible();
+      await expect(staking.search.getSearchResultItemWithText('VelasPad.io')).toBeVisible();
       await staking.search.cancel.click();
     });
   });
@@ -161,7 +147,7 @@ test.describe('Staking', () => {
       await staking.validator.waitForStakeValueUpdate({ fromValue: '1.10', toValue: '1.30' });
     });
 
-    test('request withdraw', async () => {
+    test('request withdraw (2 stakes from one validator)', async () => {
       await auth.loginByRestoringSeed(data.wallets.staking.staker2_1.seed);
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
@@ -233,35 +219,31 @@ test.describe('Staking', () => {
 
       expect(Number(inputValue)).toEqual(availableForStakingAmount - 1);
     });
+
+    test('copy validator address', async ({ page }) => {
+      await auth.loginByRestoringSeed(data.wallets.staking.withoutStakeAccounts.seed);
+      await wallets.openMenu('staking');
+      await staking.waitForLoaded();
+
+      await staking.validatorsList.validator.first().click();
+
+      const copiedAddress = await staking.validator.copyAddress();
+
+      expect(copiedAddress).toHaveLength(44);
+      await expect(page.locator('#message', { hasText: 'Copied' })).toBeVisible();
+    });
   });
 
-  // test.only('EPOCH', async () => {
-  //   const epochinfo = await velasNative.getEpochInfo();
-  //   log.warn(epochinfo);
-  // });
+  test('stake with conversion (ENM > Native)', async ({ page }) => {
+    await auth.loginByRestoringSeed(data.wallets.staking.stakerEVM.seed);
+    await wallets.openMenu('staking');
+    await staking.waitForLoaded();
 
-  // stake with conversion - gets from EVM
+    await staking.validatorsList.validator.first().click();
+    await staking.validator.notStaked.stakeButton.click();
+    await staking.stakeForm.amountInput.fill('13.13');
+    await staking.stakeForm.nextButton.click();
 
-  // test('withdraw 2 or more stakes from one validator', async ({ page }) => {
-  //   // stake 1 vlx, stake 1 vlx again, withdraw 2 vlx
-  // });
-
-  // test('withdraw', async ({ page }) => {
-  // });
-
-
-  // test('copy validator address', async ({ page }) => {
-  //   // 3g3bs7co7NKChsSQeqkPYcPJMyKdQbwJ3qoT1EQBUdj2
-  // });
-
-  // пополнять акк на рандомное значение баланса
-
-
-
-  // test('', async ({ page }) => {
-  // });
-
-  // test('', async ({ page }) => {
-  // });
-
+    await expect(page.locator('"Convert 11.13 VLX EVM to VLX Native"')).toBeVisible();
+  });
 });

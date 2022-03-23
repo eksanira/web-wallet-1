@@ -2,7 +2,9 @@ import { velasNative } from '@velas/velas-chain-test-wrapper';
 import {
   assert, data, expect, helpers, test, walletURL,
 } from '../../common-test-exports';
-import { AuthScreen, DAppsScreen, StakingScreen, WalletsScreen } from '../../screens';
+import {
+  AuthScreen, DAppsScreen, StakingScreen, WalletsScreen,
+} from '../../screens';
 
 let auth: AuthScreen;
 let wallets: WalletsScreen;
@@ -28,7 +30,7 @@ test.describe('Staking', () => {
     const stakingAmount = 5;
     test('Cleanup beforeall', async ({ page }) => {
       if (await page.isVisible('button[disabled]')) {
-        throw new Error(`There are stakes in warm up or cool down perios. Test suite could not be continued.`);
+        throw new Error('There are stakes in warm up or cool down perios. Test suite could not be continued.');
       }
       await staking.cleanup.stakesToUndelegate();
       await staking.cleanup.stakesToWithdraw();
@@ -97,7 +99,7 @@ test.describe('Staking', () => {
       assert.equal(stakeAccOnBlockchain.state, 'activating');
 
       // postcondition - refresh until delegated stake becomes undelegated
-      
+
       // let undelegateButtonAppears = false;
       // const startTime = new Date().getTime();
       // while (!undelegateButtonAppears) {
