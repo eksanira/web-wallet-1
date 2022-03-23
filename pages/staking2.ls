@@ -226,6 +226,7 @@ staking2.init = ({store, web3t}, cb)->
         network: store.current.network,
         nativePrivateKey: wallet_native.privateKey,
         fetchAccountsFromBackend: no
+        refresh: yes
     }
 
 
