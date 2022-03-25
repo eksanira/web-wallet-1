@@ -28,7 +28,12 @@ jobs:
           path: .compiled-ssr/web3t
           ref: testnet
 
-      - name: try to checkout web3t, the same branch as JsWallet
+      - name: get PR data
+        id: pr-data
+        uses: velas/get-pull-request-data@master
+
+      - name: try to checkout the same branch for web3t
+        if: contains(steps.pr-data.outputs.title, 'web3t')
         uses: actions/checkout@v2
         continue-on-error: true
         with:
@@ -48,10 +53,6 @@ jobs:
       - name: get npm version
         run: npm -v
 
-      # - uses: joschi/setup-jdk@v2
-      #   with:
-      #     java-version: '8'
-
       - name: install web3t modules
         working-directory: .compiled-ssr/web3t
         run: npm i
@@ -62,6 +63,20 @@ jobs:
       - name: copy web3 side by side to wallet
         working-directory: ../
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
+
+      - name: check dev domain presence is repo
+        working-directory: ./
+        run: |
+          grep -Ri ${{secrets.SECRET_DOMAIN}} . \
+          --exclude-dir node_modules \
+          --exclude-dir e2e/node_modules \
+          --exclude-dir .git || exit 0 && \
+          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
+          echo 'The development domain was found in repository code.' && \
+          echo 'See filename(s) above.' && \
+          echo 'Domain is replaced with *** due to security.' && \
+          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
+          exit 13
 
       - name: install wallet modules
         working-directory: ./
@@ -108,51 +123,3 @@ jobs:
             e2e/test-report/
             e2e/test-report-swap/
           retention-days: 7
-
-      # - name: generate allure report
-      #   if: always()
-      #   run: npm run allure:generate
-
-      # - uses: actions/upload-artifact@master
-      #   if: always()
-      #   with:
-      #     name: allure-results
-      #     path: e2e/allure-results
-      #     retention-days: 7
-
-      # - name: get allure history
-      #   uses: actions/checkout@v2
-      #   if: always()
-      #   continue-on-error: true
-      #   with:
-      #     ref: gh-pages
-      #     path: gh-pages
-
-      # - name: generates allure report with history
-      #   uses: simple-elf/allure-report-action@master
-      #   if: always()
-      #   id: allure-report
-      #   with:
-      #     allure_results: e2e/allure-results
-      #     gh_pages: gh-pages
-      #     allure_report: allure-report
-      #     allure_history: allure-history
-      #     keep_reports: 20
-
-      # - name: deploy report to Github pages
-      #   if: always()
-      #   uses: peaceiris/actions-gh-pages@v2
-      #   env:
-      #     PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     PUBLISH_BRANCH: gh-pages
-      #     PUBLISH_DIR: allure-history
-
-      # - name: post the link to the report
-      #   if: always()
-      #   uses: Sibz/github-status-action@v1
-      #   with:
-      #       authToken: ${{secrets.GITHUB_TOKEN}}
-      #       context: 'Test report'
-      #       state: 'success'
-      #       sha: ${{ github.event.pull_request.head.sha }}
-      #       target_url: https://velas.github.io/JsWallet/${{ github.run_number }}
