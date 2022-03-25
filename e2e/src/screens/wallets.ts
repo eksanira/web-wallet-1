@@ -39,7 +39,6 @@ export class WalletsScreen extends BaseScreen {
 
   balanceAmount = this.page.locator('.amount:not(.placeholder)');
 
-
   lockButton = this.page.locator('.menu-item.bottom');
 
   manageWalletsModal = this.page.locator('.manage-account');
@@ -219,7 +218,7 @@ export class WalletsScreen extends BaseScreen {
     await this.addToken(fromToken);
     await this.addToken(toToken);
     await this.selectWallet(fromToken);
-    await this.swapButton.click({timeout: 15000});
+    await this.swapButton.click({ timeout: 15000 });
     await this.swapForm.networkSelector.waitFor({ timeout: 20000 });
     await this.swapActions.chooseDestinationNetwork(toToken);
 

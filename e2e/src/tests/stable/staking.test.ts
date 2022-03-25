@@ -2,11 +2,14 @@ import { velasNative } from '@velas/velas-chain-test-wrapper';
 import {
   assert, data, expect, helpers, test, walletURL,
 } from '../../common-test-exports';
-import { AuthScreen, StakingScreen, WalletsScreen } from '../../screens';
+import {
+  AuthScreen, DAppsScreen, StakingScreen, WalletsScreen,
+} from '../../screens';
 
 let auth: AuthScreen;
 let wallets: WalletsScreen;
 let staking: StakingScreen;
+let dApps: DAppsScreen;
 
 // TODO: validators loading takes too much time
 test.describe('Staking', () => {
@@ -14,9 +17,11 @@ test.describe('Staking', () => {
     auth = new AuthScreen(page);
     wallets = new WalletsScreen(page);
     staking = new StakingScreen(page);
+    dApps = new DAppsScreen(page);
     await page.goto(walletURL);
     await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
-    await wallets.openMenu('staking');
+    await wallets.openMenu('dApps');
+    await dApps.oldStaking.click();
     await staking.waitForLoaded();
   });
 
@@ -25,7 +30,7 @@ test.describe('Staking', () => {
     const stakingAmount = 5;
     test('Cleanup beforeall', async ({ page }) => {
       if (await page.isVisible('button[disabled]')) {
-        throw new Error(`There are stakes in warm up or cool down perios. Test suite could not be continued.`);
+        throw new Error('There are stakes in warm up or cool down perios. Test suite could not be continued.');
       }
       await staking.cleanup.stakesToUndelegate();
       await staking.cleanup.stakesToWithdraw();
@@ -94,7 +99,7 @@ test.describe('Staking', () => {
       assert.equal(stakeAccOnBlockchain.state, 'activating');
 
       // postcondition - refresh until delegated stake becomes undelegated
-      
+
       // let undelegateButtonAppears = false;
       // const startTime = new Date().getTime();
       // while (!undelegateButtonAppears) {

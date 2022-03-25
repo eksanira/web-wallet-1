@@ -1,7 +1,8 @@
 import { Locator } from '@playwright/test';
 import { Browser, BrowserContext, Page } from '../common-test-exports';
+import { Environment, getWalletURL, Network } from '../config';
 
-type MenuItem = 'wallets' | 'staking' | 'search' | 'settings' | 'support' | 'testnet';
+type MenuItem = 'wallets' | 'staking' | 'dApps' | 'settings' | 'support' | 'testnet';
 
 export abstract class BaseScreen {
   context: BrowserContext;
@@ -35,8 +36,9 @@ export abstract class BaseScreen {
 
   async openMenu(item: MenuItem): Promise<void> {
     // add new type property to correspond html classname (staking menu item has class "delegate")
-    let menuItemName: MenuItem | 'delegate' = item;
+    let menuItemName: MenuItem | 'delegate' | 'search' = item;
     if (item === 'staking') menuItemName = 'delegate';
+    if (item === 'dApps') menuItemName = 'search';
     await this.page.click(`#menu-${menuItemName}`);
   }
 
@@ -62,5 +64,15 @@ export abstract class BaseScreen {
     }
 
     if (isElementVisible) throw new Error(`Element with selector "${selector}" has not disappeared in ${totalWaitTime / 1000} seconds`);
+  }
+
+  async setSeedToLocalStorage(encryptedSeed: string): Promise<void> {
+    await this.page.evaluate((encryptedSeed) => {
+      localStorage.setItem('sseed', encryptedSeed);
+    }, encryptedSeed);
+  }
+
+  async goto(params?: { environment?: Environment, network?: Network, host?: string }): Promise<void> {
+    await this.page.goto(getWalletURL({ environment: params?.environment, network: params?.network }));
   }
 }
