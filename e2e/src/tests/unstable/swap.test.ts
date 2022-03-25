@@ -50,10 +50,18 @@ test.describe('Swap', () => {
       await evmchain.waitForTx({ txHash, testName: test.info().title });
     });
 
-    test('USDT Velas > USDT', async () => {
-      await wallets.swapTokens('token-vlx_usdt', 'token-usdt_erc20', 0.001);
+    // not enough funds
+    test.skip('USDT Velas > USDT', async () => {
+      await wallets.swapTokens('token-vlx_usdt', 'token-usdt_erc20', 0.1);
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
+    });
+    
+    // not enough funds
+    test.skip('USDT Velas > USDT: min amount per tx error', async ({ page }) => {
+      await wallets.swapTokens('token-vlx_usdt', 'token-usdt_erc20', 0.09, { confirm: false });
+      await (page.locator('button :text("swap")')).click();
+      await page.locator('" Min amount per transaction is 0.1 USDT"').waitFor();
     });
 
     test.skip('USDC Velas > USDC', async () => {
@@ -96,8 +104,9 @@ test.describe('Swap', () => {
       await ropsten.waitForTx({ txHash, testName: test.info().title });
     });
 
-    test('USDT > USDT Velas', async () => {
-      await wallets.swapTokens('token-usdt_erc20', 'token-vlx_usdt', 0.001);
+    // not enough funds
+    test.skip('USDT > USDT Velas', async () => {
+      await wallets.swapTokens('token-usdt_erc20', 'token-vlx_usdt', 0.012);
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title }));
     });

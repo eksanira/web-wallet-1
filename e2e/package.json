@@ -7,7 +7,7 @@
     "allure:generate": "npx allure generate ./allure-results --clean",
     "allure:open": "npx allure open ./allure-report",
     "allure:serve": "npx allure serve",
-    "test": "npm run test:stable && npm run test:swap",
+    "test": "npm run test:swap && npm run test:stable",
     "test:stable": "npx playwright test tests/stable/",
     "test:swap": "PLAYWRIGHT_HTML_REPORT=test-report-swap npx playwright test tests/unstable/swap --output test-results-swap",
     "blockchain-health-check": "npx ts-node src/tests/blockchain-health-check.ts",
