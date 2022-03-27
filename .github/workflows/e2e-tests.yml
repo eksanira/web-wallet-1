@@ -10,9 +10,6 @@ concurrency:
 jobs:
   swap-tests-on-feature-branch:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./e2e
     steps:
       - name: checkout JsWallet
         uses: actions/checkout@v2
@@ -48,11 +45,6 @@ jobs:
       - name: install latest npm
         run: npm install -g npm@latest
 
-      - name: get node version
-        run: node -v
-      - name: get npm version
-        run: npm -v
-
       - name: install web3t modules
         working-directory: .compiled-ssr/web3t
         run: npm i
@@ -64,55 +56,31 @@ jobs:
         working-directory: ../
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
 
-      - name: check dev domain presence is repo
-        working-directory: ./
-        run: |
-          grep -Ri ${{secrets.SECRET_DOMAIN}} . \
-          --exclude-dir node_modules \
-          --exclude-dir e2e/node_modules \
-          --exclude-dir .git || exit 0 && \
-          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
-          echo 'The development domain was found in repository code.' && \
-          echo 'See filename(s) above.' && \
-          echo 'Domain is replaced with *** due to security.' && \
-          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
-          exit 13
-
       - name: install wallet modules
-        working-directory: ./
         run: npm i
-
-      - name: delete wallet build cache
-        working-directory: ./
-        run: rm -rf ./.compiled
 
       - name: build wallet
-        working-directory: ./
         run: npm run wallet-build
 
+#####
+      - name: check token providers in default.conf
+        run: npm run test:check-token-providers-in-default-conf
+#####
+
       - name: launch wallet
-        working-directory: ./
         run: |
-          npm run wallet-start:no-watch &
-          echo '- - - - - Wallet is started'
+            npm run wallet-start:no-watch &
+            echo '- - - - - Wallet is started'
 
       - name: install test npm modules
+        working-directory: ./e2e
         run: npm i
-
-      - name: check token providers in default.conf
-        working-directory: ./
-        run: npm run test:check-token-providers-in-default-conf
-
-      # - name: balances api health check
-      #   run: CI=true npm run balances-api-health-check
-
-      # - name: balances api health check
-      #   run: CI=true npm run balances-api-health-check
 
       - name: check that wallet has started
         run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check outputs of build/run wallet commands" && exit 1)
 
       - name: run tests swap
+        working-directory: ./e2e
         run: CI=true npm run test:swap
 
       - name: upload artifacts
@@ -122,14 +90,10 @@ jobs:
           name: test-report-swap
           path: |
             e2e/test-report-swap/
-          retention-days: 6
+          retention-days: 5
   
   stable-tests-on-feature-branch:
     runs-on: ubuntu-latest
-    # needs: 'swap-tests-on-feature-branch'
-    defaults:
-      run:
-        working-directory: ./e2e
     steps:
       - name: checkout JsWallet
         uses: actions/checkout@v2
@@ -165,11 +129,6 @@ jobs:
       - name: install latest npm
         run: npm install -g npm@latest
 
-      - name: get node version
-        run: node -v
-      - name: get npm version
-        run: npm -v
-
       - name: install web3t modules
         working-directory: .compiled-ssr/web3t
         run: npm i
@@ -182,34 +141,25 @@ jobs:
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
 
       - name: install wallet modules
-        working-directory: ./
         run: npm i
 
-      - name: delete wallet build cache
-        working-directory: ./
-        run: rm -rf ./.compiled
-
       - name: build wallet
-        working-directory: ./
         run: npm run wallet-build
 
       - name: launch wallet
-        working-directory: ./
         run: |
           npm run wallet-start:no-watch &
           echo '- - - - - Wallet is started'
 
       - name: install test npm modules
+        working-directory: ./e2e
         run: npm i
-
-      - name: check token providers in default.conf
-        working-directory: ./
-        run: npm run test:check-token-providers-in-default-conf
 
       - name: check that wallet has started
         run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check outputs of build/run wallet commands" && exit 1)
 
       - name: run tests stable
+        working-directory: ./e2e
         run: CI=true npm run test:stable
 
       - name: upload artifacts
@@ -219,15 +169,12 @@ jobs:
           name: test-report
           path: |
             e2e/test-report/
-          retention-days: 6
+          retention-days: 5
 
   
   staking-tests-on-feature-branch:
     runs-on: ubuntu-latest
     needs: 'swap-tests-on-feature-branch'
-    defaults:
-      run:
-        working-directory: ./e2e
     steps:
       - name: checkout JsWallet
         uses: actions/checkout@v2
@@ -263,11 +210,6 @@ jobs:
       - name: install latest npm
         run: npm install -g npm@latest
 
-      - name: get node version
-        run: node -v
-      - name: get npm version
-        run: npm -v
-
       - name: install web3t modules
         working-directory: .compiled-ssr/web3t
         run: npm i
@@ -280,34 +222,25 @@ jobs:
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
 
       - name: install wallet modules
-        working-directory: ./
         run: npm i
 
-      - name: delete wallet build cache
-        working-directory: ./
-        run: rm -rf ./.compiled
-
       - name: build wallet
-        working-directory: ./
         run: npm run wallet-build
 
       - name: launch wallet
-        working-directory: ./
         run: |
           npm run wallet-start:no-watch &
           echo '- - - - - Wallet is started'
 
       - name: install test npm modules
+        working-directory: ./e2e
         run: npm i
-
-      - name: check token providers in default.conf
-        working-directory: ./
-        run: npm run test:check-token-providers-in-default-conf
 
       - name: check that wallet has started
         run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check outputs of build/run wallet commands" && exit 1)
 
       - name: run tests staking
+        working-directory: ./e2e
         run: CI=true npm run test:staking
 
       - name: upload artifacts
@@ -317,4 +250,11 @@ jobs:
           name: test-report-staking
           path: |
             e2e/test-report-staking/
-          retention-days: 6
+          retention-days: 5
+
+
+# - name: balances api health check
+#   run: CI=true npm run balances-api-health-check
+
+# - name: balances api health check
+#   run: CI=true npm run balances-api-health-check

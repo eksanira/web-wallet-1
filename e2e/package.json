@@ -4,7 +4,7 @@
   "description": "Tests for Velas Wallet",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test:unstable && npm run test:stable",
+    "test": "npm run test:swap && npm run test:staking && npm run test:stable",
     "test:stable": "npx playwright test tests/stable/",
     "test:staking": "PLAYWRIGHT_HTML_REPORT=test-report-staking npx playwright test tests/staking/",
     "test:swap": "PLAYWRIGHT_HTML_REPORT=test-report-swap npx playwright test tests/swap/",
