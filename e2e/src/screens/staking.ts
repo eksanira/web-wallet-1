@@ -46,11 +46,11 @@ export class StakingScreen extends BaseScreen {
     clickUndelegate: async (): Promise<void> => {
       try {
         await this.accounts.undelegateButton.first().click();
-        log.debug(`Undelegating stake`);
+        log.debug('Undelegating stake');
       } catch (e) {
         throw new Error(`No stakes available to undelegate. Please delegate first\n${e}`);
       }
-    }
+    },
   };
 
   stakeAccount = {
@@ -69,6 +69,7 @@ export class StakingScreen extends BaseScreen {
   };
 
   createStakingAccountButton = this.page.locator('#create-staking-account button span:text(" Create Account")');
+
   creatingStakingAccountLoader = this.page.locator('"Creating staking account..."');
 
   createStakingAccountForm = {
@@ -78,7 +79,7 @@ export class StakingScreen extends BaseScreen {
       const maxAmountValue = await this.createStakingAccountForm.amount.getAttribute('value');
       const maxAmount = Number(maxAmountValue?.replace(',', ''));
       return maxAmount;
-    }
+    },
   };
 
   async waitForStakingAccountCreation() {
@@ -88,7 +89,7 @@ export class StakingScreen extends BaseScreen {
     while (accountCreationIsInProgress && (new Date().getTime() - startTime < 25000)) {
       await this.page.waitForTimeout(100);
       accountCreationIsInProgress = await this.creatingStakingAccountLoader.isVisible();
-    };
+    }
     log.debug(`Staking account was created. It took ${((new Date().getTime() - startTime) / 1000).toFixed()} seconds`);
     await this.createStakingAccountButton.waitFor();
   }
@@ -366,7 +367,7 @@ export class StakingScreen extends BaseScreen {
 
         // refresh stakes
         await this.page.waitForTimeout(15000);
-        await this.refreshStakes()
+        await this.refreshStakes();
         await this.page.waitForSelector('#staking-accounts h3:text("LOADING")');
         await this.waitForLoaded();
       }
@@ -396,7 +397,7 @@ export class StakingScreen extends BaseScreen {
 
         // refresh stakes
         await this.page.waitForTimeout(15000);
-        await this.refreshStakes()
+        await this.refreshStakes();
         await this.page.waitForSelector('#staking-accounts h3:text("LOADING")');
         await this.waitForLoaded();
 

@@ -273,12 +273,12 @@ module.exports = (store, web3t)->
     show-class =
         if store.menu.show then \show else \ ""
     show = ->
-        return if store.current.page is \account_details
+        return if store.current.page in  <[ account_details staking2 ]>
         store.menu.show = not store.menu.show
     disabled-class = if store.current.refreshing is yes or store.staking.accounts-are-loading is yes then "disabled" else ""
     create-account-position = (index)->        
         change-account = ->
-            return if store.current.page is \account_details
+            return if store.current.page in  <[ account_details staking2 ]>
             return if store.current.refreshing is yes or store.staking.accounts-are-loading is yes
             if store.current.account-index is index 
                 store.current.switch-account = no

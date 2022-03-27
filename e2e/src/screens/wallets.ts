@@ -39,7 +39,6 @@ export class WalletsScreen extends BaseScreen {
 
   balanceAmount = this.page.locator('.amount:not(.placeholder)');
 
-
   lockButton = this.page.locator('.menu-item.bottom');
 
   manageWalletsModal = this.page.locator('.manage-account');
@@ -385,6 +384,7 @@ export class WalletsScreen extends BaseScreen {
     );
     await this.waitForSelectorDisappears('.switch-menu');
     await this.page.fill('#contract-address', `${contract}`);
+    await this.sendButton.waitFor({ timeout: 15000 });
     await this.sendButton.click();
 
     while (await this.addTokenForm.pageLoader.isVisible()) {

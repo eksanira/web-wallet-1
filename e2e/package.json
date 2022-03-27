@@ -4,12 +4,10 @@
   "description": "Tests for Velas Wallet",
   "main": "index.js",
   "scripts": {
-    "allure:generate": "npx allure generate ./allure-results --clean",
-    "allure:open": "npx allure open ./allure-report",
-    "allure:serve": "npx allure serve",
-    "test": "npm run test:swap && npm run test:stable",
+    "test": "npm run test:unstable && npm run test:stable",
     "test:stable": "npx playwright test tests/stable/",
-    "test:swap": "PLAYWRIGHT_HTML_REPORT=test-report-swap npx playwright test tests/unstable/swap --output test-results-swap",
+    "test:staking": "PLAYWRIGHT_HTML_REPORT=test-report-staking npx playwright test tests/staking/",
+    "test:swap": "PLAYWRIGHT_HTML_REPORT=test-report-swap npx playwright test tests/swap/",
     "blockchain-health-check": "npx ts-node src/tests/blockchain-health-check.ts",
     "balances-api-health-check": "npx ts-node src/tests/balances-api-healcheck.ts",
     "prod-monitoring-test": "NETWORK=mainnet ENVIRONMENT=prod npx playwright test monitoring",
@@ -30,8 +28,6 @@
     "@types/node": "^15.12.1",
     "@typescript-eslint/eslint-plugin": "^5.10.0",
     "@typescript-eslint/parser": "^5.10.0",
-    "allure-commandline": "^2.13.8",
-    "allure-playwright": "^2.0.0-beta.13",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-google": "^0.14.0",
@@ -41,13 +37,12 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
-    "@playwright/test": "^1.15.0",
+    "@playwright/test": "^1.20.0",
     "@velas/velas-chain-test-wrapper": "https://github.com/velas/velas-chain-test-wrapper.git",
     "axios": "^0.21.1",
     "chai": "^4.3.4",
-    "playwright-chromium": "^1.16.3",
-    "playwright-core": "^1.16.3",
-    "tracer": "^1.1.4",
-    "ts-node": "^10.0.0"
+    "playwright": "^1.20.0",
+    "playwright-core": "^1.20.0",
+    "tracer": "^1.1.4"
   }
 }

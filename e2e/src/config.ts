@@ -13,4 +13,10 @@ export const config = {
   headless: !!process.env.CI || !!process.env.HEADLESS || false,
 };
 
-export const walletURL = `${data.walletHosts[config.environment]}?network=${config.network}`;
+export function getWalletURL(params?: { environment?: Environment, network?: Network, host?: string }) {
+  const environment = params?.environment || config.environment;
+  const network = params?.network || config.network;
+  const host = params?.host || data.walletHosts[environment];
+  return `${host}?network=${network}`;
+}
+export const walletURL = getWalletURL();

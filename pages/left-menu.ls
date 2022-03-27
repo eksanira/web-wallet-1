@@ -253,7 +253,7 @@ module.exports = (store, web3t)->
     settings = if store.current.page is \settings then \active else \not-active
     filestorage = if store.current.page is \filestorage then \active else \not-active
     staking = if store.current.page is \staking then \active else \not-active
-    staking-active = if store.current.page is \validators then \active else \not-active
+    staking-active = if store.current.page is \staking2 then \active else \not-active
     info-active = if store.current.page is \info then \active else \not-active
     resources = if store.current.page is \resources then \active else \not-active
     faq = if store.current.page is \faq then \active else \not-active
@@ -317,12 +317,15 @@ module.exports = (store, web3t)->
     goto-file-storage = ->
         navigate store, web3t, \filestorage
     goto-staking = ->
-        navigate store, web3t, \staking
+        navigate store, web3t, \staking2
+        store.menu.show = no
+    goto-choose-staker2 = ->
+        navigate store, web3t, \staking2
         store.menu.show = no
     goto-resources = ->
         navigate store, web3t, \resources
     goto-choose-staker = ->
-        navigate store, web3t, \validators
+        navigate store, web3t, \staking2
         store.menu.show = no
     goto-info = ->
         navigate store, web3t, \info
@@ -366,25 +369,22 @@ module.exports = (store, web3t)->
         menu { store, web3t }
         .pug.menu-items
             if store.preference.settings-visible is yes
-                .menu-item.pug(on-click=wallet style=icon-style class="#{wallets}" id="menu-wallets")
-                    span.arrow_box.pug #{lang.your-wallets}
-                    img.pug(src="#{icons.wallet}" style=wallet-icon)
-            if store.preference.settings-visible is yes
-                .menu-item.pug(on-click=goto-choose-staker style=icon-style class="#{staking-active}" id="menu-delegate")
-                    span.arrow_box.pug #{lang.staking}
-                    img.pug(src="#{icons.staking}"style=icon-color)
-            if store.preference.settings-visible is yes
-                .menu-item.pug(on-click=goto-search style=icon-style class="#{search}" id="menu-search")
-                    span.arrow_box.pug #{lang.search}
-                    img.pug(src="#{icons.search}" style=icon-color)
-            if store.preference.settings-visible is yes
-                .menu-item.pug(on-click=goto-settings style=icon-style class="#{settings}" id="menu-settings")
-                    span.arrow_box.pug #{lang.settings}
-                    img.pug(src="#{icons.setting}" style=icon-color)
-            if store.preference.settings-visible is yes
-                .menu-item.pug(on-click=goto-support style=icon-style id="menu-support")
-                    span.arrow_box.pug #{lang.support}
-                    img.pug(src="#{icons.support}" style=icon-color)
+                .pug.left-menu-items
+                    .menu-item.pug(on-click=wallet style=icon-style class="#{wallets}" id="menu-wallets")
+                        span.arrow_box.pug #{lang.your-wallets}
+                        img.pug(src="#{icons.wallet}" style=wallet-icon)
+                    .menu-item.pug(on-click=goto-choose-staker style=icon-style class="#{staking-active}" id="menu-delegate")
+                        span.arrow_box.pug #{lang.staking}
+                        img.pug(src="#{icons.staking}"style=icon-color)
+                    .menu-item.pug(on-click=goto-search style=icon-style class="#{search}" id="menu-search")
+                        span.arrow_box.pug #{lang.dapps}
+                        img.pug(src="#{icons.search}" style=icon-color)
+                    .menu-item.pug(on-click=goto-settings style=icon-style class="#{settings}" id="menu-settings")
+                        span.arrow_box.pug #{lang.settings}
+                        img.pug(src="#{icons.setting}" style=icon-color)
+                    .menu-item.pug(on-click=goto-support style=icon-style id="menu-support")
+                        span.arrow_box.pug #{lang.support}
+                        img.pug(src="#{icons.support}" style=icon-color)
             if store.current.network is \devnet
                 .menu-item.pug.testnet(on-click=goto-mainnet style=icon-style class="#{settings}" id="menu-devnet")
                     span.arrow_box.pug Devnet

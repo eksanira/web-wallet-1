@@ -1,5 +1,5 @@
 import {
-  AuthScreen, SearchScreen, SettingsScreen, StakingScreen, WalletsScreen,
+  AuthScreen, SearchScreen, SettingsScreen, Staking2Screen, WalletsScreen,
 } from '../../screens';
 import {
   assert, data, test, walletURL,
@@ -9,7 +9,7 @@ let wallets: WalletsScreen;
 let auth: AuthScreen;
 let settings: SettingsScreen;
 let search: SearchScreen;
-let staking: StakingScreen;
+let staking: Staking2Screen;
 
 test.describe.parallel('Navigation', () => {
   test.beforeEach(async ({ page }) => {
@@ -17,12 +17,12 @@ test.describe.parallel('Navigation', () => {
     settings = new SettingsScreen(page);
     auth = new AuthScreen(page);
     search = new SearchScreen(page);
-    staking = new StakingScreen(page);
+    staking = new Staking2Screen(page);
     await page.goto(walletURL, { waitUntil: 'networkidle' });
     await auth.loginByRestoringSeed(data.wallets.login.seed);
   });
 
-  test('Navigate with back button in header', async () => {
+  test('Navigate with back button in header', async ({ page }) => {
     await wallets.waitForWalletsDataLoaded();
 
     const screens = ['settings', 'search', 'staking', 'swap', 'send'];
@@ -31,7 +31,7 @@ test.describe.parallel('Navigation', () => {
       const screen = screens[i];
 
       // check that navigation doesn't get broken by locking screen
-      await wallets.lockButton.click();
+      await page.reload();
       await auth.pinForLoggedOutAcc.typeAndConfirm('111222');
       assert.isTrue(await auth.isLoggedIn());
 
@@ -43,14 +43,14 @@ test.describe.parallel('Navigation', () => {
 
         case 'search':
           await wallets.openMenu('wallets');
-          await wallets.openMenu('search');
+          await wallets.openMenu('dApps');
           await search.dapps.waitFor();
           break;
 
         case 'staking':
           await wallets.openMenu('wallets');
           await wallets.openMenu('staking');
-          await staking.waitForLoaded();
+          await staking.container.waitFor();
           break;
 
         case 'swap':
@@ -66,10 +66,6 @@ test.describe.parallel('Navigation', () => {
           assert.isFalse(await wallets.swapForm.networkSelector.isVisible());
           break;
       }
-
-      await wallets.backButton.click();
-      await wallets.waitForWalletsDataLoaded();
-      assert.isTrue(await wallets.walletItemInWalletsList.first().isVisible());
     }
   });
 
