@@ -1,5 +1,4 @@
 import { velasNative } from '@velas/velas-chain-test-wrapper';
-import { expect } from 'chai';
 import {
   bscchain, evmchain, hecochain, ropsten,
 } from '../../api/explorers-api';

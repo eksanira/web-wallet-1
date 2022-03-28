@@ -85,7 +85,7 @@ test.describe('Staking', () => {
       await staking.delegateTo.selectValidator.first().click();
       await staking.modals.confirmPrompt();
       const alert = page.locator('.confirmation .text');
-      await alert.waitFor({ timeout: 20000 });
+      await alert.waitFor({ timeout: 25000 });
       const alertText = await alert.textContent();
       assert.include(alertText, 'Funds delegated to');
       await staking.modals.clickOK();

@@ -210,6 +210,8 @@ export class Staking2Screen extends BaseScreen {
 
   cleanup = async (): Promise<void> => {
     // withdraw stake in case we have active one
+    await this.waitForLoaded();
+    await this.page.waitForTimeout(500);
     if (await this.validatorsList.stakedValidatorsAmountIsVisible(1)) {
       await this.validatorsList.validator.first().click();
       await this.validator.staked.stakeMoreButton.waitFor();
@@ -226,7 +228,7 @@ export class Staking2Screen extends BaseScreen {
       // final withdrawal
       await this.validator.tab.withdrawals.click();
       await this.validator.withdrawals.withdrawButton.click();
-      await this.stakeForm.successfulWithdrawMessage.waitFor();
+      await this.stakeForm.successfulWithdrawMessage.waitFor({ timeout: 16000 });
     }
   }
 }
