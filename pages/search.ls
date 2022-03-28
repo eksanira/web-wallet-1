@@ -10,7 +10,6 @@ require! {
     \./switch-account.ls
     \./epoch.ls
     \../icons.ls
-    \./alert-demo.ls
     \../components/burger.ls
 }
 .search
@@ -166,7 +165,7 @@ require! {
         overflow-y: scroll
         scrollbar-width: none
         padding: 0 20px
-        margin-top: 129px
+        margin-top: 40px
         >.panel-content
             width: 50%
             margin-left: 10%
@@ -329,17 +328,14 @@ dapps = (store, web3t)->
     .pug.panel-content
         .pug.section
             .source.pug(on-click=goto-staking)
-                .pug.address Advanced Staking
                 .pug.header Velas Staking
             .pug.description
         .pug.section
             .source.pug(on-click=goto-wallets)
-                .pug.address Download Velas Wallets
                 .pug.header Velas Wallets
             .pug.description For mac, windows, ios, android devices
         .pug.section
             .source.pug(on-click=goto-util)
-                .pug.address #{lang.velas-sphere}
                 .pug.header Convert VLX2ETH
             .pug.description
 
@@ -422,7 +418,6 @@ search = ({ store, web3t })->
     show-class =
         if store.current.open-menu then \hide else \ ""
     .pug.search
-        alert-demo store, web3t
         .pug.title(style=border-style)
             .pug.header(class="#{show-class}") #{lang.apps}
             .pug.close(on-click=go-back)
@@ -431,38 +426,10 @@ search = ({ store, web3t })->
             epoch store, web3t
             switch-account store, web3t
         .pug.search-input
-            .pug.section(style=border-style3)
-                .title.pug
-                    h2.iron.pug Voogle
-                .description.search-field.pug
-                    .pug.left
-                        input.pug(type='text' style=input-style value="dapps" placeholder="dapps")
-                        .pug.icon
-                            icon \Search, 15
             .pug.section.filter(style=border-style)
                 .title.pug
                 .description.tabs.pug
-                    ul.pug
-                        li.pug(key="active-all" on-click=activate-all class="#{active-all}")
-                            span.icon.pug
-                                icon \Search, 15
-                            span.pug #{lang.all}
-                        li.pug(key="active-dapps" on-click=activate-dapps class="#{active-dapps}")
-                            span.icon.pug
-                                icon \Rocket, 15
-                            span.pug #{lang.dapps}
-                        li.pug(key="active-web" on-click=activate-web class="#{active-web}")
-                            span.icon.pug
-                                icon \Globe, 15
-                            span.pug #{lang.web}
-                        li.pug(key="active-images" on-click=activate-images class="#{active-images}")
-                            span.icon.pug
-                                icon \FileMedia, 15
-                            span.pug #{lang.images}
-                        li.pug(key="active-files" on-click=activate-files class="#{active-files}")
-                            span.icon.pug
-                                icon \FileDirectory, 15
-                            span.pug #{lang.public-files}
+
         .pug.wrapper
             if active-all is \active
                 all store, web3t
