@@ -1004,13 +1004,14 @@ staking-content = (store, web3t)->
     inactiveStakeLabel =
         | store.staking.chosenAccount.status is "activating" => lang.warminUp
         | _ => lang.inactiveStake 
-    { unixTimestamp, epoch, lockup } = store.staking.chosenAccount
-    is-locked = lockup? and lockup.unixTimestamp > moment!.unix!
+    { lockupUnixTimestamp, epoch, lockup } = store.staking.chosenAccount
+    is-locked = lockupUnixTimestamp? and lockupUnixTimestamp > moment!.unix!
+    console.log {}
     date-expires =
-        | is-locked is yes => moment.unix(unixTimestamp).format("MMMM D, YYYY"); 
+        | is-locked is yes => moment.unix(lockupUnixTimestamp).format("MMMM D, YYYY");
         | _ => ""
     time-expires =
-        | is-locked is yes => moment.unix(unixTimestamp).format("hh:mm:ss"); 
+        | is-locked is yes => moment.unix(lockupUnixTimestamp).format("hh:mm:ss");
         | _ => ""  
     lockup-warning-style = 
         padding: "20px"

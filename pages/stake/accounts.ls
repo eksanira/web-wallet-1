@@ -206,7 +206,7 @@ staking-accounts-content = (store, web3t)->
             activationEpoch,
             deactivationEpoch,
             active_stake,
-            unixTimestamp,
+            lockupUnixTimestamp,
             inactive_stake
         } = item
         balance = if rent? then (Math.round((lamports `minus` rent) `div` (10^9)) `times` 100) `div` 100  else "-"
@@ -276,8 +276,8 @@ staking-accounts-content = (store, web3t)->
             store.current.page = \validators
             remove-stake-acc(pubkey)
         now = moment!.unix!        
-        locked-and-can-withdraw = unixTimestamp? and (unixTimestamp <= now)
-        not-locked = not unixTimestamp?
+        locked-and-can-withdraw = lockupUnixTimestamp? and (lockupUnixTimestamp <= now)
+        not-locked = not lockupUnixTimestamp? || +lockupUnixTimestamp is 0 || +lockupUnixTimestamp < now
         can-delegate =
             | has-validator => no
             | _ => yes
@@ -291,10 +291,13 @@ staking-accounts-content = (store, web3t)->
                 button { classes: "action-withdraw", store, text: lang.withdraw, on-click: withdraw, type: \secondary , icon : \arrowLeft, makeDisabled:disabled }
             | _ =>
                 disabled = item.status in <[ deactivating ]>
+                icon =
+                    | not-locked => 'arrowLeft'
+                    | _ => 'lock'
                 if activationEpoch? and deactivationEpoch? and (activationEpoch !== deactivationEpoch)
                     if +activationEpoch < +deactivationEpoch and +deactivationEpoch isnt +max-epoch
                         disabled = yes
-                button { store, classes: "action-undelegate" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon : \arrowLeft, makeDisabled: disabled }
+                button { store, classes: "action-undelegate" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon, makeDisabled: disabled }
         highlighted = if highlight is yes then "highlight" else ""
         tr.pug(class="stake-account-item #{item.status} #{highlighted}" key="#{address}")
             td.pug

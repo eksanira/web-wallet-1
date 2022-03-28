@@ -30,8 +30,8 @@ const config: PlaywrightTestConfig = {
         video: {
           mode: 'retain-on-failure',
           size: {
-            width: 1920,
-            height: 1080,
+            width: 1024,
+            height: 768,
           },
         },
         trace: 'retain-on-failure'

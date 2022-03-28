@@ -181,7 +181,7 @@ export class WalletsScreen extends BaseScreen {
   async waitForWalletsDataLoaded(): Promise<void> {
     await this.page.waitForSelector('.wallet-item .top-left [class=" img"]', {
       state: 'visible',
-      timeout: 35000,
+      timeout: 40000,
     });
     await this.page.waitForTimeout(100);
   }
