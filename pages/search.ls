@@ -419,7 +419,7 @@ search = ({ store, web3t })->
         if store.current.open-menu then \hide else \ ""
     .pug.search
         .pug.title(style=border-style)
-            .pug.header(class="#{show-class}") #{lang.apps}
+            .pug.header(class="#{show-class}") #{lang.dapps}
             .pug.close(on-click=go-back)
                 img.icon-svg.pug(src="#{icons.arrow-left}")
             burger store, web3t
