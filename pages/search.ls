@@ -328,12 +328,12 @@ dapps = (store, web3t)->
     .pug.panel-content
         .pug.section
             .source.pug(on-click=goto-staking)
-                .pug.header Velas Staking
+                .pug.header Velas Staking 1.0
             .pug.description
         .pug.section
             .source.pug(on-click=goto-wallets)
                 .pug.header Velas Wallets
-            .pug.description For mac, windows, ios, android devices
+            .pug.description For Mac, Windows, IOS, Android devices
         .pug.section
             .source.pug(on-click=goto-util)
                 .pug.header Convert VLX2ETH
