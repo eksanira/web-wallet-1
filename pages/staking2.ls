@@ -39,6 +39,8 @@ require! {
     @media(max-width:$ipad)
         width: 100%
         margin: 0
+    .ss
+        background: rgb(22, 26, 66)
     .staking
         top: 40%
         @media(max-width: $mobile)
