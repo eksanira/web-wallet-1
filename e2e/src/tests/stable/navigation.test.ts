@@ -22,7 +22,7 @@ test.describe.parallel('Navigation', () => {
     await auth.loginByRestoringSeed(data.wallets.login.seed);
   });
 
-  test('Navigate with back button in header', async () => {
+  test('Navigate with back button in header', async ({ page }) => {
     await wallets.waitForWalletsDataLoaded();
 
     const screens = ['settings', 'search', 'staking', 'swap', 'send'];
@@ -31,7 +31,7 @@ test.describe.parallel('Navigation', () => {
       const screen = screens[i];
 
       // check that navigation doesn't get broken by locking screen
-      await wallets.lockButton.click();
+      await page.reload();
       await auth.pinForLoggedOutAcc.typeAndConfirm('111222');
       assert.isTrue(await auth.isLoggedIn());
 
@@ -66,10 +66,6 @@ test.describe.parallel('Navigation', () => {
           assert.isFalse(await wallets.swapForm.networkSelector.isVisible());
           break;
       }
-
-      await wallets.backButton.click();
-      await wallets.waitForWalletsDataLoaded();
-      assert.isTrue(await wallets.walletItemInWalletsList.first().isVisible());
     }
   });
 

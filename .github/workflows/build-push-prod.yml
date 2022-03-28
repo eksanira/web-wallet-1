@@ -8,9 +8,6 @@ concurrency:
 jobs:
   e2e-tests-local:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./e2e
     steps:
       - name: checkout JsWallet
         uses: actions/checkout@v2
@@ -31,32 +28,27 @@ jobs:
       - name: copy web3 side by side to wallet
         working-directory: ../
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
-      - name: delete wallet build cache
-        working-directory: ./
-        run: rm -rf ./.compiled
       - name: run wallet
         working-directory: ./
         run: |
           npm run wallet-start:no-watch &
           echo '- - - - - Wallet is started but it takes till 30 seconds to be up - - - - -'
       - name: install modules required for testrun
+        working-directory: ./e2e
         run: npm i
-      - name: clean previous test results
-        run: rm -rf ./test-results/
-      - name: blockchain health check
-        run: CI=true LOG_LEVEL=debug npm run blockchain-health-check
-      - name: balances api health check
-        run: CI=true npm run balances-api-health-check
       - name: run tests
+        working-directory: ./e2e
         run: CI=true LOG_LEVEL=debug npm run test
       - name: upload artifacts
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: test-results
+          name: test-report
           path: |
-            e2e/test-results/
-          retention-days: 7
+            e2e/test-report/
+            e2e/test-report-staking/
+            e2e/test-report-swap/
+          retention-days: 4
 
   docker-build-push:
     # Name the Job
@@ -144,10 +136,8 @@ jobs:
           node-version: '14.x'
       - name: install npm modules
         run: npm i
-      - name: clean previous test results
-        run: rm -rf ./test-results/
       - name: run tests
-        run: CI=true LOG_LEVEL=debug ENVIRONMENT=prod NETWORK=testnet npm test
+        run: CI=true LOG_LEVEL=debug ENVIRONMENT=prod NETWORK=testnet npm run test
       - name: upload artifacts
         if: always()
         uses: actions/upload-artifact@v2
@@ -156,4 +146,5 @@ jobs:
           path: |
             e2e/test-report/
             e2e/test-report-swap/
+            e2e/test-report-staking/
           retention-days: 7

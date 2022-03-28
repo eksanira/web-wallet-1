@@ -50,7 +50,7 @@ test.describe.parallel('Settings', () => {
     assert.equal(await wallets.getWalletAddress(), 'BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW', 'Account 2 address on UI does not equal expected');
   });
 
-  test('Enable/Disable testnet', async () => {
+  test('Enable/Disable testnet', async ({ page }) => {
     await wallets.waitForWalletsDataLoaded();
 
     await wallets.openMenu('settings');
@@ -59,14 +59,16 @@ test.describe.parallel('Settings', () => {
 
     await wallets.openMenu('wallets');
     await wallets.selectWallet('token-btc');
+    await page.waitForTimeout(500);
     assert.equal(await wallets.getWalletAddress(), '1PV8RPEL8kNBnQytq2881TE3bSZJbJazDw', 'Mainnet BTC address on UI does not equal expected');
-
+    
     await wallets.openMenu('settings');
     await settings.networkSwitcher.click();
     assert.isTrue(await wallets.testnetMenuItem.isVisible());
-
+    
     await wallets.openMenu('wallets');
     await wallets.selectWallet('token-btc');
+    await page.waitForTimeout(500);
 
     assert.equal(await wallets.getWalletAddress(), 'n415iSKJwmoSZXTWYb6VqNSNTSA1YMwL8U', 'Testnet BTC address on UI does not equal expected');
   });

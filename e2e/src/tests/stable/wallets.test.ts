@@ -108,7 +108,8 @@ test.describe.parallel('Wallets screen', () => {
       assert.equal(customTokenBalance, '2');
     });
 
-    test('DAI on BSC', async () => {
+    // TODO: CORS error
+    test.skip('DAI on BSC', async () => {
       await wallets.addCustomToken(data.customTokens.bsc.dai, 'BSC', 'testnet');
 
       const customTokenBalance = await wallets.getCustomTokenBalance('#token-dai_testnet_BSC__custom');
