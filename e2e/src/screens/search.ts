@@ -6,5 +6,5 @@ export class SearchScreen extends BaseScreen {
     super(page);
   }
 
-  dapps = this.page.locator('[placeholder="dapps"]');
+  dapps = this.page.locator('.header', {hasText:/dapps/i});
 }
