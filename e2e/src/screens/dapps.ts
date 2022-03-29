@@ -6,5 +6,5 @@ export class DAppsScreen extends BaseScreen {
     super(page);
   }
 
-  oldStaking = this.page.locator('"Velas Staking"');
+  oldStaking = this.page.locator('" Velas Staking 1.0"');
 }

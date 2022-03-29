@@ -59,7 +59,7 @@ test.describe.parallel('Settings', () => {
 
     await wallets.openMenu('wallets');
     await wallets.selectWallet('token-btc');
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
     assert.equal(await wallets.getWalletAddress(), '1PV8RPEL8kNBnQytq2881TE3bSZJbJazDw', 'Mainnet BTC address on UI does not equal expected');
     
     await wallets.openMenu('settings');

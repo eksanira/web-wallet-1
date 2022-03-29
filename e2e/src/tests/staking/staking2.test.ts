@@ -157,7 +157,7 @@ test.describe('Staking 2', () => {
       await staking.validator.staked.clickrequestWithdraw();
       await staking.stakeForm.useMaxButton.click();
       await staking.stakeForm.withdrawButton.click();
-      await staking.stakeForm.successfulWithdrawMessage.waitFor({ timeout: 15000 });
+      await staking.stakeForm.successfulWithdraRequestMessage.waitFor({ timeout: 15000 });
       await staking.stakeForm.okButton.click();
     });
 
