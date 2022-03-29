@@ -34,7 +34,6 @@ calc-fee-proxy = (input, cb)->
 #        calc-fee input, cb
 #    calc-fee-proxy.timer = clear-timeout calc-fee-proxy.timer
 #    calc-fee-proxy.timer = set-timeout fun, 500
-
 export calc-fee-before-send = ({ store, query, fast }, cb)->
     { store, token, to, data, network, amount, fee-type, tx-type, account, swap } = query
     return cb "store isn`t defined"   if not store?
@@ -48,14 +47,12 @@ export calc-fee-before-send = ({ store, query, fast }, cb)->
     gas-price = 
         | send?gas-price-type is \custom => (send?gas-price-custom-amount `times` (10^9))
         | _ => send.gas-price-auto
-    
     err, result <- calc-fee-fun { store, token, to, data, network, amount, fee-type, tx-type, account, gas-price, swap }
     send.fee-calculating = no
     send.error = "#{err.message ? err}" if err?
     return cb "#{err.message ? err}" if err?
     #{ calced-fee, gas-price, gas-estimate } = result
     return cb null, result
-
 change-amount-generic = (field)-> (store, amount-send, fast, cb)->
     send = store.current[field]
     /* Prevent call onChange twice */
@@ -78,11 +75,9 @@ change-amount-generic = (field)-> (store, amount-send, fast, cb)->
         balance = +wallet.balance
         max-amount = Math.max 1e10, balance
         amountSend = max-amount if +amountSend > max-amount
-        
     /* Update home bridge fee */
     store.current.send.homeFee = store.current.send.amount-send `times` (store.current.send.homeFeePercent `div` 100 )
     store.current.send.homeFeeUsd = store.current.send.homeFee `times` wallet.usdRate 
-        
     result-amount-send = amount-send ? 0
     { fee-type, tx-type, fee-custom-amount } = store.current.send
     usd-rate = wallet?usd-rate ? 0
@@ -94,15 +89,12 @@ change-amount-generic = (field)-> (store, amount-send, fast, cb)->
     send.amount-obtain-usd = send.amount-obtain `times` usd-rate
     send.amount-send-usd = calc-usd store, amount-send
     send.amount-send-eur = calc-eur store, amount-send
-                
     dataBuilder = contract-data({ store })
     err <- dataBuilder.form-contract-data!
-    
     send-to = 
         | store.current.send.isSwap is yes => store.current.send.contract-address
         | store.current.send.to.trim!.length is 0 => store.current.send.wallet.address
         | _ => store.current.send.to
-    
     query = { store, token, to: send-to, send.data, send.network, amount: result-amount-send, fee-type, tx-type, account, send.swap, send.gas-price }
     err, result <- calc-fee-before-send { store, query, fast }
     console.error err if err?
@@ -167,15 +159,12 @@ export change-amount-send = (store, amount-send, fast, cb)->
     send.value = result-amount-send `times` (10 ^ send.network.decimals)
     send.amount-obtain = result-amount-send
     send.amount-obtain-usd = send.amount-obtain `times` usd-rate
-    
     dataBuilder = contract-data({ store })
     err <- dataBuilder.form-contract-data!
-    
     send-to = 
         | store.current.send.isSwap is yes => store.current.send.contract-address
         | store.current.send.to.trim!.length is 0 => store.current.send.wallet.address
         | _ => store.current.send.to
-  
     query = { store, token, to: send-to, send.data, send.network, amount: result-amount-send, fee-type, tx-type, account, send.swap, send.gas-price }
     err, result <- calc-fee-before-send { store, query, fast }
     send.error = err if err?
@@ -190,17 +179,14 @@ export change-amount-send = (store, amount-send, fast, cb)->
         | result?calced-fee? => result.calced-fee
         | send.network?tx-fee-options? => send.network.tx-fee-options[fee-type] ? send.network.tx-fee
         | _ => send.network.tx-fee
-    
     /* If this is ERC20 Token (not Coin) then result send amount shoud not be minus fee */
     txFeeIn = wallet?network?txFeeIn
     minus-fee = 
         | txFeeIn? and txFeeIn isnt wallet?coin?token => 0
         | _ => tx-fee
-        
     /* Update home bridge fee */
     store.current.send.homeFee = store.current.send.amount-send `times` (store.current.send.homeFeePercent `div` 100 )
     store.current.send.homeFeeUsd = store.current.send.homeFee `times` wallet.usdRate  
-          
     result-amount-send = if (+amount-send > +tx-fee) then amount-send `minus` tx-fee else (amount-send ? 0)     
     send.amount-send = amount-send `minus` minus-fee if  +amount-send > +tx-fee    
     send.amount-send-usd = calc-usd store, send.amount-send
@@ -247,15 +233,12 @@ export change-amount-calc-fiat = (store, amount-send, fast, cb)->
     send.value = result-amount-send `times` (10 ^ send.network.decimals)
     send.amount-obtain = result-amount-send
     send.amount-obtain-usd = send.amount-obtain `times` usd-rate   
-    
     dataBuilder = contract-data({ store })
     err <- dataBuilder.form-contract-data!
-    
     send-to = 
         | store.current.send.isSwap is yes => store.current.send.contract-address
         | store.current.send.to.trim!.length is 0 => store.current.send.wallet.address
         | _ => store.current.send.to
-    
     query = { store, token, to: send-to, send.data, send.network, amount: result-amount-send, fee-type, tx-type, account, send.swap, send.gas-price }
     err, result <- calc-fee-before-send { store, query, fast }
     send.error = err if err?
@@ -263,7 +246,7 @@ export change-amount-calc-fiat = (store, amount-send, fast, cb)->
     if result?
         { calced-fee, gas-price, gas-estimate } = result
         if send.gas-price-type isnt \custom then
-             send.gas-price-auto = gas-price
+            send.gas-price-auto = gas-price
     send.gas-estimate = gas-estimate
     tx-fee =
         | fee-type is \custom => send.amount-send-fee

@@ -6,7 +6,7 @@ require! {
     \../get-lang.ls
     \./icon.ls
     \../navigate.ls
-    \../../web3t/providers/superagent.ls : { get }
+    \../../web3t/providers/superagent.js : { get }
     \prelude-ls : { each, map, find }
     \../menu-funcs.ls
     \../icons.ls
@@ -38,7 +38,6 @@ require! {
     .title
         color: #ebf6f8
         font-size: 22px
-        
     .version
         letter-spacing: 1px
         font-size: 8px
@@ -227,7 +226,6 @@ language = (store, web3t)->
         filter: style.app.filterIcon
     text-style =
         color: style.app.text
-        
     country-codes = 
         en: \English
         ru: \Русский
@@ -242,22 +240,18 @@ language = (store, web3t)->
         ph: \Pilipino
         yr: \Yoruba
         vn: "Tiếng Việt"
-        
     order =
         * <[ fr en cn kr ]>
         * <[ ru ua es ar ]>
         * <[ in id ph yr ]>
         * <[ vn ]>
-        
     set-lang = (lang)->
         store.lang = lang
         store.current.choose-language = no
-    
     change-lang = (code)->
         ->
             store.current.language-menu = no
             return set-lang code    
-    
     download = ->
         navigate store, web3t, \downloadwallet
     .pug
@@ -276,11 +270,9 @@ language = (store, web3t)->
                                     lang-style = color
                                     name = country-codes[code]
                                     tag = "langs_#{code}"
-                                    
                                     li.pug.lang-item(key="lang_#{code}" on-click=change-lang(code) style=color id="lang-#{code}")
                                         img.pug(src="#{icons[tag]}")
                                         .pug #{name}
-                            
             if not process?versions?electron?    
                 .pug.downloadwalletlist
                     a.pug(href="https://apps.apple.com/us/app/velas-mobile-wallet/id1541032748" target="_blank" id="download-ios")

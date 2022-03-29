@@ -9,7 +9,7 @@ require! {
     \copy-to-clipboard
     \./pages/confirmation.ls : { confirm, prompt, alert, notify, prompt-password, prompt-choose-token }
     \./get-lang.ls
-    \../web3t/providers/deps.ls : { bip39 }
+    \../web3t/providers/deps.js : { bip39 }
 }
 export generate-wallet = ->
     bip39.generate-mnemonic!
@@ -38,7 +38,12 @@ module.exports = (store, web3t)->
     lock = ->
         navigate store, web3t, \locked
     refresh = ->
+        console.log("menu-funcs refresh")
+        store.forceReload = yes
+        store.forceReloadTxs = yes
         <- web3t.refresh
+        store.forceReload = no
+        store.forceReloadTxs = no
     not-in-dictionary = (word)->
         word not in bip39.wordlists.EN
     check-problem = (seed)->
@@ -92,6 +97,8 @@ module.exports = (store, web3t)->
         seedmem.mnemonic = generate-wallet!
         create-account!
     switch-network = ->
+        store.forceReload = yes
+        store.forceReloadTxs = yes
         network =
             | store.current.network is \mainnet => \testnet
             | _ => \mainnet
@@ -129,11 +136,14 @@ module.exports = (store, web3t)->
         store.current.account-index += 1
         refresh!
     change-account-index = (event)->
+        console.log("change-account-index")
         return if not event?target
         val = event.target.value
         return if not val.match(/[0-9]+/)?
         val = parse-int val
         val = 0 if val < 0 or val > 999999999
+        store.forceReload = yes
+        store.forceReloadTxs = yes
         store.current.account-index = val
         change-account-index.timer = clear-timeout change-account-index.timer
         change-account-index.timer = set-timeout refresh, 2000

@@ -1,13 +1,27 @@
 import { log } from '../tools/logger';
-import { Page } from '../types';
+import { Page } from '../common-test-exports';
 import { BaseScreen } from './base';
 
 export type Language = 'fr' | 'en' | 'kr' | 'cn' | 'es' | 'ua' | 'ru' | 'ar';
 
-export class Auth extends BaseScreen {
+export class AuthScreen extends BaseScreen {
   constructor(public page: Page) {
     super(page);
   }
+
+  balanceBlockInMenu = this.page.locator('.menu-body .balance');
+
+  menuItems = this.page.locator('.menu-items');
+
+  seedPhraseChecksumMatchError = this.page.locator('" Seed phrase checksum not match. Please try again."');
+
+  downloadButtons = {
+    iOS: this.page.locator('#download-ios'),
+    android: this.page.locator('#download-android'),
+    desktop: this.page.locator('#download-desktop'),
+  };
+
+  passwordInput = this.page.locator('input[type="password"]');
 
   customSeedInput = {
     fillAndConfirm: async (seedPhrase: string | string[]): Promise<void> => {
@@ -16,14 +30,21 @@ export class Auth extends BaseScreen {
       await this.page.fill('#seedphrase-custom', seedPhrase);
       await this.page.click('#seed-phrase-next');
     },
+  };
+
+  async fastLogin(testWallet: Wallet) {
+    if (!testWallet.encryptedSeed) throw new Error(`Wallet with seed ${testWallet.seed} does not contain encrypted seed value`);
+    const seed = testWallet.encryptedSeed;
+    await this.setSeedToLocalStorage(seed);
+    await this.page.reload({ waitUntil: 'commit' });
+    await this.pinForNewAcc.fillAndConfirm('111222');
   }
 
   async loginByRestoringSeed(seedPhrase: string | string[]) {
-    const auth = new Auth(this.page);
+    const auth = new AuthScreen(this.page);
 
-    const isLoggedIn = await this.isLoggedIn();
-    if (isLoggedIn) {
-      log.info('User is already logged in');
+    if (await this.isLoggedIn()) {
+      log.info('User is logged in');
       return;
     }
 
@@ -39,9 +60,11 @@ export class Auth extends BaseScreen {
     await auth.pinForNewAcc.fillAndConfirm('111222');
     await auth.customSeedInput.fillAndConfirm(seedPhrase);
 
-    await this.page.waitForSelector('.menu-item');
-    await this.page.waitForSelector('.balance');
-    log.info(`Successfully logged in with seed "${seedPhrase}"`);
+    if (await this.isLoggedIn()) {
+      log.info(`Successfully logged in with seed "${seedPhrase}"`);
+    } else {
+      throw new Error('Can\'t perform login');
+    }
   }
 
   newSeed = {
@@ -64,44 +87,47 @@ export class Auth extends BaseScreen {
     next: async (): Promise<void> => {
       await this.page.click('#seed-next');
     },
-  }
+  };
 
   pinForLoggedOutAcc = {
     typeAndConfirm: async (password: string): Promise<void> => {
-      await this.page.type('[type="password"]', password);
+      await this.passwordInput.fill(password);
       await this.page.click('" Enter"');
     },
 
     newAccount: async (): Promise<void> => {
       await this.page.click('button.setup');
-      await this.page.click('button#confirmation-confirm');
+      await this.modals.confirmPrompt();
     },
-  }
+
+    wrongPinError: this.page.locator('.wrong'),
+  };
 
   pinForNewAcc = {
     fillAndConfirm: async (password: string): Promise<void> => {
-      await this.page.fill('[type="password"]', password);
+      await this.passwordInput.fill(password);
       await this.page.click('button.setup');
     },
-  }
+  };
 
   restoreFrom = {
     seed: async (type: '24' | '12' | 'custom'): Promise<void> => {
       await this.page.click(`#restore-${type}`);
     },
-  }
+  };
 
   language = {
     select: async (language: Language): Promise<void> => {
       await this.page.click(`#lang-${language}`);
     },
-  }
+    welcomeText: this.page.locator('.welcome'),
+  };
 
   terms = {
     accept: async (): Promise<void> => {
       await this.page.click('" Accept"');
     },
-  }
+  };
 
   welcome = {
     create: async (): Promise<void> => {
@@ -111,24 +137,28 @@ export class Auth extends BaseScreen {
     restore: async (): Promise<void> => {
       await this.page.click('#btn-restore');
     },
-  }
+  };
+
+  installWallets = {
+    platformsList: this.page.locator('.platforms'),
+  };
 
   wordByWordSeedInputForm = {
     fill: async (seedWords: string[], params: { fast: boolean } = { fast: false }): Promise<void> => {
-      const elementWithWordNumberSelector = '.words [placeholder*="word #"]';
+      const elementWithWordNumberSelector = this.page.locator('.words [placeholder*="word #"]');
       for (let i = 0; i < seedWords.length; i++) {
         // example of "placeholder" attribute value: "word #1"
-        const placeholderValue = await this.page.getAttribute(elementWithWordNumberSelector, 'placeholder');
+        const placeholderValue = await elementWithWordNumberSelector.getAttribute('placeholder');
         // cut text "word #" and leave only number at the end of string
         const requestedWordNumber = Number(placeholderValue?.slice(6));
-        const inputToFillSelector = `.words [placeholder*="word #${requestedWordNumber}"]`;
+        const inputToFill = this.page.locator(`.words [placeholder*="word #${requestedWordNumber}"]`);
         if (params.fast) {
-          await this.page.fill(inputToFillSelector, seedWords[requestedWordNumber - 1]);
+          await inputToFill.fill(seedWords[requestedWordNumber - 1]);
         } else {
-          await this.page.type(inputToFillSelector, seedWords[requestedWordNumber - 1]);
+          await inputToFill.type(seedWords[requestedWordNumber - 1]);
         }
         await this.page.click('" Next"');
       }
     },
-  }
+  };
 }

@@ -1,5 +1,5 @@
 import Axios, { AxiosInstance } from 'axios';
-import { axiosConfig } from "./axios-config";
+import { axiosConfig } from './axios-config';
 
 type ConfirmedTransaction = {
   blockTime: number,
@@ -17,13 +17,13 @@ export class VelasTestnet {
 
   async getConfirmedTransactionsForAddress(address: string, limit = 10): Promise<{ transactions: ConfirmedTransaction[], signatures: string[] }> {
     const response = await this.axios.post('', {
-      jsonrpc: "2.0",
-      id: "4644c07303da831b36371afedde62d82",
-      method: "getConfirmedSignaturesForAddress2",
+      jsonrpc: '2.0',
+      id: '4644c07303da831b36371afedde62d82',
+      method: 'getConfirmedSignaturesForAddress2',
       params: [
         address,
-        { limit }
-      ]
+        { limit },
+      ],
     });
 
     const transactions: ConfirmedTransaction[] = response.data.result;
@@ -32,7 +32,7 @@ export class VelasTestnet {
     if (!response.data.result) throw new Error(`Cannot get transactions for address ${address}\n${response.data.error.message}`);
     if (!transactions.length) throw new Error(`No transactions for address ${address}`);
 
-    transactions.forEach(tx => {
+    transactions.forEach((tx) => {
       signatures.push(tx.signature);
     });
 

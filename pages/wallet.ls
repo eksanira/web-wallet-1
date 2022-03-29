@@ -6,7 +6,7 @@ require! {
     \../get-lang.ls
     \./icon.ls
     \../get-primary-info.ls
-    \../../web3t/providers/superagent.ls : { get }
+    \../../web3t/providers/superagent.js : { get }
     \../icons.ls
     \../round-human.ls
     \./confirmation.ls : { alert }
@@ -277,11 +277,9 @@ module.exports = (store, web3t, wallets, wallet)-->
     wallet-is-disabled  = isNaN(wallet.balance)
     is-loading = store.current.refreshing is yes
     disabled-class = if not is-loading and wallet-is-disabled then "disabled-wallet-item" else ""
-    
     wallet-is-disabled = isNaN(wallet.balance)
     is-loading = store.current.refreshing is yes
     send-swap-disabled = wallet-is-disabled or is-loading
-    
     .wallet.pug.wallet-item(class="#{big} #{disabled-class}" key="#{token}" style=border-style)
         .wallet-top.pug(on-click=expand)
             .top-left.pug(style=wallet-style)
@@ -319,7 +317,7 @@ module.exports = (store, web3t, wallets, wallet)-->
         if no
             .wallet-middle.pug(style=border)
                 address-holder { store, wallet, type: \bg }
-                if token not in <[ btc vlx vlx_native vlx2 eth vlx_evm vlx_evm_legacy ]>
+                if token not in <[ btc vlx vlx_native vlx2 eth vlx_evm  ]>
                     .pug.uninstall(on-click=uninstall style=wallet-style) #{label-uninstall}
             .wallet-middle.title-balance.pug(style=border)
                 .name.pug(class="#{placeholder}" title="#{usd-rate}") $#{ round-human(usd-rate)}

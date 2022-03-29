@@ -6,7 +6,7 @@ require! {
     \prelude-ls : { map, sort-by, filter }
     \../navigate.ls
     \../icons.ls
-    \../../web3t/providers/deps.ls : { bip39 }
+    \../../web3t/providers/deps.js : { bip39 }
     \../components/typeahead.ls
 }
 .newseed

@@ -4,7 +4,6 @@ require! {
     \./round-human.ls
     \./round-number.ls
     \./math.ls : { times, minus, div, plus }
-    
 }
 module.exports = (store, web3t)->
     { send } = store.current
@@ -47,7 +46,6 @@ module.exports = (store, web3t)->
     text-parts-swap =
         * "Swap #{amount-send} #{token-display} to #{send.to}"
         * "You are allowed to spend your resources on execution #{round-number send.amount-send-fee, {decimals: decimalsConfig}} #{token-display}."
-    
     text =
         | is-data => text-parts-contract
         | swap is yes => text-parts-swap 

@@ -230,6 +230,7 @@ require! {
                         -web-kit-transition: breathe 3s ease-in infinite
                         height: auto
                         max-height: 70vh
+                        background: rgba(255, 255, 255, 0.04)
                         .stake-pointer
                             background: rgb(37, 87, 127)
                         &.lockup
@@ -280,8 +281,6 @@ require! {
                         width: 100%
                         border-collapse: collapse
                         margin: 0px auto
-                    tr:nth-of-type(odd)
-                        background: rgba(gray, 0.2)
                     th
                         font-weight: 400
                         &:first-child
@@ -643,8 +642,11 @@ staking-content = (store, web3t)->
         err-message = get-error-message(err, result)
         return alert store, err-message if err-message?
         store.staking.getAccountsFromCashe = no
-        <- notify store, "Funds delegated to\n #{store.staking.chosenPool.address}" 
-        navigate store, web3t, \validators
+        <- notify store, "Funds delegated to\n #{store.staking.chosenPool.address}"
+        if store.staking.webSocketAvailable is no
+            store.staking.getAccountsFromCashe = no
+            return navigate store, web3t, \validators
+        store.current.page = \validators
     change-address = ->
         store.staking.add.add-validator = it.target.value
     change-stake = !->
@@ -763,7 +765,6 @@ staking-content = (store, web3t)->
             agree <- confirm store, confirmText
             return if agree is no
             delegate!
-             
         cancel-pool = ->
             store.staking.chosen-pool = null
         to-eth = ->
@@ -801,7 +802,6 @@ staking-content = (store, web3t)->
             td.pug #{item.stakers}
             td.pug
                 button { store, on-click: choose-pull , type: \secondary , icon : \arrowRight }
-    
     activate = (step)-> ->
         store.current.step = step
     activate-first = activate \first
@@ -839,7 +839,7 @@ staking-content = (store, web3t)->
     pagination-disabled = store.staking.pools-are-loading is yes
     .pug.staking-content.delegate
         .pug.main-sections
-            .form-group.pug(id="pools")
+            .form-group.pug(id="pools" class="select-validators-list")
                 alert-txn { store }
                 .pug.section
                     .title.pug

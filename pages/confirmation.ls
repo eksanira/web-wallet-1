@@ -196,6 +196,13 @@ require! {
             @media screen and (max-width: 800px)
                 padding: 7px 0
                 text-align: center
+subtitle-notify-msg = (store)->
+    | store.staking.webSocketAvailable is no =>
+        if store.current.page in <[ validators account_details poolchoosing ]>
+            "This action may take some time to reflect on the staking dashboard."
+        else
+            null
+    | _ => null
 alert-modal = (store)->
     return null if typeof! store.current.alert isnt \String
     cancel = ->
@@ -246,6 +253,7 @@ notification-modal = (store)->
         color: style.app.text
     confirmation-style2 =
         color: style.app.text
+        user-select: "text"
     button-style=
         color: style.app.text
     confirmation=
@@ -254,10 +262,16 @@ notification-modal = (store)->
         color: style.app.text
         border-bottom: "1px solid #{style.app.border}"
     lang = get-lang store
+    subtitle-msg = subtitle-notify-msg(store)
+    subtitle-style =
+        opacity: 0.3
+        font-size: "13px"
     .pug.confirmation
         .pug.confirmation-body(style=confirmation)
             .pug.header(style=confirmation-style) Alert
             .pug.text(style=confirmation-style2) #{store.current.notification}
+            if subtitle-msg?
+                .pug.subitile-msg(style=subtitle-style) #{subtitle-msg}
             .pug.buttons
                 button.pug.button(on-click=cancel style=button-style id="notification-close")
                     span.cancel.pug
@@ -322,7 +336,6 @@ confirmation-modal = (store)->
                     span.cancel.pug
                         img.icon-svg-cancel.pug(src="#{icons.close}")
                         | #{lang.cancel}
-
 swap-confirmation-modal = (store)->
     return null if typeof! store.current.swap-confirmation isnt \String
     confirm = ->
@@ -342,6 +355,7 @@ swap-confirmation-modal = (store)->
         color: style.app.text
     confirmation-style2 =
         color: style.app.text
+        user-select: "text"
     button-style=
         color: style.app.text
     confirmation=
@@ -366,8 +380,6 @@ swap-confirmation-modal = (store)->
                 span.pug.token #{tokenTo}
                 span.pug on
                 span.pug.network #{toNetwork}
-
-
             .pug.buttons
                 button.pug.button(on-click=confirm style=button-style id="confirmation-confirm")
                     span.apply.pug
@@ -377,7 +389,6 @@ swap-confirmation-modal = (store)->
                     span.cancel.pug
                         img.icon-svg-cancel.pug(src="#{icons.close}")
                         | #{lang.cancel}
-
 prompt-modal = (store)->
     return null if typeof! store.current.prompt isnt \String
     confirm = ->
@@ -400,6 +411,7 @@ prompt-modal = (store)->
         background: style.app.background
         background-color: style.app.bgspare
         color: style.app.text
+        user-select: "text"
     input-style =
         background: style.app.input
         color: style.app.text
@@ -458,6 +470,7 @@ prompt-modal2 = (store)->
         background: style.app.background
         background-color: style.app.bgspare
         color: style.app.text
+        user-select: "text"
     input-style =
         background: style.app.input
         color: style.app.text
@@ -536,6 +549,7 @@ prompt-modal3 = (store)->
         background: style.app.background
         background-color: style.app.bgspare
         color: style.app.text
+        user-select: "text"
     input-style =
         background: style.app.input
         color: style.app.text
@@ -668,19 +682,20 @@ prompt-choose-token-modal = (store)->
         {image, name, token} = item.coin
         wallet = wallets |> find (-> it.coin.token is token)
         return null if not wallet?
-        #on-click = ->
-            #store.current.prompt-answer = token
-            #data.token = name
-            #copy-to-clipboard wallet.private-key
-            #notify store, "Your Private KEY is copied into your clipboard", cb
         token-network = item?network?group
         active-class = if store.current.prompt-answer is token then "active" else ""
         token = (wallet?coin?name ? "").to-upper-case!
+        elId = "cpc-wallet-#{token}"
+        onCopy = (event) ->
+            # fixes the issue with no copied value after one click https://github.com/nkbt/react-copy-to-clipboard/issues/100#issuecomment-524057405
+            el = document.getElementById elId
+            el.click!
+            copied-pk-inform(store)(event)
         li.pug.lang-item(style=optionStyle class="#{active-class}")
             .pug
-                CopyToClipboard.pug(text="#{wallet.private-key}" on-copy=copied-pk-inform(store) style=icon2-style)
+                CopyToClipboard.pug(text="#{wallet.private-key}" on-copy=onCopy style=icon2-style)
                     .pug
-                        img.pug(src="#{image}" style=imgStyle)
+                        img.pug(id="#{elId}" src="#{image}" style=imgStyle)
                         span.token-name.pug #{name}
                         span.pug.network #{token-network} Network
     input-style =
@@ -775,12 +790,10 @@ prompt-password-modal = (store)->
                     span.cancel.pug
                         img.icon-svg-cancel.pug(src="#{icons.close}")
                         | #{lang.cancel}
-
 $network-details-modal = (store)->
     return null if store.current.current-network-details.show isnt yes
     cancel = ->
         store.current.current-network-details.show = no
-
     style = get-primary-info store
     table-item-style-title=
         flex: 1
@@ -819,7 +832,6 @@ $network-details-modal = (store)->
     maxPerTx   = round-human(maxPerTx,   {decimals: 2})
     remaining  = round-human(remainingDailyLimit,   {decimals: 2})
     currency = (nickname ? "").to-upper-case!
-
     from-network = (name ? "").to-upper-case!
     to-network   = (wallet-to.coin.name ? "").to-upper-case!
     title = "Swap from #{from-network} to #{to-network}"
@@ -850,9 +862,6 @@ $network-details-modal = (store)->
                     .table-item.pug(style=table-item-style)
                         .title.h5.pug(style=table-item-style-title) Bridge fee
                         .value.pug(style=bridge-fee-style) #{bridgeFeePercent} %
-
-
-
 export confirmation-control = (store)->
     #for situation when we ask peen before action. this window should be hidden
     return null if store.current.page-pin?
@@ -898,5 +907,4 @@ export alert = (store, text, cb)->
     state.callback = cb
 export network-details-modal = ->
     store.current.current-network-details.show = yes
-
 window.confirm-state = state

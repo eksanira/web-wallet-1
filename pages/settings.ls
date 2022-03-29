@@ -355,21 +355,17 @@ list-language = (store, web3t)->
         ph: \Pilipino
         yr: \Yoruba
         vn: "Tiếng Việt"
-        
     set-lang = (lang)->
         local-storage.set-item \lang, lang
         store.lang = lang
-    
     change-lang = (code)->
         ->
             store.current.language-menu = no
             return set-lang code
     color =
         color: style.app.text
-
     up = (it)->
         it.to-upper-case!
-
     ul.pug
         country-codes
             |> keys
@@ -385,7 +381,6 @@ list-language = (store, web3t)->
                 li.pug.lang-item(key="langs_#{code}" on-click=change-lang(code) class="#{code}" style=lang-style)
                     img.pug(src="#{icons[tag]}")
                     | #{name}
-        
 switch-language = (store, web3t)->
     style = get-primary-info store
     lang = get-lang store
@@ -403,8 +398,6 @@ switch-language = (store, web3t)->
     search-lang = (event)->
         input = (event.target.value ? "")
         store.current.search-language = input
-        
-        
     span.pug
         button { store, on-click: open-language , type: \secondary , icon : \arrowRight, text: \languageType }
         if store.current.language-menu
@@ -447,6 +440,8 @@ switch-network = (store, web3t)->
     lang = get-lang store
     change-network = ->
         value = it.target.value is \true
+        store.forceReload = yes
+        store.forceReloadTxs = yes
         web3t.use networks-reverted[not value]
         store.current.wallet-index = 0
         store.current.group-index = 0
