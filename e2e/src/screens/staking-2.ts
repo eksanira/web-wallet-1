@@ -198,6 +198,7 @@ export class Staking2Screen extends BaseScreen {
     confirmButton: this.page.locator('"Confirm"'),
     okButton: this.page.locator('.button-block-style button#next', { hasText: 'Ok' }).first(),
     successfulWithdrawMessage: this.page.locator('"Withdrawal has been submitted successfully"'),
+    successfulWithdraRequestMessage: this.page.locator('"Withdrawal request has been submitted successfully"'),
     withdrawButton: this.page.locator('#withdraw'),
     _availableForStaking: this.page.locator('#standard-weight-helper-text'),
 
