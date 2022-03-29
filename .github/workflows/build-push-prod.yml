@@ -38,6 +38,8 @@ jobs:
       - name: install modules required for testrun
         working-directory: ./e2e
         run: npm i
+      - name: check that wallet has started
+        run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check outputs of build/run wallet commands" && exit 1)
       - name: run tests
         working-directory: ./e2e
         run: CI=true LOG_LEVEL=debug npm run test
