@@ -20,6 +20,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
+      - name: install latest npm
+        run: npm install -g npm@latest
       - name: install web3t modules
         working-directory: .compiled-ssr/web3t
         run: npm i
@@ -28,11 +30,11 @@ jobs:
       - name: copy web3 side by side to wallet
         working-directory: ../
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
+      - name: build wallet
+        run: npm run wallet-build
       - name: run wallet
         working-directory: ./
-        run: |
-          npm run wallet-start:no-watch &
-          echo '- - - - - Wallet is started but it takes till 30 seconds to be up - - - - -'
+        run: npm run wallet-start:no-watch
       - name: install modules required for testrun
         working-directory: ./e2e
         run: npm i
