@@ -700,7 +700,8 @@ Rewards = (props)->
         background: style.app.stats
     mountedRef = react.useRef(true)
     return-fn = ->
-        mountedRef.current = no 
+        mountedRef.current = no
+
     fetchRewards = react.useCallback (!~>>
         err, $rewards <- fetchEpochRewards(account.address, activationEpoch)
         return null if not mountedRef.current 
@@ -708,6 +709,7 @@ Rewards = (props)->
         setRewards($rewards)
         store.staking.chosenAccount.rewards = $rewards
         return ), [mountedRef]
+            
     react.useEffect (->
         fetchRewards!
         return return-fn ), [fetchRewards]
@@ -732,11 +734,15 @@ Rewards = (props)->
                     tbody.pug
                         rewards |> map build-rewards 
         RewardsStats.pug(rewards=rewards)
+
+
 staking-content = (store, web3t)->
     { go-back } = history-funcs store, web3t
     style = get-primary-info store
     lang = get-lang store
+
     down = (it)-> it.toLowerCase!
+
     account = store.staking.chosenAccount
     {
         address,
@@ -758,8 +764,10 @@ staking-content = (store, web3t)->
         pubkey
         lamports
     } = account
+
     rent = rentExemptReserve `div` (10^9)
     balanceRaw = if (not isNaN(rent) and rent?) then lamports `minus` rent else lamports
+
     button-primary3-style=
         border: "1px solid #{style.app.primary3}"
         color: style.app.text2
@@ -855,17 +863,21 @@ staking-content = (store, web3t)->
         err <- staking.init { store, web3t }
         return cb err if err?
         cb null, \done
+
     remove-stake-acc = (public_key)->
         console.log "pubKey to remove" public_key
         index = store.staking.accounts |> findIndex (-> it.pubkey is public_key)
         if index > -1
             store.staking.accounts.splice(index,1)
         console.log "index to remove" index
+
         accountIndex = store.current.accountIndex
         index2 = (store.staking.accountsCached[accountIndex] ? []) |> findIndex (-> it.pubkey is public_key)
         console.log "index cache to remove" index2
+
         if index2 > -1
             (store.staking.accountsCached[accountIndex] ? []).splice(index2,1)
+
     withdraw = ->
         agree <- confirm store, lang.areYouSureToWithdraw
         return if agree is no
@@ -879,6 +891,7 @@ staking-content = (store, web3t)->
         if store.staking.webSocketAvailable is no
             return navigate store, web3t, \validators
         store.current.page = \validators
+
     delegate = ->
         navigate store, web3t, \poolchoosing
     undelegate = ->
@@ -895,6 +908,7 @@ staking-content = (store, web3t)->
         if store.staking.webSocketAvailable is no
             return navigate store, web3t, \validators
         store.current.page = \validators
+
     split-account = ->
         cb = console.log
         buffer = {}
@@ -915,8 +929,10 @@ staking-content = (store, web3t)->
         if +(min_stake) > +buffer.amount
             store.staking.splitting-staking-account = no
             return alert store, lang.minimalStakeMustBe + " #{min_stake} VLX"
+
         err <- as-callback web3t.velas.NativeStaking.getStakingAccounts(store.staking.parsedProgramAccounts)
         return cb err if err?
+
         store.staking.splitting-staking-account = yes
         /* Get next account seed */
         err, seed <- as-callback web3t.velas.NativeStaking.getNextSeed()
@@ -924,6 +940,7 @@ staking-content = (store, web3t)->
         if err-message?
             store.staking.splitting-staking-account = no
             return alert store, err-message
+
         amount = buffer.amount * 10^9
         /* Create new account */
         fromPubkey$ = store.staking.chosenAccount.address
@@ -936,6 +953,7 @@ staking-content = (store, web3t)->
         catch error
             store.staking.splitting-staking-account = no
             return alert store, error.toString!
+
         /* Split account */
         stakeAccount = store.staking.chosenAccount.address
         $voter = store.staking.chosenAccount.voter
@@ -945,11 +963,14 @@ staking-content = (store, web3t)->
         if err-message?
             store.staking.splitting-staking-account = no
             return alert store, err-message
+
         { activationEpoch, deactivationEpoch } = store.staking.chosenAccount
+
         err <- creation-account-subscribe({ store, web3t, signature, timeout: 1000, acc_type: "split", deactivationEpoch, activationEpoch, voter: $voter })
         if err?
             store.staking.splitting-staking-account = no
             return alert store, err, cb
+
         /* Update balance of stake account from which split was called */
         fromPubkey$ = store.staking.chosenAccount.address
         err, accountInfo <- as-callback web3t.velas.NativeStaking.getAccountInfo(fromPubkey$)
@@ -958,6 +979,7 @@ staking-content = (store, web3t)->
             store.staking.splitting-staking-account = no
             return alert store, "Split was confirmed. Please reload stake accounts manually to see updates.", cb
         split_lamports = accountInfo?value?lamports
+
         /* Find account in store.staking.accounts and update balance */
         found-account = store.staking.accounts |> find (-> down(it.pubkey) is down(fromPubkey$))
         if found-account?
@@ -965,9 +987,11 @@ staking-content = (store, web3t)->
             found-account.balanceRaw = split_lamports + ""
             found-account.lamports = split_lamports + ""
         <- notify store, lang.accountCreatedAndFundsSplitted + ".\n\nNew stake account address: " + splitStakePubkeyBase58
+
         store.staking.getAccountsFromCashe = no
         store.current.page = "validators"
         store.staking.splitting-staking-account = no
+
     icon-style =
         color: style.app.loader
         margin-top: "10px"
@@ -977,6 +1001,7 @@ staking-content = (store, web3t)->
         background: style.app.stats
     stats=
         background: style.app.stats
+
     has-validator = validator? and validator.toString!.trim! isnt ""
     active_stake = store.staking.chosenAccount.active_stake `div` (10^9)
     inactive_stake = store.staking.chosenAccount.inactive_stake `div` (10^9)
@@ -1013,12 +1038,14 @@ staking-content = (store, web3t)->
     time-expires =
         | is-locked is yes => moment.unix(lockupUnixTimestamp).format("hh:mm:ss");
         | _ => ""  
+        
     lockup-warning-style = 
         padding: "20px"
         background: "rgb(207, 149, 44)"
         font-weight: "bold"
         text-align: "center"
         max-width: "500px"
+          
     /* Render */    
     .pug.staking-content.delegate
         loader { loading: store.staking.splitting-staking-account, text: "Splitting in process" }
@@ -1155,6 +1182,8 @@ staking-content = (store, web3t)->
                             button { store, on-click: undelegate , type: \secondary , text: lang.to_undelegate, icon : \arrowLeft, classes: "action-undelegate" }
                         button { store, on-click: split-account , type: \secondary , text: lang.to_split, classes: "action-split", no-icon: yes }
             Rewards.pug
+
+
 account-details = ({ store, web3t })->
     lang = get-lang store
     { go-back } = history-funcs store, web3t
@@ -1190,6 +1219,7 @@ account-details = ({ store, web3t })->
         store.staking.chosenAccount.stopLoadingRewards = yes
         store.staking.getAccountsFromCashe = yes
         store.current.page = \validators
+
     .pug.staking
         .pug.title(style=border-style)
             .pug.header(class="#{show-class}") #{lang.delegateStake}
@@ -1199,6 +1229,8 @@ account-details = ({ store, web3t })->
             epoch store, web3t
             switch-account store, web3t
         staking-content store, web3t
+
+
 account-details.init = ({ store, web3t }, cb)!->
     account = store.staking.chosenAccount
     cb2 = (err, data)->
