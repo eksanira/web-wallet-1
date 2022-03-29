@@ -3,7 +3,6 @@ require! {
     \../get-primary-info.ls
     \../get-lang.ls
     \./epoch.ls
-    \./alert-demo.ls
     \../components/burger.ls
     \./switch-account.ls
     \../icons.ls
@@ -125,7 +124,6 @@ convert = ({ store, web3t })->
     show-class =
         if store.current.open-menu then \hide else \ ""
     .pug.convert
-        alert-demo store, web3t
         .pug.title(style=border-style)
             .pug.header(class="#{show-class}") Convert
             .pug.close(on-click=go-back)

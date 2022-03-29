@@ -23,15 +23,15 @@ const config: PlaywrightTestConfig = {
         launchOptions: {
           args: ['--disable-dev-shm-usage', '--disable-gpu', '--no-sandbox', `--window-size=${windowSize.width},${windowSize.height}`, '--disable-features=TranslateUI'],
           devtools: false,
-          slowMo: 200,
+          slowMo: 250,
         },
         screenshot: 'only-on-failure',
         viewport: { width: 1890, height: 1080 },
         video: {
           mode: 'retain-on-failure',
           size: {
-            width: 1920,
-            height: 1080,
+            width: 1024,
+            height: 768,
           },
         },
         trace: 'retain-on-failure'
@@ -41,8 +41,6 @@ const config: PlaywrightTestConfig = {
   ],
   reporter: [
     ['list'],
-    ['junit', { outputFile: 'test-results/test-results.xml' }],
-    ['allure-playwright'],
     ['html', { outputFolder: 'test-report', open: 'never' }]
   ],
   reportSlowTests: { threshold: 120000, max: 0 },

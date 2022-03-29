@@ -39,7 +39,6 @@ export class WalletsScreen extends BaseScreen {
 
   balanceAmount = this.page.locator('.amount:not(.placeholder)');
 
-
   lockButton = this.page.locator('.menu-item.bottom');
 
   manageWalletsModal = this.page.locator('.manage-account');
@@ -182,7 +181,7 @@ export class WalletsScreen extends BaseScreen {
   async waitForWalletsDataLoaded(): Promise<void> {
     await this.page.waitForSelector('.wallet-item .top-left [class=" img"]', {
       state: 'visible',
-      timeout: 31000,
+      timeout: 40000,
     });
     await this.page.waitForTimeout(100);
   }
@@ -210,7 +209,7 @@ export class WalletsScreen extends BaseScreen {
     fromToken: Currency,
     toToken: Currency,
     transactionAmount: number | 'use max',
-    params?: { customAddress?: string },
+    params: { customAddress?: string, confirm: boolean } = { confirm: true },
   ): Promise<void> {
     if (fromToken === toToken) {
       throw TypeError('You can\'t swap to the same token you are swapping from');
@@ -219,7 +218,7 @@ export class WalletsScreen extends BaseScreen {
     await this.addToken(fromToken);
     await this.addToken(toToken);
     await this.selectWallet(fromToken);
-    await this.swapButton.click({timeout: 15000});
+    await this.swapButton.click({ timeout: 15000 });
     await this.swapForm.networkSelector.waitFor({ timeout: 20000 });
     await this.swapActions.chooseDestinationNetwork(toToken);
 
@@ -235,7 +234,8 @@ export class WalletsScreen extends BaseScreen {
 
     // wait for amount error disappears
     await this.page.waitForTimeout(300);
-    await this.swapActions.confirm();
+
+    if (params?.confirm) await this.swapActions.confirm();
   }
 
   swapForm = {
@@ -384,6 +384,7 @@ export class WalletsScreen extends BaseScreen {
     );
     await this.waitForSelectorDisappears('.switch-menu');
     await this.page.fill('#contract-address', `${contract}`);
+    await this.sendButton.waitFor({ timeout: 15000 });
     await this.sendButton.click();
 
     while (await this.addTokenForm.pageLoader.isVisible()) {
