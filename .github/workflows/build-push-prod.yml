@@ -30,10 +30,11 @@ jobs:
       - name: copy web3 side by side to wallet
         working-directory: ../
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
+      - name: install wallet modules
+        run: npm i
       - name: build wallet
         run: npm run wallet-build
       - name: run wallet
-        working-directory: ./
         run: npm run wallet-start:no-watch
       - name: install modules required for testrun
         working-directory: ./e2e
