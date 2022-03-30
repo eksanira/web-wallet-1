@@ -295,7 +295,7 @@ export class WalletsScreen extends BaseScreen {
       await this.waitForSelectorDisappears('.switch-menu', 25000);
     },
     confirm: async () => {
-      await this.sendButton.waitFor();
+      await this.sendButton.waitFor({ timeout: 1500 });
       await this.page.waitForTimeout(500);
       await this.sendButton.click();
       await this.modals.confirmPrompt();

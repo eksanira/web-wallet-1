@@ -1,11 +1,11 @@
 {
   "name": "velas-wallet",
-  "version": "1.2.46",
+  "version": "1.2.47",
   "description": "",
   "main": "",
   "dependencies": {
     "@primer/octicons-react": "9.1.1",
-    "@velas/web3": "0.1.15",
+    "@velas/web3": "git+https://github.com/velas/web3.js.git#web",
     "atob": "2.1.2",
     "bignumber.js": "6.0.0",
     "bitgo-utxo-lib": "^1.8.0",
@@ -25,6 +25,7 @@
     "mobx-react": "5.0.0",
     "moment": "2.22.1",
     "nivo": "^0.31.0",
+    "patch-package": "^6.4.7",
     "prelude-ls": "1.1.2",
     "protect": "0.5.0",
     "qrcode.react": "0.8.0",
@@ -50,8 +51,5 @@
     "sync-languages": "lsc langs/index.ls --sync",
     "test:check-token-providers-in-default-conf": "node tests/providers-domains.test.js",
     "postinstall": "patch-package"
-  },
-  "devDependencies": {
-    "patch-package": "^6.4.7"
   }
 }
