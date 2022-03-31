@@ -350,6 +350,7 @@ module.exports = (store, web3t)->
     color =
         color: style.app.text
     goto-mainnet = ->
+        return if store.current.refreshing is yes
         web3t.use \mainnet
         store.current.wallet-index = 0
         store.current.group-index = 0    
@@ -361,6 +362,9 @@ module.exports = (store, web3t)->
         if store.menu.show then \active else \ ""
     close = ->
         store.menu.show = no
+    network-button-style =
+        | store.current.refreshing is yes => {color: style.app.text, opacity: 0.2, cursor: 'no-pointer'}
+        | _ => {color: style.app.text, opacity: 1}
     .menu.side-menu.pug(style=border-style class="#{show-mobile}")
         .pug.closed(on-click=close class="#{show-mobile}")
             icon \X, 20
@@ -386,10 +390,10 @@ module.exports = (store, web3t)->
                         span.arrow_box.pug #{lang.support}
                         img.pug(src="#{icons.support}" style=icon-color)
             if store.current.network is \devnet
-                .menu-item.pug.testnet(on-click=goto-mainnet style=icon-style class="#{settings}" id="menu-devnet")
+                .menu-item.pug.testnet(on-click=goto-mainnet style=network-button-style class="#{settings}" id="menu-devnet")
                     span.arrow_box.pug Devnet
                     img.pug(src="#{icons.test}" style=icon-color)
             if store.current.network is \testnet
-                .menu-item.pug.testnet(on-click=goto-mainnet style=icon-style class="#{settings}" id="menu-testnet")
+                .menu-item.pug.testnet(on-click=goto-mainnet style=network-button-style class="#{settings}" id="menu-testnet")
                     span.arrow_box.pug Testnet
                     img.pug(src="#{icons.test}" style=icon-color)
