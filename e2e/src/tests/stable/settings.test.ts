@@ -55,6 +55,7 @@ test.describe.parallel('Settings', () => {
 
     await wallets.openMenu('settings');
     await settings.networkSwitcher.click();
+    await wallets.totalBalance.waitFor();
     assert.isFalse(await wallets.testnetMenuItem.isVisible());
 
     await wallets.openMenu('wallets');
@@ -64,6 +65,7 @@ test.describe.parallel('Settings', () => {
     
     await wallets.openMenu('settings');
     await settings.networkSwitcher.click();
+    await wallets.totalBalance.waitFor();
     assert.isTrue(await wallets.testnetMenuItem.isVisible());
     
     await wallets.openMenu('wallets');

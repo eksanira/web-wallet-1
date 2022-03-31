@@ -439,6 +439,7 @@ switch-network = (store, web3t)->
     style = get-primary-info store
     lang = get-lang store
     change-network = ->
+        return if store.current.refreshing is yes
         value = it.target.value is \true
         store.forceReload = yes
         store.forceReloadTxs = yes
@@ -447,7 +448,10 @@ switch-network = (store, web3t)->
         store.current.group-index = 0
     value= networks[store.current.network]
     isChecked = store.current.network is "testnet"
-    label.active-network.pug
+    checkbox-style =
+        | store.current.refreshing is yes => {opacity: 0.2}
+        | _ => {opacity: 1}
+    label.active-network.pug(style=checkbox-style)
         input.pug(type='checkbox' on-change=change-network value=value id="settings-testnet" checked=isChecked)
         .track.thumb.pug
 naming-part = ({ store, web3t })->
