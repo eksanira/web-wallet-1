@@ -42,7 +42,7 @@ var ping = function ping(_ref) {
 
     var xhr = new XMLHttpRequest();
 
-    xhr.onerror = isOffline;
+    //xhr.onerror = isOffline;
     xhr.ontimeout = isOffline;
     xhr.onreadystatechange = function () {
       if (xhr.readyState === xhr.HEADERS_RECEIVED) {
