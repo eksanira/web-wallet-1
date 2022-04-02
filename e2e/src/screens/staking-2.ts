@@ -221,7 +221,7 @@ export class Staking2Screen extends BaseScreen {
         await this.validator.staked.clickrequestWithdraw();
         await this.stakeForm.useMaxButton.click();
         await this.stakeForm.withdrawButton.click();
-        await this.stakeForm.successfulWithdrawMessage.waitFor({ timeout: 15000 });
+        await this.stakeForm.successfulWithdraRequestMessage.waitFor({ timeout: 15000 });
         await this.stakeForm.okButton.click();
       }
 
