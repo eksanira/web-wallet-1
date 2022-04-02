@@ -23,7 +23,7 @@ RUN cp -pr /app/web3t .compiled-ssr/web3t
 
 WORKDIR /app/wallet
 RUN mkdir -p /app/wallet/.compiled-ssr/web3t/providers /app/wallet/.compiled-ssr/web3t/node_modules_embed/ethereumjs-tx
-RUN npm install --ignore-scripts
+RUN npm install --ignore-scripts --legacy-peer-deps
 # npm install is failed sometimes; added retry in case of fail
 RUN npm install -g --unsafe-perm node-sass https://github.com/askucher/lsxc livescript
 RUN mkdir -p /app/wallet/.compiled-ssr/web3t/node_modules_embed/scryptsy/lib
