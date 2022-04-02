@@ -57,7 +57,7 @@ jobs:
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
 
       - name: install wallet modules
-        run: npm i
+        run: npm i --legacy-peer-deps
 
       - name: build wallet
         run: npm run wallet-build
@@ -141,7 +141,7 @@ jobs:
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
 
       - name: install wallet modules
-        run: npm i
+        run: npm i --legacy-peer-deps
 
       - name: build wallet
         run: npm run wallet-build
@@ -222,7 +222,7 @@ jobs:
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
 
       - name: install wallet modules
-        run: npm i
+        run: npm i --legacy-peer-deps
 
       - name: build wallet
         run: npm run wallet-build

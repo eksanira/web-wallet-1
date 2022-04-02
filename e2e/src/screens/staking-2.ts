@@ -195,7 +195,6 @@ export class Staking2Screen extends BaseScreen {
       await this.stakeForm.useMaxButton.click();
     },
     nextButton: this.page.locator('"Next"'),
-    confirmButton: this.page.locator('"Confirm"'),
     okButton: this.page.locator('.button-block-style button#next', { hasText: 'Ok' }).first(),
     successfulWithdrawMessage: this.page.locator('"Withdrawal has been submitted successfully"'),
     successfulWithdraRequestMessage: this.page.locator('"Withdrawal request has been submitted successfully"'),
