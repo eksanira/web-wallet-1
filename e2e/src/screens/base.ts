@@ -17,8 +17,11 @@ export abstract class BaseScreen {
   }
 
   modals = {
-    confirmPrompt: async (params?: { timeout?: number }): Promise<void> => {
-      await this.page.click('" Confirm"', { timeout: params?.timeout || 10000 });
+    confirmPrompt: async (): Promise<void> => {
+      const confirmButton = this.page.locator('" Confirm"');
+      await confirmButton.waitFor({ timeout: 10000 });
+      await this.page.waitForTimeout(600);
+      await confirmButton.click();
     },
 
     clickOK: async (): Promise<void> => {

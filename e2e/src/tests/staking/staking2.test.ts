@@ -121,7 +121,7 @@ test.describe('Staking 2', () => {
       await staking.validator.notStaked.stakeButton.click();
       await staking.stakeForm.typeAmount(1.1);
       await staking.stakeForm.nextButton.click();
-      await staking.stakeForm.confirmButton.click();
+      await staking.modals.confirmPrompt();
 
       await page.locator('"Stake account has been created successfully"').waitFor();
       await staking.stakeForm.okButton.click();
@@ -139,7 +139,7 @@ test.describe('Staking 2', () => {
       await staking.validator.staked.clickStakeMore()
       await staking.stakeForm.typeAmount(0.2);
       await staking.stakeForm.nextButton.click();
-      await staking.stakeForm.confirmButton.click();
+      await staking.modals.confirmPrompt();
 
       await page.locator('"Stake account has been created successfully"').waitFor();
       await staking.stakeForm.okButton.click();
