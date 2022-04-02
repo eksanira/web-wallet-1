@@ -188,16 +188,27 @@ export class WalletsScreen extends BaseScreen {
 
   addWalletsPopup = {
     open: async () => {
-      await this.page.click('.header .button.lock.mt-5');
-      await this.page.waitForTimeout(300);
+      const editWalletsButton = this.page.locator('.header .button.lock.mt-5');
+      await editWalletsButton.waitFor({ timeout: 15000 });
+      await this.page.waitForTimeout(500);
+      await editWalletsButton.click();
       await this.manageWalletsModal.waitFor();
+      await this.page.waitForTimeout(500);
     },
     add: async (tokenName: Currency) => {
       const addTokenButton = this.page.locator(`#add-${tokenName} button`);
-      await addTokenButton.waitFor();
-      await addTokenButton?.scrollIntoViewIfNeeded();
-      await this.page.waitForTimeout(600);
-      await addTokenButton?.click();
+      await addTokenButton.waitFor({ timeout: 20000 });
+      await addTokenButton.scrollIntoViewIfNeeded();
+      await this.page.waitForTimeout(500);
+
+      // // exclusion for BUSD in 
+      // if (tokenName === 'token-vlx_busd') {
+      //   // @ts-expect-error
+      //   await this.page.evaluate(() => document.querySelector(`#add-token-vlx_busd button`).click());
+      // }
+
+      await addTokenButton.click({ timeout: 15000, force: true });
+      await this.page.waitForTimeout(500);
 
       // TODO: investigate why click does not work and FIX
       // repeat action if required
@@ -235,7 +246,16 @@ export class WalletsScreen extends BaseScreen {
     // wait for amount error disappears
     await this.page.waitForTimeout(300);
 
-    if (params?.confirm) await this.swapActions.confirm();
+    if (params?.confirm) {
+      try {
+        await this.swapActions.confirm();
+      } catch {
+        log.error(`Attention! This could be an expected error from try/catch.
+        Test could pass even if this error is thrown.
+        
+        <swap ${fromToken}>${toToken} failed on attempt to confirm.>`);
+      }
+    }
   }
 
   swapForm = {
