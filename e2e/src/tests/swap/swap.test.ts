@@ -71,9 +71,6 @@ test.describe('Swap', () => {
       await evmchain.waitForTx({ txHash, testName: test.info().title });
     });
 
-    // always fails with error
-    // locator.click: Timeout 5000ms exceeded.
-    // waiting for selector "#add-token-vlx_busd button"
     test('BUSD Velas > BUSD', async () => {
       await wallets.swapTokens('token-vlx_busd', 'token-busd', 0.01);
       const txHash = await wallets.getTxHashFromTxlink();
@@ -82,7 +79,7 @@ test.describe('Swap', () => {
   });
 
   test.describe('To Velas network', async () => {
-    test.only('HRC-20 > EVM', async () => {
+    test('HRC-20 > EVM', async () => {
       await wallets.swapTokens('token-vlx_huobi', 'token-vlx_evm', 0.0001);
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(hecochain.waitForTx({ txHash, testName: test.info().title }));
