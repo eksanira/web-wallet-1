@@ -16,7 +16,7 @@ require! {
     \./get-primary-info.ls
     \./pages/confirmation.ls : { confirmation-control }
     \./pages/hovered-address.ls
-    \react-detect-offline : { Offline, Online }
+    \./components/react-detect-offline : { Offline, Online }
 }
 .app
     button
