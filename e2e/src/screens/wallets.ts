@@ -252,8 +252,7 @@ export class WalletsScreen extends BaseScreen {
       } catch {
         log.error(`Attention! This could be an expected error from try/catch.
         Test could pass even if this error is thrown.
-        
-        <swap ${fromToken}>${toToken} failed on attempt to confirm.>`);
+        <swap ${fromToken}>${toToken} failed on attempt to confirm>`);
       }
     }
   }
