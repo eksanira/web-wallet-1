@@ -47,6 +47,7 @@ create-send =->
     typing-amount-time-ms: 0
     TYPING_THRESHOLD_MS: 500
     gasEstimate: \0
+    feeMode: \percent
     homeFee: 0
     homeFeePercent: 0
     is-swap: no

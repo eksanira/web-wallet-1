@@ -201,7 +201,7 @@ export class WalletsScreen extends BaseScreen {
       await addTokenButton.scrollIntoViewIfNeeded();
       await this.page.waitForTimeout(500);
 
-      // // exclusion for BUSD in 
+      // // exclusion for BUSD in
       // if (tokenName === 'token-vlx_busd') {
       //   // @ts-expect-error
       //   await this.page.evaluate(() => document.querySelector(`#add-token-vlx_busd button`).click());

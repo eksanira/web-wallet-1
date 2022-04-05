@@ -835,6 +835,9 @@ $network-details-modal = (store)->
     from-network = (name ? "").to-upper-case!
     to-network   = (wallet-to.coin.name ? "").to-upper-case!
     title = "Swap from #{from-network} to #{to-network}"
+    bridgeFeePercentLabel =
+        | store.current.send.feeMode is "fixed" => round-human(homeFeePercent) + " " + currency
+        | _ => "#{bridgeFeePercent} %"
     .pug.confirmation
         .pug.confirmation-body(style=confirmation)
             .pug.buttons
@@ -861,7 +864,7 @@ $network-details-modal = (store)->
                 if +homeFeePercent > 0
                     .table-item.pug(style=table-item-style)
                         .title.h5.pug(style=table-item-style-title) Bridge fee
-                        .value.pug(style=bridge-fee-style) #{bridgeFeePercent} %
+                        .value.pug(style=bridge-fee-style) #{bridgeFeePercentLabel}
 export confirmation-control = (store)->
     #for situation when we ask peen before action. this window should be hidden
     return null if store.current.page-pin?
