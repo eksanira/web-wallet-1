@@ -14,6 +14,7 @@ require! {
     \../components/button.ls
     \../components/text-field.ls
     \../components/export-import-seed.ls
+    \../pages/confirmation.ls : { alert }
 }
 .locked
     @import scheme
@@ -335,8 +336,12 @@ setup-button = (store, web3t)->
     lang = get-lang store
     style = get-primary-info store
     { open-language } = menu-funcs store, web3t
+    MIN_PASSWORD_LENGTH = 6
     setup = ->
-        return alert(lang.wrong-pin-should) if store.current.pin.length < 4
+        is-secure-length = (store.current.pin ? "").length >= MIN_PASSWORD_LENGTH
+        return alert store, "Password must contain at least #{MIN_PASSWORD_LENGTH} characters" if not is-secure-length
+        is-secure-encoding = /^[0-9a-zA-Z]{6,}$/.test(store.current.pin)
+        return alert store, "Password must contain latin characters" if not is-secure-encoding
         set store.current.pin
         check-pin store, web3t
         store.current.pin = ""
