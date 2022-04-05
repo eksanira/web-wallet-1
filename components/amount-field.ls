@@ -10,6 +10,7 @@ require! {
     \../numbers.js : {parseNum}
     \./react-currency-input-field : { default: CurrencyInput }
     \../icons.ls
+    \bignumber.js
 }
 .input-area
     @import scheme
@@ -96,7 +97,7 @@ module.exports = ({ store, value, on-change, placeholder, id, show-details, toke
             | _ => ".."
     value = 0 if value is "" or not value?
     # Input validation #
-    decimalsLimit = wallet?network?decimals ? 4
+    decimalsLimit = Math.min(wallet?network?decimals, 8)
     decimals = value.toString!.split(DECIMAL_SEPARATOR).1
     if decimals? and (decimals.length > decimalsLimit) then
         value = round-number(value, {decimals: decimalsLimit})
