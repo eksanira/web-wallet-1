@@ -1,5 +1,5 @@
 require! {
-    \read-write-google-spreadsheet : Spreadsheet
+    \google-spreadsheet : { GoogleSpreadsheet }
     \./config.json : { oauth2 }
     \./langs.json
     \prelude-ls : { obj-to-pairs, map, zip, pairs-to-obj, find, each }
@@ -13,7 +13,7 @@ opts =
   worksheetId: \od6
   oauth2: oauth2
 
-spreadsheet = new Spreadsheet opts
+spreadsheet = new GoogleSpreadsheet opts.worksheetId
 
 build-row = (langs, lang)-->
     [name, values] = lang
