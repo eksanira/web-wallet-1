@@ -76,8 +76,11 @@ change-amount-generic = (field)-> (store, amount-send, fast, cb)->
         max-amount = Math.max 1e10, balance
         amountSend = max-amount if +amountSend > max-amount
     /* Update home bridge fee */
-    store.current.send.homeFee = store.current.send.amount-send `times` (store.current.send.homeFeePercent `div` 100 )
-    store.current.send.homeFeeUsd = store.current.send.homeFee `times` wallet.usdRate 
+    homeFee =
+        | store.current.send.feeMode is "fixed" => store.current.send.homeFeePercent `div` (10 ^ 18)
+        | _ => store.current.send.amount-send `times` (store.current.send.homeFeePercent `div` 100)
+    store.current.send.homeFee = homeFee
+    store.current.send.homeFeeUsd = homeFee `times` wallet.usdRate
     result-amount-send = amount-send ? 0
     { fee-type, tx-type, fee-custom-amount } = store.current.send
     usd-rate = wallet?usd-rate ? 0
@@ -129,6 +132,7 @@ change-amount-generic = (field)-> (store, amount-send, fast, cb)->
     send.error =
         | wallet.balance is \... => "Balance is not yet loaded"
         | parse-float(amount-to-charge) < 0 => "Not Enough Funds"
+        | +send.amount-charged > 0 and store.current.send.feeMode is "fixed" and (+send.amount-charged < +(store.current.send.homeFeePercent)) => "Amount #{send.amount-charged} is less than bridge fee (#{store.current.send.homeFeePercent})"
         | _ => ""
     cb null
 export change-amount-send = (store, amount-send, fast, cb)->
@@ -185,8 +189,11 @@ export change-amount-send = (store, amount-send, fast, cb)->
         | txFeeIn? and txFeeIn isnt wallet?coin?token => 0
         | _ => tx-fee
     /* Update home bridge fee */
-    store.current.send.homeFee = store.current.send.amount-send `times` (store.current.send.homeFeePercent `div` 100 )
-    store.current.send.homeFeeUsd = store.current.send.homeFee `times` wallet.usdRate  
+    homeFee =
+        | store.current.send.feeMode is "fixed" => store.current.send.homeFeePercent `div` (10 ^ 18)
+        | _ => store.current.send.amount-send `times` (store.current.send.homeFeePercent `div` 100)
+    store.current.send.homeFee = homeFee
+    store.current.send.homeFeeUsd = homeFee `times` wallet.usdRate
     result-amount-send = if (+amount-send > +tx-fee) then amount-send `minus` tx-fee else (amount-send ? 0)     
     send.amount-send = amount-send `minus` minus-fee if  +amount-send > +tx-fee    
     send.amount-send-usd = calc-usd store, send.amount-send
@@ -203,6 +210,7 @@ export change-amount-send = (store, amount-send, fast, cb)->
     send.amount-send-fee-usd = tx-fee `times` fee-usd-rate
     send.error =
         | wallet.balance is \... => "Balance is not yet loaded"
+        | +send.amount-charged > 0 and store.current.send.feeMode is "fixed" and (+send.amount-charged < +(store.current.send.homeFeePercent)) => "Amount #{send.amount-charged} is less than bridge fee (#{store.current.send.homeFeePercent})"
         | parse-float(wallet.balance `minus` result-amount-send `minus` send.amount-send-fee) < 0 => "Not Enough Funds"
         | _ => ""
     cb null
@@ -265,6 +273,7 @@ export change-amount-calc-fiat = (store, amount-send, fast, cb)->
     send.amount-send-fee-usd = tx-fee `times` fee-usd-rate
     send.error =
         | wallet.balance is \... => "Balance is not yet loaded"
+        | +send.amount-charged > 0 and store.current.send.feeMode is "fixed" and (+send.amount-charged < +(store.current.send.homeFeePercent)) => "Amount #{send.amount-charged} is less than bridge fee (#{store.current.send.homeFeePercent})"
         | parse-float(wallet.balance `minus` result-amount-send) < 0 => "Not Enough Funds"
         | _ => ""
     cb null
@@ -314,6 +323,7 @@ export change-amount-without-fee = (store, amount-send, fast, cb)->
     send.amount-send-fee-usd = tx-fee `times` fee-usd-rate
     send.error =
         | wallet.balance is \... => "Balance is not yet loaded"
+        | +send.amount-charged > 0 and store.current.send.feeMode is "fixed" and (+send.amount-charged < +(store.current.send.homeFeePercent)) => "Amount #{send.amount-charged} is less than bridge fee (#{store.current.send.homeFeePercent})"
         | parse-float(wallet.balance `minus` result-amount-send `minus` send.amount-send-fee) < 0 => "Not Enough Funds"
         | _ => ""
     cb null

@@ -1,5 +1,5 @@
 import {
-  assert, config, data, test, walletURL,
+  assert, data, test, walletURL,
 } from '../../common-test-exports';
 import { AuthScreen, WalletsScreen } from '../../screens';
 
@@ -23,9 +23,8 @@ test.describe.parallel('Wallets screen', () => {
       const transactions = await wallets.txHistory.txDetails.elementHandles();
       assert.isAbove(transactions.length, 10, 'Amount of transactions in the list is less than 10');
 
-      const prodSenderAddress = '46LegTMYJ7ZYLftiCv3Ldzzud3dwajrV6S1oonF5wqFV';
       const txDetails = await wallets.txHistory.txDetails.first().elementHandle();
-      await txDetails?.waitForSelector(`.address-holder a[href*="https://native.velas.com/address/${config.network === 'mainnet' ? prodSenderAddress : data.wallets.txSender.address}"]`);
+      await txDetails?.waitForSelector(`.address-holder a[href*="https://native.velas.com/tx/"]`);
     });
   });
 

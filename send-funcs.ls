@@ -90,7 +90,6 @@ module.exports = (store, web3t)->
         return cb err if err?
         parts = get-tx-details store
         agree <- confirm store, parts.0
-        console.log "send-tx"
         return cb null if not agree
         err, tx <- push-tx { token, tx-type, network, ...tx-data }
         if err?
@@ -867,8 +866,41 @@ module.exports = (store, web3t)->
     export has-send-error = ->
         error = store.current.send.error.toString!
         error? and error.length > 0 and error.toLowerCase! isnt "not enough funds"
-    homeFee = store.current.send.amount-send `times` store.current.send.homeFeePercent
+    homeFee =
+        | store.current.send.feeMode is "fixed" => store.current.send.homeFeePercent
+        | _ => store.current.send.amount-send `times` store.current.send.homeFeePercent
     homeFeeUsd = homeFee `times` wallet.usdRate
+    /**/
+    FIXED_FEE = "0xc76cdb54"
+    PERCENTAGE_FEE = "0x40c62b8f"
+
+    /**/
+    get-fee-mode = (token, feeManagerContract)->
+        mode = 'percent'
+        wallets = window.store.current.account.wallets
+        wallet = wallets.find (.coin.token is token)
+        evm_wallet = wallets.find (.coin.token is \vlx_evm)
+        return mode if not wallet?
+        return mode if not feeManagerContract?
+
+        abi = [{"constant":true,"inputs":[],"name":"getFeeMode","outputs":[{"name":"","type":"bytes4"}],"payable":false,"stateMutability":"view","type":"function"}]
+        web3 = new Web3(new Web3.providers.HttpProvider(evm_wallet?network?api?web3Provider))
+        web3.eth.provider-url = evm_wallet?network?api?web3Provider
+        addr = feeManagerContract
+        return mode if not addr?
+        try
+            contract = web3.eth.contract(abi).at(addr)
+            feeMode = contract.getFeeMode!
+            if feeMode not in [FIXED_FEE, PERCENTAGE_FEE]
+                console.error "feeMode was not recognized properly "
+                return feeMode
+            mode =
+                | feeMode is FIXED_FEE => "fixed"
+                | _ => "percent"
+        catch err
+            #console.error "getFeeMode err", err
+        return mode
+
     getBridgeInfo = (cb)->
         chosen-network = store?current?send?chosen-network
         return cb null if not chosen-network?
@@ -893,6 +925,7 @@ module.exports = (store, web3t)->
             * {"constant":true,"inputs":[],"name":"maxAvailablePerTx","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}
             * {"constant":true,"inputs":[],"name":"getCurrentDay","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}
             * {"constant":true,"inputs":[{"name":"_day","type":"uint256"}],"name":"totalSpentPerDay","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}
+            * {"constant":true,"inputs":[],"name":"feeManagerContract","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}
         web3 = new Web3(new Web3.providers.HttpProvider(wallet?network?api?web3Provider))
         web3.eth.provider-url = wallet.network.api.web3Provider
         { HOME_BRIDGE, HECO_SWAP__HOME_BRIDGE, BSC_SWAP__HOME_BRIDGE, FOREIGN_BRIDGE } = wallet.network
@@ -909,9 +942,18 @@ module.exports = (store, web3t)->
             | _ => HOME_BRIDGE
         contract = web3.eth.contract(abi).at(addr)
         homeFeePercent = 0
+        feeMode = "percent"
         try
-            homeFee = contract.getHomeFee!
-            homeFeePercent = homeFee `div` (10 ^ wallet?network.decimals)
+            feeManagerContract = contract.feeManagerContract!
+            feeMode = get-fee-mode(token, feeManagerContract)
+            if feeMode?
+                store.current.send.feeMode = feeMode
+        catch err
+        try
+            bridgeHomeFee = contract.getHomeFee!
+            homeFeePercent =
+                | feeMode is "fixed" => bridgeHomeFee `div` (10 ^ network.decimals)
+                | _ => bridgeHomeFee `div` (10 ^ network.decimals)
             store.current.send.homeFeePercent = homeFeePercent
         catch err
             store.current.send.homeFeePercent = 0
@@ -961,20 +1003,20 @@ module.exports = (store, web3t)->
         contract = web3.eth.contract(abi).at(addr)
         { network } = wallet-to
         /* Retrieve maxPerTx, minPerTx, dailyLimit, brridgeFee */
-        #try
-            #minPerTxRaw = contract.minPerTx!
-            #minPerTx = minPerTxRaw `div` (10 ^ network.decimals)
-            #maxPerTxRaw = contract.maxPerTx!
-            #maxPerTx = maxPerTxRaw `div` (10 ^ network.decimals)
-        #catch err
-            #console.log "[dminPerTx/maxPerTx Error]: " err
         try
-            homeFee = contract.getForeignFee!
-            homeFeePercent = homeFee `div` (10 ^ network.decimals)
+            feeManagerContract = contract.feeManagerContract!
+            feeMode = get-fee-mode(token, feeManagerContract)
+            if feeMode?
+                store.current.send.feeMode = feeMode
+        try
+            bridgeHomeFee = contract.getForeignFee!
+            homeFeePercent =
+                | feeMode is "fixed" => bridgeHomeFee `div` (10 ^ network.decimals)
+                | _ => bridgeHomeFee `div` (10 ^ network.decimals)
             store.current.send.homeFeePercent = homeFeePercent
             store.current.network-details <<<< { homeFeePercent }
         catch err
-            console.log "[getHomeFee Error]: " err
+            store.current.send.homeFeePercent = 0
         #try
             #dailyLimit = contract.dailyLimit!
             #dailyLimit = dailyLimit `div` (10 ^ network.decimals)

@@ -10,7 +10,7 @@ require! {
     \../copy.ls
     \../icons.ls
     \../components/middle-ellipsis : MiddleEllipsis
-    \../components/address-holder.ls
+    \../components/tx-address-holder.ls
     \../round-number.ls
     \../components/popups/loading.ls
 }
@@ -793,9 +793,9 @@ render-transaction = (store, web3t, tran)-->
                     .pug.gray(style=lightText)
                         span.action.pug
                             if tran.tx-type? then
-                                address-holder { store, wallet: wallet-from, text: tran.tx-type  }
+                                tx-address-holder { store, wallet: wallet-from, url, text: tran.tx-type  }
                             else
-                                address-holder { store, wallet: wallet-from }
+                                tx-address-holder { store, wallet: wallet-from, url }
                         if no
                             span.from-to.pug
                                 span.pug.smart-contract
@@ -807,9 +807,9 @@ render-transaction = (store, web3t, tran)-->
                     .pug.gray(style=lightText)
                         span.action.pug
                             if tran.tx-type? then
-                                address-holder { store, wallet: wallet-to, text: tran.tx-type  }
+                                tx-address-holder { store, wallet: wallet-to, url, text: tran.tx-type  }
                             else
-                                address-holder { store, wallet: wallet-to }
+                                tx-address-holder { store, wallet: wallet-to, url }
                         if no
                             span.from-to.pug
                                 span.pug.smart-contract

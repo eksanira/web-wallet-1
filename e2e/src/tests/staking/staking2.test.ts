@@ -35,6 +35,7 @@ test.describe('Staking 2', () => {
   test.describe('validators list', () => {
     test('validator item info: active/inactive, name', async () => {
       await auth.loginByRestoringSeed(data.wallets.staking.withoutStakeAccounts.seed);
+      await wallets.waitForWalletsDataLoaded();
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
 
@@ -50,6 +51,7 @@ test.describe('Staking 2', () => {
 
     test('sorting', async () => {
       await auth.loginByRestoringSeed(data.wallets.staking.withoutStakeAccounts.seed);
+      await wallets.waitForWalletsDataLoaded();
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
 
@@ -68,6 +70,7 @@ test.describe('Staking 2', () => {
     test('search', async () => {
       await staking.goto({ network: 'mainnet' });
       await auth.loginByRestoringSeed(data.wallets.staking.withoutStakeAccounts.seed);
+      await wallets.waitForWalletsDataLoaded();
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
 
@@ -105,6 +108,7 @@ test.describe('Staking 2', () => {
 
     test('cleanup on start', async () => {
       await auth.loginByRestoringSeed(data.wallets.staking.staker2_1.seed);
+      await wallets.waitForWalletsDataLoaded();
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
 
@@ -113,6 +117,7 @@ test.describe('Staking 2', () => {
 
     test('stake', async ({ page }) => {
       await auth.loginByRestoringSeed(data.wallets.staking.staker2_1.seed);
+      await wallets.waitForWalletsDataLoaded();
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
       await staking.validatorsList.refreshStakesUntilStakedValidatorDisappears();
@@ -131,6 +136,7 @@ test.describe('Staking 2', () => {
 
     test('stake more', async ({ page }) => {
       await auth.loginByRestoringSeed(data.wallets.staking.staker2_1.seed);
+      await wallets.waitForWalletsDataLoaded();
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
 
@@ -149,6 +155,7 @@ test.describe('Staking 2', () => {
 
     test('request withdraw (2 stakes from one validator)', async () => {
       await auth.loginByRestoringSeed(data.wallets.staking.staker2_1.seed);
+      await wallets.waitForWalletsDataLoaded();
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
 
@@ -163,6 +170,7 @@ test.describe('Staking 2', () => {
 
     test('withdraw', async () => {
       await auth.loginByRestoringSeed(data.wallets.staking.staker2_1.seed);
+      await wallets.waitForWalletsDataLoaded();
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
 
@@ -183,6 +191,7 @@ test.describe('Staking 2', () => {
       test.skip(allTestsPassed);
 
       await auth.loginByRestoringSeed(data.wallets.staking.staker2_1.seed);
+      await wallets.waitForWalletsDataLoaded();
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
 
@@ -193,6 +202,7 @@ test.describe('Staking 2', () => {
   test.describe('validator', () => {
     test('rewards', async () => {
       await auth.loginByRestoringSeed(data.wallets.staking.rewards.seed);
+      await wallets.waitForWalletsDataLoaded();
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
 
@@ -208,6 +218,7 @@ test.describe('Staking 2', () => {
 
     test('use max', async () => {
       await auth.loginByRestoringSeed(data.wallets.staking.useMax.seed);
+      await wallets.waitForWalletsDataLoaded();
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
 
@@ -222,6 +233,7 @@ test.describe('Staking 2', () => {
 
     test('copy validator address', async ({ page }) => {
       await auth.loginByRestoringSeed(data.wallets.staking.withoutStakeAccounts.seed);
+      await wallets.waitForWalletsDataLoaded();
       await wallets.openMenu('staking');
       await staking.waitForLoaded();
 
@@ -236,6 +248,7 @@ test.describe('Staking 2', () => {
 
   test('stake with conversion (ENM > Native)', async ({ page }) => {
     await auth.loginByRestoringSeed(data.wallets.staking.stakerEVM.seed);
+    await wallets.waitForWalletsDataLoaded();
     await wallets.openMenu('staking');
     await staking.waitForLoaded();
 

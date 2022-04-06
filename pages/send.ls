@@ -536,7 +536,11 @@ send = ({ store, web3t })->
         address
     recipient = get-recipient(send.to)
     title = if store.current.send.is-swap isnt yes then \send else \swap
-    homeFeePercent = send.homeFeePercent `times` 100
+    homeFeePercent =
+        | _ => send.homeFeePercent `times` 100
+    homeFeePercentLabel =
+        | store.current.send.feeMode is "fixed" => ""
+        | _ => "(#{homeFeePercent}%)"
     is-not-bridge = ->
         { token } = store.current.send.wallet.coin
         { chosen-network } = store.current.send
@@ -680,7 +684,7 @@ send = ({ store, web3t })->
                             tr.pug.orange.home-fee
                                 td.pug
                                     | #{lang.home-fee}
-                                    | (#{homeFeePercent}%)
+                                    | #{homeFeePercentLabel}
                                 td.pug
                                     span.pug(title="#{homeFee}") #{round-human homeFee}
                                         img.label-coin.pug(src="#{send.coin.image}")
@@ -713,6 +717,7 @@ module.exports.init = ({ store, web3t }, cb)->
     store.current.send.amount-buffer.val = \0
     store.current.send.amount-buffer.usdVal = \0
     store.current.send.error = ''
+    store.current.send.feeMode = 'percent'
     if store.current.send.is-swap isnt yes
         store.current.send.contract-address = null
     is-swap-contract = contracts.is-swap-contract(store, send.to)
