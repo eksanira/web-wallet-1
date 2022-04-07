@@ -34,8 +34,6 @@ require! {
     padding: 0px
     background: transparent
     text-align: left
-    @media(max-width:$mobile)
-        background: #14183b
     @media(max-width:$ipad)
         width: 100%
         margin: 0
@@ -58,9 +56,11 @@ require! {
             background: transparent
             border: none
     .style-container
+        min-width: 430px
         @media(max-width:$mobile)
+            min-width: auto
             width: 90%
-            top: 45%
+            top: 375px !important
     .css-5o0em1
         @media(max-width:$mobile)
             min-width: 90%
@@ -112,9 +112,6 @@ require! {
     .css-1mxz8qt-MuiPaper-root
         background-color: transparent !important
     .section-item-container
-        background-color: #1F2853 !important
-        border-top: 1px solid #151839 !important
-        border-bottom: 1px solid #151839 !important
         @media(max-width:$mobile)
             display: inline-block
             width: 95%
@@ -150,13 +147,13 @@ require! {
             margin-left: 10px !important
     button
         font-size: 11px !important
+    .enterance-style-link
+        color: #0bffb7 !important
     div.section-item
         display: flex
         align-items: center
-        height: 90px !important
         padding-block: 5px !important
         padding: 0 !important
-        border-bottom: 2px solid #151839 !important
     >.title
         position: sticky
         position: -webkit-sticky
@@ -204,7 +201,7 @@ staking2 = ({ store, web3t })->
     /* Render */
     .pug.staking2
         .pug.title(style=border-style)
-            .pug.header(class="#{show-class}") Staking
+            .pug.header(class="#{show-class}") #{lang.staking}
             burger store, web3t
         .container.pug
             Staking.pug(stakingStore=store.stakingStore lang=lang info=info)
