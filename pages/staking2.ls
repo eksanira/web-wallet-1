@@ -207,7 +207,7 @@ staking2 = ({ store, web3t })->
             .pug.header(class="#{show-class}") Staking
             burger store, web3t
         .container.pug
-            Staking.pug(stakingStore=store.stakingStore)
+            Staking.pug(stakingStore=store.stakingStore lang=lang info=info)
 
 
 staking2.init = ({store, web3t}, cb)->
