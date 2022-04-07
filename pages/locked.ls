@@ -340,7 +340,7 @@ setup-button = (store, web3t)->
     setup = ->
         is-secure-length = (store.current.pin ? "").length >= MIN_PASSWORD_LENGTH
         return alert store, "Password must contain at least #{MIN_PASSWORD_LENGTH} characters" if not is-secure-length
-        is-secure-encoding = /^[0-9a-zA-Z$&+,:;=?@#|'<>.^*()%!-]{6,}$/.test(store.current.pin)
+        is-secure-encoding = /^[0-9a-zA-Z$&+,:;=?@#|'<>.^*()%!-_]{6,}$/.test(store.current.pin)
         return alert store, "Password must contain only latin characters and/or special characters and digits" if not is-secure-encoding
         set store.current.pin
         check-pin store, web3t
