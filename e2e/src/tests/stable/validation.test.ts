@@ -1,19 +1,13 @@
-import { AuthScreen, WalletsScreen } from '../../screens';
-import { data, test, walletURL } from '../../common-test-exports';
-
-let wallets: WalletsScreen;
-let auth: AuthScreen;
+import { data, test } from '../../common-test-exports';
 
 test.describe.parallel('Validation', () => {
-  test.beforeEach(async ({ page }) => {
-    auth = new AuthScreen(page);
-    wallets = new WalletsScreen(page);
-    await page.goto(walletURL, { waitUntil: 'networkidle' });
+  test.beforeEach(async ({ auth, wallets }) => {
+    await auth.goto();
     await auth.loginByRestoringSeed(data.wallets.txSender.seed);
     await wallets.selectWallet('token-vlx_native');
   });
 
-  test('VLX Native: Show Invalid Address error', async () => {
+  test('VLX Native: Show Invalid Address error', async ({ wallets }) => {
     await wallets.clickSendButton();
     await wallets.sendForm.recepientInput.type('invalid');
     const error = wallets.getElementWhichTextContentContainsWords(['not', 'valid', 'address']);
@@ -22,7 +16,7 @@ test.describe.parallel('Validation', () => {
     await error.isHidden();
   });
 
-  test('VLX Native: Show Not Enough Funds error', async ({ page }) => {
+  test('VLX Native: Show Not Enough Funds error', async ({ page, wallets }) => {
     await wallets.selectWallet('token-vlx_native');
     await wallets.clickSendButton();
     await wallets.sendForm.recepientInput.fill('BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW');

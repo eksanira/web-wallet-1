@@ -76,7 +76,7 @@ export abstract class BaseScreen {
     }, encryptedSeed);
   }
 
-  async goto(params?: { environment?: Environment, network?: Network, host?: string }): Promise<void> {
-    await this.page.goto(getWalletURL({ environment: params?.environment, network: params?.network }));
+  async goto(params?: { environment?: Environment, network?: Network, host?: string, waitUntil?: 'networkidle' | 'load' | 'domcontentloaded' | 'commit' | undefined }): Promise<void> {
+    await this.page.goto(getWalletURL({ environment: params?.environment, network: params?.network }), { waitUntil: params?.waitUntil ?? 'networkidle' });
   }
 }

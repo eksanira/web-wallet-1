@@ -1,18 +1,8 @@
-import { AuthScreen, WalletsScreen } from '../screens';
-import {
-  expect, data, test, walletURL,
-} from '../common-test-exports';
-
-let auth: AuthScreen;
-let wallets: WalletsScreen;
+import { expect, data, test } from '../common-test-exports';
 
 test.describe.parallel('Wallets screen >', () => {
   test.describe('Transactions', () => {
-    test('Transactions list is displayed', async ({ page }) => {
-      // arrange
-      auth = new AuthScreen(page);
-      wallets = new WalletsScreen(page);
-      await page.goto(walletURL, { waitUntil: 'networkidle' });
+    test('Transactions list is displayed', async ({ auth, page, wallets }) => {
       await auth.loginByRestoringSeed(data.wallets.login.seed);
 
       // assert

@@ -1,22 +1,16 @@
-import { AuthScreen, Language, WalletsScreen } from '../../screens';
-import {
-  assert, data, expect, test, walletURL,
-} from '../../common-test-exports';
+import { Language } from '../../screens';
+import { assert, data, expect, test } from '../../common-test-exports';
 import { log } from '../../tools/logger';
 
 test.describe.parallel('Auth', () => {
-  let auth: AuthScreen;
-  let wallets: WalletsScreen;
   const accountAddress24Words = 'G3N4212jLtDNCkfuWuUHsyG2aiwMWQLkeKDETZbo4KG';
 
-  test.beforeEach(async ({ page }) => {
-    await page.goto(walletURL, { waitUntil: 'networkidle' });
-    wallets = new WalletsScreen(page);
-    auth = new AuthScreen(page);
+  test.beforeEach(async ({ auth }) => {
+    await auth.goto();
   });
 
   test.describe('Sign up', () => {
-    test('Create wallet', async () => {
+    test('Create wallet', async ({ auth }) => {
       await auth.language.select('en');
       await auth.welcome.create();
       await auth.pinForNewAcc.fillAndConfirm('111222');
@@ -33,14 +27,14 @@ test.describe.parallel('Auth', () => {
   });
 
   test.describe('Restore with', () => {
-    test('custom seed phrase', async () => {
+    test('custom seed phrase', async ({ auth, wallets }) => {
       await auth.loginByRestoringSeed(data.wallets.login.seed);
 
       await wallets.selectWallet('token-vlx_native');
       assert.equal(await wallets.getWalletAddress(), accountAddress24Words, 'Account address on UI does not equal expected');
     });
 
-    test('24-words seed phrase', async () => {
+    test('24-words seed phrase', async ({ auth, wallets }) => {
       await auth.language.select('en');
       await auth.welcome.restore();
       await auth.restoreFrom.seed('24');
@@ -51,7 +45,7 @@ test.describe.parallel('Auth', () => {
       assert.equal(await wallets.getWalletAddress(), accountAddress24Words, 'Account address on UI does not equal expected');
     });
 
-    test('12-words seed phrase', async () => {
+    test('12-words seed phrase', async ({ auth, wallets }) => {
       const accountAddress12Words = '4NmVCBCCh1cnMTCGTKCgUeYV5Eyk3CmeHUSgMJz7Dwdr';
 
       await auth.language.select('en');
@@ -66,7 +60,7 @@ test.describe.parallel('Auth', () => {
       assert.equal(await wallets.getWalletAddress(), accountAddress12Words, 'Account address on UI does not equal expected');
     });
 
-    test('Can\'t restore with incorrect 24-word seed phrase', async () => {
+    test('Can\'t restore with incorrect 24-word seed phrase', async ({ auth }) => {
       await auth.language.select('en');
       await auth.welcome.restore();
       await auth.restoreFrom.seed('24');
@@ -79,18 +73,17 @@ test.describe.parallel('Auth', () => {
   });
 
   test.describe('Log in', () => {
-    test.beforeEach(async ({ page }) => {
-      wallets = new WalletsScreen(page);
+    test.beforeEach(async ({ page, auth }) => {
       await auth.loginByRestoringSeed(data.wallets.login.seed);
       await page.reload();
     });
 
-    test('Can\'t log in with incorrect password', async () => {
+    test('Can\'t log in with incorrect password', async ({ auth }) => {
       await auth.pinForLoggedOutAcc.typeAndConfirm('111111');
       await expect(auth.pinForLoggedOutAcc.wrongPinError).toBeVisible();
     });
 
-    test('Log in with pin', async () => {
+    test('Log in with pin', async ({ auth, wallets }) => {
       await auth.pinForLoggedOutAcc.typeAndConfirm('111222');
 
       await wallets.selectWallet('token-vlx_native');
@@ -99,7 +92,7 @@ test.describe.parallel('Auth', () => {
   });
 
   test.describe('Choose language on sign up', () => {
-    test('Change language', async ({ page }) => {
+    test('Change language', async ({ page, auth }) => {
       const welcomeTexts = {
         fr: 'Bienvenu(e)!',
         en: 'Welcome!',

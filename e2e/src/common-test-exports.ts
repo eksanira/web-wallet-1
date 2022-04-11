@@ -1,7 +1,7 @@
 import chai from 'chai';
 
 export const { assert } = chai;
-export { expect, test } from '@playwright/test';
+export { expect, test } from './fixtures'
 export {
   Browser, BrowserContext, ElementHandle, Page,
 } from 'playwright-core';
