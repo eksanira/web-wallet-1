@@ -1,15 +1,11 @@
-import { AuthScreen } from '../../screens';
-import { assert, test, walletURL } from '../../common-test-exports';
+import { assert, test } from '../../common-test-exports';
 
 test.describe('Links', () => {
-  let auth: AuthScreen;
-
-  test.beforeEach(async ({ page }) => {
-    await page.goto(walletURL, { waitUntil: 'networkidle' });
-    auth = new AuthScreen(page);
+  test.beforeEach(async ({ auth }) => {
+    await auth.goto();
   });
 
-  test('Download links are correct', async ({ page }) => {
+  test('Download links are correct', async ({ page, auth }) => {
     const appleLink = await auth.downloadButtons.iOS.getAttribute('href');
     const androidLink = await auth.downloadButtons.android.getAttribute('href');
     assert.isTrue(appleLink?.includes('https://apps.apple.com/'));

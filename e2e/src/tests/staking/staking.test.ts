@@ -1,24 +1,12 @@
 import { velasNative } from '@velas/velas-chain-test-wrapper';
 import {
-  assert, data, expect, helpers, test, walletURL,
+  assert, data, expect, helpers, test,
 } from '../../common-test-exports';
-import {
-  AuthScreen, DAppsScreen, StakingScreen, WalletsScreen,
-} from '../../screens';
-
-let auth: AuthScreen;
-let wallets: WalletsScreen;
-let staking: StakingScreen;
-let dApps: DAppsScreen;
 
 // TODO: validators loading takes too much time
 test.describe('Staking', () => {
-  test.beforeEach(async ({ page }) => {
-    auth = new AuthScreen(page);
-    wallets = new WalletsScreen(page);
-    staking = new StakingScreen(page);
-    dApps = new DAppsScreen(page);
-    await page.goto(walletURL);
+  test.beforeEach(async ({ auth, wallets, dApps, staking }) => {
+    await auth.goto();
     await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
     await wallets.openMenu('dApps');
     await dApps.oldStaking.click();
@@ -28,7 +16,7 @@ test.describe('Staking', () => {
   // don't remove "serial". tests in this suite depend on each other
   test.describe.serial('Actions >', () => {
     const stakingAmount = 5;
-    test('Cleanup beforeall', async ({ page }) => {
+    test('Cleanup beforeall', async ({ page, staking }) => {
       if (await page.isVisible('button[disabled]')) {
         throw new Error('There are stakes in warm up or cool down perios. Test suite could not be continued.');
       }
@@ -37,15 +25,7 @@ test.describe('Staking', () => {
       await staking.cleanup.stakesNotDelegated();
     });
 
-    test('Use max', async () => {
-      const balance = await staking.getVLXNativeBalance();
-      await staking.createStakingAccountButton.click();
-      await staking.useMax();
-      const maxAmount = await staking.createStakingAccountForm.getMaxAmount();
-      assert.equal(maxAmount, Math.floor(balance) - 1);
-    });
-
-    test('Create staking account', async () => {
+    test('Create staking account', async ({ staking }) => {
       // arrange
       // VLXNativeAddress is hardcoded address for the 1st account
       const VLXNativeAddress = data.wallets.staking.staker.publicKey;
@@ -74,9 +54,12 @@ test.describe('Staking', () => {
       // check newly created staking account on blockchain
       await staking.makeSureStakingAccIsCreatedAndNotDelegated(newlyAddedStakingAccountAddress);
       assert.equal(helpers.toFixedNumber((await velasNative.getBalance(newlyAddedStakingAccountAddress)).VLX), stakingAmount);
+
+      // wait for staking account will be cached
+      await helpers.sleep(5000);
     });
 
-    test('Delegate stake', async ({ page }) => {
+    test('Delegate stake', async ({ page, staking }) => {
       const initialAmountOfDelegatedStakes = await staking.getAmountOfStakes('Undelegate');
       const stakeAccountAddress = await staking.getFirstStakingAccountAddressFromTheList('Delegate');
 
@@ -109,10 +92,10 @@ test.describe('Staking', () => {
       //   await staking.waitForLoaded();
       //   undelegateButtonAppears = await staking.accounts.undelegateButton.isVisible();
       // }
-      await helpers.sleep(5000);
+      await helpers.sleep(20_000);
     });
 
-    test('Undelegate stake', async ({ page }) => {
+    test('Undelegate stake', async ({ page, staking }) => {
       const initialToUndelegateStakesAmount = await staking.getAmountOfStakes('Undelegate');
       const initialToDelegateStakesAmount = await staking.getAmountOfStakes('Delegate');
       const stakeAccountAddress = await staking.getFirstStakingAccountAddressFromTheList('Delegate');
@@ -145,10 +128,12 @@ test.describe('Staking', () => {
       //   await staking.waitForLoaded();
       //   delegateButtonAppears = await staking.accounts.delegateButton.isVisible();
       // }
-      await helpers.sleep(5000);
+
+      // TODO: implement smart refresh instead of sleep
+      await helpers.sleep(20_000);
     });
 
-    test('Split stake', async ({ page }) => {
+    test('Split stake', async ({ page, staking }) => {
       const initialAmountOfStakingAccounts = await staking.getAmountOfStakes('Delegate');
       const stakingAccountAddresses = await staking.getStakingAccountsAddresses();
 
@@ -168,14 +153,16 @@ test.describe('Staking', () => {
       if (!addedAfterSplitAccountAddress) throw new Error('No staking accounts appears. But it was expected after staking');
 
       // postcondition – withdraw splitted account
-      await staking.selectAccountByAddress(addedAfterSplitAccountAddress);
-      await staking.stakeAccount.withdrawButton.click();
-      await staking.modals.confirmPrompt();
-      await page.waitForSelector('" Funds withdrawn successfully"', { timeout: 20000 });
-      await staking.modals.clickOK();
+      // await staking.selectAccountByAddress(addedAfterSplitAccountAddress);
+      // await staking.stakeAccount.withdrawButton.click();
+      // await staking.modals.confirmPrompt();
+      // await page.waitForSelector('" Funds withdrawn successfully"', { timeout: 20000 });
+      // await staking.modals.clickOK();
+      // wait for splitting to finish (2 accoutns are created)
+      await helpers.sleep(20_000);
     });
 
-    test('Withdraw stake', async ({ page }) => {
+    test('Withdraw stake', async ({ page, staking }) => {
       const stakingAccountAddresses = await staking.getStakingAccountsAddresses();
       const initialAmountOfStakingAccounts = await staking.getAmountOfStakes('all');
       const stakeAccountAddress = await staking.getFirstStakingAccountAddressFromTheList('Delegate');
@@ -195,24 +182,50 @@ test.describe('Staking', () => {
       const withdrawedStakeAccountAddress = (await staking.getStakingAccountsUpdate(stakingAccountAddresses))?.removed;
       if (!withdrawedStakeAccountAddress) throw new Error(`Withdwed stake ${stakingAccountAddresses} does not disappear from stakes list`);
       assert.equal(withdrawedStakeAccountAddress, stakeAccountAddress);
-    });
 
-    test('Validators list', async ({ page }) => {
-      await page.waitForSelector('.validator-item .identicon', { timeout: 10000 });
-      await staking.validatorsList.validator.icon.first().waitFor();
-      assert.isTrue(await staking.validatorsList.validator.browse.first().isVisible(), 'No icon with link to explorer in validators list');
-      assert.isTrue(await staking.validatorsList.validator.copy.first().isVisible(), 'No copy address icon in validators list');
-      assert.isTrue(await staking.validatorsList.validator.myStakes.first().isVisible(), 'No my-stake column in validators list');
+      // POSTCONDITIONS
+      // withdraw second splitted account
+      await staking.selectAccount('Delegate');
+      await staking.stakeAccount.withdrawButton.click();
+      await staking.modals.confirmPrompt();
+      await page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
+      await staking.modals.clickOK();
+      await staking.waitForLoaded(); 
+
+      // wait for withdrawal completion
+      await helpers.sleep(20_000);
     });
 
     // TODO
     test.skip('stakes list could be refreshed manually if WS connection is not established', async () => {
     });
+
+
+    test('Cleanup afterall', async ({ staking }) => {
+      await staking.cleanup.stakesToUndelegate();
+      await staking.cleanup.stakesToWithdraw();
+      await staking.cleanup.stakesNotDelegated();
+    });
   });
 
-  test('Cleanup afterall', async () => {
-    await staking.cleanup.stakesToUndelegate();
-    await staking.cleanup.stakesToWithdraw();
-    await staking.cleanup.stakesNotDelegated();
+  test('Use max', async ({ staking }) => {
+    const balance = await staking.getVLXNativeBalance();
+    await staking.createStakingAccountButton.click();
+    await staking.useMax();
+    const maxAmount = await staking.createStakingAccountForm.getMaxAmount();
+    assert.equal(maxAmount, Math.floor(balance) - 1);
   });
+
+  test('Validators list', async ({ page, staking }) => {
+    await page.waitForSelector('.validator-item .identicon', { timeout: 10000 });
+    await staking.validatorsList.validator.icon.first().waitFor();
+    assert.isTrue(await staking.validatorsList.validator.browse.first().isVisible(), 'No icon with link to explorer in validators list');
+    assert.isTrue(await staking.validatorsList.validator.copy.first().isVisible(), 'No copy address icon in validators list');
+    assert.isTrue(await staking.validatorsList.validator.myStakes.first().isVisible(), 'No my-stake column in validators list');
+  });
+
 });
+
+
+// TODO: unite staking ations from cleanup with staking actions in tests;
+// e.g. if withdrawal is implemented in cleanup, no need to implement it in tests

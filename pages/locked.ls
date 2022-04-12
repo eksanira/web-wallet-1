@@ -14,6 +14,7 @@ require! {
     \../components/button.ls
     \../components/text-field.ls
     \../components/export-import-seed.ls
+    \../pages/confirmation.ls : { alert }
 }
 .locked
     @import scheme
@@ -242,6 +243,14 @@ check-pin = (store, web3t)->
         notify-form-result \unlock, null
 version = (store, web3t)->
     .version.pug #{store.version}
+MIN_PASSWORD_LENGTH = 6
+validate-password = (store, cb)->
+    is-secure-length = (store.current.pin ? "").length >= MIN_PASSWORD_LENGTH
+    return cb "Password must contain at least #{MIN_PASSWORD_LENGTH} characters" if not is-secure-length
+    is-secure-encoding = /^[0-9a-zA-Z$&+,:;=?@#|'<>.^*()%!-_]{6,}$/.test(store.current.pin)
+    return cb "Password must contain only latin characters and/or special characters and digits" if not is-secure-encoding
+    cb null
+
 input = (store, web3t)->
     style = get-primary-info store
     button-primary1-style=
@@ -267,7 +276,8 @@ input = (store, web3t)->
         if exists!
             check-pin store, web3t
         else
-            return alert(lang.wrong-pin-should) if store.current.pin.length < 4
+            err <- validate-password store
+            return alert(store, err) if err?
             set store.current.pin
             check-pin store, web3t
             store.current.pin = ""
@@ -335,8 +345,10 @@ setup-button = (store, web3t)->
     lang = get-lang store
     style = get-primary-info store
     { open-language } = menu-funcs store, web3t
+
     setup = ->
-        return alert(lang.wrong-pin-should) if store.current.pin.length < 4
+        err <- validate-password store
+        return alert(store, err) if err?
         set store.current.pin
         check-pin store, web3t
         store.current.pin = ""

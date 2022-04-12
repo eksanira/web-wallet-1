@@ -68,6 +68,11 @@ module.exports =
         left-side: \#05061f
         filter: "invert(105%)"
         confirm: "linear-gradient(90deg, #0bffb7 42%, #0bffb7 150%)"
+        stakingBg: \#050621
+        bgItem: \#151633
+        borderItem: \#05061f
+        bgSecond: \#2e315b
+        tooltipEpoch: \#2c2e50
     deep_blue:
         clip: "none"
         border-btn: "6px"
@@ -134,7 +139,12 @@ module.exports =
         drag-bg: "rgba(33, 48, 64, 0.78)"
         left-side: \#151A42
         filter: "none"
-        confirm: "linear-gradient(90deg, rgb(247, 97, 139) 42%, rgb(42, 122, 255) 150%)"
+        confirm: "linear-gradient(90deg, rgb(247, 97, 139) 42%, rgb(42, 122, 255) 150%)",
+        stakingBg: \#1d1f48
+        bgItem: \#282b58
+        borderItem: \#1d1f48
+        bgSecond: \#151A42
+        tooltipEpoch: \#2c2e50
     violet:
         clip: "none"
         text-seed-btn: "#0b0c27"
@@ -201,6 +211,11 @@ module.exports =
         left-side: "transparent"
         filter: "none"
         confirm: "linear-gradient(90deg, rgb(247, 97, 139) 42%, rgb(42, 122, 255) 150%)"
+        stakingBg: \#391970
+        bgItem: \#501b94
+        borderItem: \#31135f
+        bgSecond: \#6b268e
+        tooltipEpoch: \#6942b2
     dark:
         clip: "none"
         primary-button-filter: "none"
@@ -265,6 +280,11 @@ module.exports =
         left-side: "transparent"
         filter: "none"
         confirm: "linear-gradient(90deg, rgb(247, 97, 139) 42%, rgb(42, 122, 255) 150%)"
+        stakingBg: \#2f4156
+        bgItem: \#213040
+        borderItem: \#2a4158
+        bgSecond: \#677897
+        tooltipEpoch: \#465e73
     testnet:
         clip: "none"
         primary-button-filter: "none"
@@ -330,6 +350,11 @@ module.exports =
         left-side: "transparent"
         filter: "none"
         confirm: "linear-gradient(90deg, rgb(247, 97, 139) 42%, rgb(42, 122, 255) 150%)"
+        stakingBg: \#383942
+        bgItem: \#2a2b30
+        borderItem: \#383942
+        bgSecond: \#4d4e58
+        tooltipEpoch: \#1f1e1e
     dark_mojave:
         clip: "none"
         primary-button-filter: "none"
@@ -395,6 +420,11 @@ module.exports =
         left-side: "transparent"
         filter: "none"
         confirm: "linear-gradient(90deg, rgb(247, 97, 139) 42%, rgb(42, 122, 255) 150%)"
+        stakingBg: \#383942
+        bgItem: \#292a2f
+        borderItem: \#383943
+        bgSecond: \#4d4e58
+        tooltipEpoch: \#5b5c6d
     monochrome:
         clip: "none"
         text-seed-btn: "#0b0c27"
@@ -460,3 +490,8 @@ module.exports =
         left-side: "transparent"
         filter: "none"
         confirm: "linear-gradient(90deg, rgb(247, 97, 139) 42%, rgb(42, 122, 255) 150%)"
+        stakingBg:\#283b50
+        bgItem: \#3b536d
+        borderItem: \#213040
+        bgSecond: \#677897
+        tooltipEpoch: \#4b6e8b

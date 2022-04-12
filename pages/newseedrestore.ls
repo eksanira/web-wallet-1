@@ -6,6 +6,8 @@ require! {
     \./icon.ls
     \../icons.ls
     \prelude-ls : { map, each, sort-by }
+    \../pin.ls : { set, check, exists, del, setbkp }
+    \../seed.ls : seedmem
 }
 .newseed-restore
     @import scheme
@@ -185,8 +187,17 @@ newseed = ({ store, web3t })->
     new-wallet = ->
         generate-seed!
         next!
+    reset-wallet = (store)->
+        setbkp!
+        del!
+        seedmem.setbkp!
+        seedmem.del!
+        store.current.pin = ""
+        store.current.pin-trial = 0
+
     random = -> Math.random!
     restore-wallet = (count)-> ->
+        reset-wallet store
         store.current.seed-words =
             [1 to count] |> map -> { part: "", index: 0 }
         store.current.seed-generated = no

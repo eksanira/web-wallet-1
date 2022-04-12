@@ -1,28 +1,12 @@
-import {
-  AuthScreen, SearchScreen, SettingsScreen, Staking2Screen, WalletsScreen,
-} from '../../screens';
-import {
-  assert, data, test, walletURL,
-} from '../../common-test-exports';
-
-let wallets: WalletsScreen;
-let auth: AuthScreen;
-let settings: SettingsScreen;
-let search: SearchScreen;
-let staking: Staking2Screen;
+import { assert, data, test } from '../../common-test-exports';
 
 test.describe.parallel('Navigation', () => {
-  test.beforeEach(async ({ page }) => {
-    wallets = new WalletsScreen(page);
-    settings = new SettingsScreen(page);
-    auth = new AuthScreen(page);
-    search = new SearchScreen(page);
-    staking = new Staking2Screen(page);
-    await page.goto(walletURL, { waitUntil: 'networkidle' });
+  test.beforeEach(async ({ auth }) => {
+    await auth.goto();
     await auth.loginByRestoringSeed(data.wallets.login.seed);
   });
 
-  test('Navigate with back button in header', async ({ page }) => {
+  test('Navigate with back button in header', async ({ auth, page, search, settings, staking2, wallets }) => {
     await wallets.waitForWalletsDataLoaded();
 
     const screens = ['settings', 'search', 'staking', 'swap', 'send'];
@@ -50,7 +34,7 @@ test.describe.parallel('Navigation', () => {
         case 'staking':
           await wallets.openMenu('wallets');
           await wallets.openMenu('staking');
-          await staking.container.waitFor();
+          await staking2.container.waitFor();
           break;
 
         case 'swap':
@@ -69,7 +53,7 @@ test.describe.parallel('Navigation', () => {
     }
   });
 
-  test('Redirects to support page from menu', async ({ context }) => {
+  test('Redirects to support page from menu', async ({ context, wallets }) => {
     const [newPage] = await Promise.all([
       context.waitForEvent('page'),
       wallets.openMenu('support'),
