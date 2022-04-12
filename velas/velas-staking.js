@@ -1,4 +1,5 @@
-const velasSolanaWeb3 = require("../../web3t/providers/solana/index.cjs");
+//const velasSolanaWeb3 = require("../../web3t/providers/solana/index.cjs");
+const velasSolanaWeb3 = require("@velas/web3");
 let PublicKey, Connection, StakeProgram, Authorized, Lockup, STAKE_INSTRUCTION_LAYOUTS, TransactionInstruction;
 PublicKey = velasSolanaWeb3.PublicKey;
 Connection = velasSolanaWeb3.Connection;
