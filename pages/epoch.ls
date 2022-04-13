@@ -153,6 +153,8 @@ require! {
             cursor: default
             display: inline-block
             vertical-align: middle
+            &:hover
+                cursor: pointer
         input
             outline: none
             width: 100px
