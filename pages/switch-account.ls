@@ -75,18 +75,17 @@ require! {
         .name
             white-space: nowrap
             overflow: hidden
-            width: 90px
+            width: 100px
             text-align: right
             cursor: default
             display: contents
             vertical-align: middle
             display: inline-block
             overflow-x: auto
-            background: var(--background)
+            background: transparent
             &:hover
                 width: auto
-                max-width: 330px
-                padding: 3px
+                cursor: pointer
         input
             outline: none
             width: 70px
