@@ -1,20 +1,12 @@
-import {
-  assert, data, test, walletURL,
-} from '../../common-test-exports';
-import { AuthScreen, WalletsScreen } from '../../screens';
-
-let auth: AuthScreen;
-let wallets: WalletsScreen;
+import { assert, data, test } from '../../common-test-exports';
 
 test.describe.parallel('Wallets screen', () => {
-  test.beforeEach(async ({ page }) => {
-    auth = new AuthScreen(page);
-    wallets = new WalletsScreen(page);
-    await page.goto(walletURL, { waitUntil: 'networkidle' });
+  test.beforeEach(async ({ auth }) => {
+    await auth.goto();
   });
 
   test.describe('Transactions', () => {
-    test('Transactions list is displayed', async () => {
+    test('Transactions list is displayed', async ({ auth, wallets }) => {
       // arrange
       await auth.loginByRestoringSeed(data.wallets.fundsReceiver.seed);
 
@@ -29,12 +21,12 @@ test.describe.parallel('Wallets screen', () => {
   });
 
   test.describe('Main', () => {
-    test.beforeEach(async () => {
+    test.beforeEach(async ({ auth, wallets }) => {
       await auth.loginByRestoringSeed(data.wallets.login.seed);
       await wallets.waitForWalletsDataLoaded();
     });
 
-    test('Lock and unlock', async () => {
+    test('Lock and unlock', async ({ auth, wallets }) => {
       await wallets.lockButton.click();
       await auth.passwordInput.isVisible();
       assert.isFalse(await wallets.lockButton.isVisible());
@@ -43,7 +35,7 @@ test.describe.parallel('Wallets screen', () => {
       assert.isTrue(await auth.isLoggedIn());
     });
 
-    test('Add and hide litecoin wallet', async () => {
+    test('Add and hide litecoin wallet', async ({ wallets }) => {
       // TODO: need to scroll to launch test for mainnet
       // add litecoin
       await wallets.addWalletsPopup.open();
@@ -56,7 +48,7 @@ test.describe.parallel('Wallets screen', () => {
       assert.isFalse(await wallets.isWalletInWalletsList('token-ltc'));
     });
 
-    test('Switch account', async ({ page }) => {
+    test('Switch account', async ({ page, wallets }) => {
       await wallets.selectWallet('token-vlx_native');
       await page.click('.switch-account');
       await page.click('" Account 2"');
@@ -68,7 +60,7 @@ test.describe.parallel('Wallets screen', () => {
       await page.waitForSelector('.qrcode');
     });
 
-    test('Copy wallet address from "Receive" page', async ({ context, page }) => {
+    test('Copy wallet address from "Receive" page', async ({ context, page, wallets }) => {
       await context.grantPermissions(['clipboard-read', 'clipboard-write']);
       // clear clipboard
       await page.evaluate(async () => await navigator.clipboard.writeText(''));
@@ -90,32 +82,32 @@ test.describe.parallel('Wallets screen', () => {
   });
 
   test.describe('Add custom tokens: ', () => {
-    test.beforeEach(async () => {
+    test.beforeEach(async ({ auth, wallets }) => {
       await auth.loginByRestoringSeed(data.wallets.withFunds.seed);
       await wallets.waitForWalletsDataLoaded();
     });
 
-    test('WAG on Velas', async () => {
+    test('WAG on Velas', async ({ wallets }) => {
       await wallets.addCustomToken(data.customTokens.velas.wag, 'Velas', 'testnet');
       const customTokenBalance = await wallets.getCustomTokenBalance('#token-wag_testnet_Velas__custom');
       assert.equal(customTokenBalance, '1');
     });
 
-    test('WEENUS on Ethereum', async () => {
+    test('WEENUS on Ethereum', async ({ wallets }) => {
       await wallets.addCustomToken(data.customTokens.eth.weenus, 'Ethereum', 'testnet');
       const customTokenBalance = await wallets.getCustomTokenBalance('#token-weenus_testnet_Ethereum__custom');
       assert.equal(customTokenBalance, '2');
     });
 
     // TODO: CORS error
-    test.skip('DAI on BSC', async () => {
+    test.skip('DAI on BSC', async ({ wallets }) => {
       await wallets.addCustomToken(data.customTokens.bsc.dai, 'BSC', 'testnet');
 
       const customTokenBalance = await wallets.getCustomTokenBalance('#token-dai_testnet_BSC__custom');
       assert.equal(customTokenBalance, '3');
     });
 
-    test('DAI on Heco', async () => {
+    test('DAI on Heco', async ({ wallets }) => {
       await wallets.addCustomToken(data.customTokens.heco.dai, 'Heco', 'testnet');
 
       const customTokenBalance = await wallets.getCustomTokenBalance('#token-dai_testnet_Heco__custom');

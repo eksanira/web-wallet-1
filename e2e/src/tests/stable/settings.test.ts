@@ -1,25 +1,17 @@
+import { Language } from '../../screens';
 import {
-  AuthScreen, Language, SettingsScreen, WalletsScreen,
-} from '../../screens';
-import {
-  assert, data, test, walletURL,
+  assert, data
 } from '../../common-test-exports';
 import { log } from '../../tools/logger';
+import { test } from '../../fixtures'
 
 test.describe.parallel('Settings', () => {
-  let wallets: WalletsScreen;
-  let auth: AuthScreen;
-  let settings: SettingsScreen;
-
-  test.beforeEach(async ({ page }) => {
-    wallets = new WalletsScreen(page);
-    auth = new AuthScreen(page);
-    settings = new SettingsScreen(page);
-    await page.goto(walletURL, { waitUntil: 'networkidle' });
+  test.beforeEach(async ({ auth }) => {
+    await auth.goto();
     await auth.loginByRestoringSeed(data.wallets.login.seed);
   });
 
-  test('Copy private key', async ({ context, page }) => {
+  test('Copy private key', async ({ context, page, auth, settings, wallets }) => {
     // arrange
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     // clear clipboard
@@ -27,7 +19,7 @@ test.describe.parallel('Settings', () => {
 
     await wallets.openMenu('settings');
     await settings.copyPrivateKeyButton.click();
-    await auth.passwordInput.type('111222');
+    await auth.passwordInput.fill('111222');
     await wallets.modals.confirmPrompt();
     await settings.selectTokenInCopyModal('Velas Native');
     await page.waitForSelector('" Copied to Clipboard!"');
@@ -38,7 +30,7 @@ test.describe.parallel('Settings', () => {
     assert.equal(copiedKey, 'WnexSzUPFb258nLxGC1jiCShUZC1DbTpaRC2kizKxnpKNuvsqAhegBUCVgoULDxog19CjxfYaijS5Cpe78EFKqQ');
   });
 
-  test('Switch account index', async () => {
+  test('Switch account index', async ({ wallets, settings }) => {
     await wallets.waitForWalletsDataLoaded();
     await wallets.openMenu('settings');
     await settings.accountIndexSwitcherRight.click();
@@ -50,7 +42,7 @@ test.describe.parallel('Settings', () => {
     assert.equal(await wallets.getWalletAddress(), 'BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW', 'Account 2 address on UI does not equal expected');
   });
 
-  test('Enable/Disable testnet', async ({ page }) => {
+  test('Enable/Disable testnet', async ({ page, settings, wallets }) => {
     await wallets.waitForWalletsDataLoaded();
 
     await wallets.openMenu('settings');
@@ -75,7 +67,7 @@ test.describe.parallel('Settings', () => {
     assert.equal(await wallets.getWalletAddress(), 'n415iSKJwmoSZXTWYb6VqNSNTSA1YMwL8U', 'Testnet BTC address on UI does not equal expected');
   });
 
-  test('Change language setting', async () => {
+  test('Change language setting', async ({ settings, wallets }) => {
     await wallets.openMenu('settings');
 
     const headerTexts = {

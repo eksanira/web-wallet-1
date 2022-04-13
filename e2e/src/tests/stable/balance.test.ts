@@ -1,27 +1,17 @@
 import { velasNative } from '@velas/velas-chain-test-wrapper';
 import balancesAPI from '../../api/balances-api';
-import { AuthScreen, Currency, WalletsScreen } from '../../screens';
-import {
-  assert, data, helpers, test, walletURL,
-} from '../../common-test-exports';
+import { Currency } from '../../screens';
+import { assert, data, helpers, test } from '../../common-test-exports';
 import { log } from '../../tools/logger';
 
 test.describe('Balance', () => {
-  let auth: AuthScreen;
-  let wallets: WalletsScreen;
-
-  test.beforeEach(async ({ page }) => {
-    auth = new AuthScreen(page);
-    wallets = new WalletsScreen(page);
-    await page.goto(walletURL);
+  test.beforeEach(async ({ auth, wallets }) => {
+    await auth.goto();
     await auth.loginByRestoringSeed(data.wallets.withFunds.seed);
     await wallets.waitForWalletsDataLoaded();
   });
 
-  test('Check VLX Legacy, VLX Native, Litecoin and Bitcoin balances', async () => {
-    // await wallets.addWalletsPopup.open();
-    // await wallets.addWalletsPopup.add('token-ltc');
-
+  test('Check VLX Legacy, VLX Native, Litecoin and Bitcoin balances', async ({ wallets }) => {
     const balances = await wallets.getWalletsBalances();
     const walletsList = Object.keys(balances) as Currency[];
 
