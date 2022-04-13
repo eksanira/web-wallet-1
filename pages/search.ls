@@ -43,95 +43,6 @@ require! {
             position: absolute
             top: 8px
             right: 12px
-    .section
-        border-bottom: 1px solid rgba(240, 237, 237, 0.16)
-        padding: 30px 20px 0
-        display: flex
-        &.filter
-            padding: 0px 20px
-        &:last-child
-            border: 0
-        .title
-            padding: 0px
-            width: 10%
-            text-align: left
-            font-size: 14px
-            @media(max-width: 800px)
-                display: none
-            h3, h2
-                margin: 0
-                line-height: 36px
-                font-weight: 400
-        .description
-            padding: 0px
-            font-size: 14px
-            width: 50%
-            text-align: left
-            &.tabs
-                overflow: hidden
-                ul
-                    overflow-x: scroll
-                    scrollbar-width: none
-                    white-space: nowrap
-            @media(max-width: 800px)
-                width: 100%
-            ul
-                list-style: none
-                padding: 0
-                margin: 10px 0 0
-                li
-                    display: inline-block
-                    padding: 15px
-                    cursor: pointer
-                    &:first-child
-                        padding-left: 0
-                    .icon
-                        margin-right: 5px
-                        svg
-                            vertical-align: middle !important
-                    &.active
-                        color: #c671f1
-                        border-bottom: 1px solid
-                        padding-bottom: 15px
-            input
-                outline: none
-                width: 100%
-                box-sizing: border-box
-                height: 36px
-                line-height: 36px
-                border-radius: $border-radius
-                padding: 0px 10px
-                font-size: 14px
-                margin: 1px
-                border: 0px
-                box-shadow: none
-    button
-        background-color: $primary
-        border: 1px solid $primary
-        border-radius: $border
-        color: white
-        height: 36px
-        width: 104px
-        margin-top: 5px
-        padding: 0 6px
-        text-decoration: none
-        text-transform: uppercase
-        font-size: 10px
-        font-weight: bold
-        cursor: pointer
-        outline: none
-        display: inline-block
-        text-overflow: ellipsis
-        overflow: hidden
-        white-space: nowrap
-        &:hover
-            background: transparent
-            color: $primary
-        &.link
-            min-width: 190px
-        float: right
-        margin-top: 12px
-        margin-right: 10px
     >.title
         position: sticky
         position: -webkit-sticky
@@ -149,29 +60,19 @@ require! {
             text-align: center
             @media(max-width:800px)
                 text-align: center
-    >.toolbar
-        position: relative
-        height: 60px
-        ul
-            display: inline-flex
-            float: left
-            list-style: none
-            padding: 0 20px
-            line-height: 1.8
-            &.path
     >.wrapper
-        height: calc(100vh - 250px)
+        height: calc(115vh - 250px);
         display: block
         overflow-y: scroll
         scrollbar-width: none
-        padding: 0 20px
         margin-top: 40px
         >.panel-content
-            width: 50%
-            margin-left: 10%
+            display: flex
+            justify-content: center
             @media(max-width: 800px)
                 width: 100%
                 margin-left: 0
+                display: block
             .results
                 text-align: left
                 font-size: 13px
@@ -232,11 +133,59 @@ require! {
                                 content: ' · '
                         &:first-child
                             margin-left: 0
-        >.store-content
-            width: 40%
-            position: relative
-            @media(max-width: 800px)
-                display: none
+            >.platform
+                display: inline-block
+                width: 300px
+                padding: 20px
+                vertical-align: top
+                text-overflow: ellipsis
+                border: 1px solid white
+                overflow: hidden
+                margin: 10px 1%
+                border-radius: $border
+                >.tag_name
+                    margin-bottom: 10px
+                .title-icons
+                    height: 40px
+                    margin: 10px 0
+                    filter: brightness(4)
+                .title-icons-small
+                    height: 35px
+                    margin: 10px 0
+                    filter: brightness(4)
+                a
+                    padding: 10px
+                >.title
+                    font-size: 16px
+                    font-weight: bold
+                    margin-top: 10px
+                >.subtitle
+                    margin-block: 20px
+                    font-size: 14px
+                    color: #8286a0
+                >.source
+                    &.link
+                        a
+                            text-decoration: underline
+                            padding: 0
+                >.source, >.download
+                    padding: 10px 0 0
+                    box-sizing: content-box
+                    a
+                        text-decoration: none
+                        text-transform: uppercase
+                        font-size: 10px
+                        font-weight: bold
+                        cursor: pointer
+                        outline: none
+                        display: inline-block
+                        overflow: hidden
+                        white-space: nowrap
+                        width: 80px
+                        border-radius: $border
+                &:hover
+                    opacity: .8
+                    cursor: pointer
     .iron
         -webkit-mask-image: linear-gradient(75deg, rgba(0, 0, 0, 0.6) 30%, #000 50%, rgba(0, 0, 0, 0.6) 70%)
         -webkit-mask-size: 50% 100%
@@ -246,175 +195,45 @@ require! {
             -webkit-mask-position: right
         100%
             -webkit-mask-position: left
-all = (store, web3t)->
-    lang = get-lang store
-    .pug.panel-content
-        p.results.pug #{lang.under-development}
+
 dapps = (store, web3t)->
     lang = get-lang store
     { go-back } = history-funcs store, web3t
     info = get-primary-info store
-    style=
-        background: info.app.wallet
+    resource =
         color: info.app.text
-    border-style =
-        color: info.app.text
-        border-bottom: "1px solid #{info.app.border}"
-    border-style2 =
-        color: info.app.text
-        border-bottom: "1px solid #{info.app.border}"
-        background: "#4b2888"
-    border-style3 =
-        color: info.app.text
-        border-bottom: "0"
-    border-right =
-        color: info.app.text
-        border-right: "1px solid #{info.app.border}"
-    button-primary2-style=
-        border: "1px solid #{info.app.primary2}"
-        color: info.app.text
-        background: info.app.primary2
-        background-color: info.app.primary2-spare
-    header-table-style=
-        border-bottom: "1px solid #{info.app.border}"
-        background: info.app.wallet-light
-        position: "sticky"
-    dashed-border=
-        border-color: "#{info.app.border}"
-        color: info.app.color3
-    filter-body =
         border: "1px solid #{info.app.border}"
         background: info.app.header
-    border-b =
-        border-bottom: "1px solid #{info.app.border}"
-    button-primary1-style=
-        border: "1px solid #{info.app.primary1}"
-        color: info.app.text
-        background: info.app.primary1
-        background-color: info.app.primary1-spare
-    input-style=
-        background: info.app.input
-        border: "0"
-        color: info.app.text
-    lightText=
-        color: info.app.color3
-    icon-style=
-        filter: info.app.nothingIcon
-    hide-sound=
-        opacity: "0"
-        float: "right"
-    goto-resources = ->
-        navigate store, web3t, \resources
-    goto-file-storage = ->
-        navigate store, web3t, \filestorage
     goto-staking = ->
         navigate store, web3t, \validators
-    goto-resources2 = ->
-        navigate store, web3t, \resources2
-    goto-choose-staker = ->
-        navigate store, web3t, \validators
-    goto-videostorage = ->
-        navigate store, web3t, \videostorage
-    goto-soundstorage = ->
-        navigate store, web3t, \soundstorage
-    goto-notice = ->
-        navigate store, web3t, \notification
     goto-wallets = ->
         navigate store, web3t, \offlinewallets
-    goto-vote = ->
-        navigate store, web3t, \vote
     goto-util = ->
         navigate store, web3t, \util
-    .pug.panel-content
-        .pug.section
-            .source.pug(on-click=goto-staking)
-                .pug.header Velas Staking 1.0
-            .pug.description
-        .pug.section
-            .source.pug(on-click=goto-wallets)
-                .pug.header Velas Wallets
-            .pug.description For Mac, Windows, IOS, Android devices
-        .pug.section
-            .source.pug(on-click=goto-util)
-                .pug.header Convert VLX2ETH
-            .pug.description
 
-web = (store, web3t)->
-    lang = get-lang store
     .pug.panel-content
-        p.results.pug #{lang.under-development}
-images = (store, web3t)->
-    lang = get-lang store
-    .pug.panel-content
-        p.results.pug #{lang.under-development}
-files = (store, web3t)->
-    lang = get-lang store
-    .pug.panel-content
-        p.results.pug #{lang.under-development}
+        .pug.platform(style=resource on-click=goto-staking)
+            img.pug.title-icons-small(src="#{icons.staking}")
+            .pug.title Velas Staking 1.0
+            .pug.subtitle Previous version of staking for experienced users
+        .pug.platform(style=resource on-click=goto-wallets)
+            img.pug.title-icons-small(src="#{icons.wallet}")
+            .pug.title Download Desktop Wallets
+            .pug.subtitle  Desktop versions for Mac, Windows, Linux
+        .pug.platform(style=resource on-click=goto-util)
+            img.pug.title-icons(src="#{icons.convert}")
+            .pug.title Legacy address conversion
+            .pug.subtitle Convert VLX Legacy address format to EVM format
+
 search = ({ store, web3t })->
     lang = get-lang store
     { go-back } = history-funcs store, web3t
     info = get-primary-info store
-    style=
-        background: info.app.wallet
-        color: info.app.text
     border-style =
         color: info.app.text
         border-bottom: "1px solid #{info.app.border}"
         background: info.app.background
         background-color: info.app.bgspare
-    border-style3 =
-        color: info.app.text
-        border-bottom: "0"
-        background: info.app.background
-        background-color: info.app.bgspare
-    border-right =
-        color: info.app.text
-        border-right: "1px solid #{info.app.border}"
-    button-primary2-style=
-        border: "1px solid #{info.app.primary2}"
-        color: info.app.text
-        background: info.app.primary2
-        background-color: info.app.primary2-spare
-    header-table-style=
-        border-bottom: "1px solid #{info.app.border}"
-        background: info.app.wallet-light
-        position: "sticky"
-    dashed-border=
-        border-color: "#{info.app.border}"
-        color: info.app.color3
-    filter-body =
-        border: "1px solid #{info.app.border}"
-        background: info.app.header
-    border-b =
-        border-bottom: "1px solid #{info.app.border}"
-    button-primary1-style=
-        border: "1px solid #{info.app.primary1}"
-        color: info.app.text
-        background: info.app.primary1
-        background-color: info.app.primary1-spare
-    input-style=
-        background: info.app.input
-        border: "0"
-        color: info.app.text
-    lightText=
-        color: info.app.color3
-    icon-style=
-        filter: info.app.nothingIcon
-    activate = (tab)-> ->
-        store.search.tab = tab 
-    activate-all = activate \all
-    activate-dapps = activate \dapps
-    activate-web = activate \web
-    activate-images = activate \images
-    activate-files = activate \files
-    active-class = (tab)->
-        if store.search.tab is tab then 'active' else ''
-    active-all = active-class \all
-    active-dapps = active-class \dapps
-    active-web = active-class \web
-    active-images = active-class \images
-    active-files = active-class \files
     show-class =
         if store.current.open-menu then \hide else \ ""
     .pug.search
@@ -423,23 +242,7 @@ search = ({ store, web3t })->
             .pug.close(on-click=go-back)
                 img.icon-svg.pug(src="#{icons.arrow-left}")
             burger store, web3t
-            epoch store, web3t
-            switch-account store, web3t
-        .pug.search-input
-            .pug.section.filter(style=border-style)
-                .title.pug
-                .description.tabs.pug
 
         .pug.wrapper
-            if active-all is \active
-                all store, web3t
-            if active-dapps is \active
-                dapps store, web3t
-            if active-web is \active
-                web store, web3t
-            if active-images is \active
-                images store, web3t
-            if active-files is \active
-                files store, web3t
-            .pug.store-content
+            dapps store, web3t
 module.exports = search
