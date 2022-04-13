@@ -34,8 +34,9 @@ export class AuthScreen extends BaseScreen {
 
   async fastLogin(testWallet: Wallet) {
     if (!testWallet.encryptedSeed) throw new Error(`Wallet with seed ${testWallet.seed} does not contain encrypted seed value`);
-    const seed = testWallet.encryptedSeed;
-    await this.setSeedToLocalStorage(seed);
+    if (!this.page.url() || this.page.url() === 'about:blank') await this.goto();
+
+    await this.setSeedToLocalStorage(testWallet.encryptedSeed);
     await this.page.reload({ waitUntil: 'commit' });
     await this.pinForNewAcc.fillAndConfirm('111222');
   }

@@ -325,6 +325,7 @@ module.exports = (store, web3t)->
     goto-resources = ->
         navigate store, web3t, \resources
     goto-choose-staker = ->
+        return null if store.current.page is \staking2
         navigate store, web3t, \staking2
         store.menu.show = no
     goto-info = ->

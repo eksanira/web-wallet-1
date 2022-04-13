@@ -1,23 +1,17 @@
 import { velasNative } from '@velas/velas-chain-test-wrapper';
 import {
-  assert, data, helpers, test, walletURL,
+  assert, data, helpers, test,
 } from '../../common-test-exports';
 import { ropsten } from '../../api/explorers-api';
-import { AuthScreen, WalletsScreen } from '../../screens';
-
-let auth: AuthScreen;
-let wallets: WalletsScreen;
 
 test.describe.parallel('Transactions', () => {
-  test.beforeEach(async ({ page }) => {
-    auth = new AuthScreen(page);
-    wallets = new WalletsScreen(page);
-    await page.goto(walletURL);
+  test.beforeEach(async ({ auth, wallets }) => {
+    await auth.goto();
     await auth.loginByRestoringSeed(data.wallets.txSender.seed);
     await wallets.waitForWalletsDataLoaded();
   });
 
-  test('Send VLX native', async () => {
+  test('Send VLX native', async ({ wallets }) => {
     await wallets.addToken('token-vlx_native');
 
     const receiverInitialBalance = await velasNative.getBalance(data.wallets.fundsReceiver.address);
@@ -39,7 +33,7 @@ test.describe.parallel('Transactions', () => {
   });
 
   // TODO: network request error
-  test.skip('Send BTC', async () => {
+  test.skip('Send BTC', async ({ wallets }) => {
     await wallets.addToken('token-btc');
 
     await wallets.sendTx('token-btc', 'mvvFj8fbFpL61S2HyhvcqEHjT2ThB1f78j', 0.00001);
@@ -51,7 +45,7 @@ test.describe.parallel('Transactions', () => {
   });
 
   // TODO: network request error
-  test.skip('Send LTC', async () => {
+  test.skip('Send LTC', async ({ wallets }) => {
     await wallets.addToken('token-ltc');
 
     await wallets.sendTx('token-ltc', 'mvvFj8fbFpL61S2HyhvcqEHjT2ThB1f78j', 0.00001);
@@ -62,7 +56,7 @@ test.describe.parallel('Transactions', () => {
     assert.isTrue(txSignatureLink.includes('https://testnet.litecore.io/'));
   });
 
-  test('Send ETH Legacy', async () => {
+  test('Send ETH Legacy', async ({ wallets }) => {
     await wallets.addToken('token-eth_legacy');
 
     await wallets.sendTx('token-eth_legacy', '0xb322f01cb6a191974e7291600a4dc1b46f00f752', 0.00001);
