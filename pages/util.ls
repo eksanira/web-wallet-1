@@ -45,6 +45,8 @@ require! {
         width: 450px
         margin: 100px auto 0
         text-align: left
+        @media(max-width: $mobile)
+            width: 90%
         .sub-header
             min-height: 40px
             text-align: left
@@ -104,11 +106,11 @@ AddressUtil = (props) ->
     return (
         .pug
             .pug.form-group
-                label.pug Please paste your VLX address here.
-                input.pug(style=style placeholder="VLX address" on-change=vlx-address-onhange value=vlx-address)
+                label.pug Please paste your VLX Legacy address here.
+                input.pug(style=style placeholder="VLX Legacy address" on-change=vlx-address-onhange value=vlx-address)
             .pug.form-group
-                label.pug Please paste your ETH address here.
-                input.pug(style=style placeholder="ETH address" on-change=eth-address-onhange value=eth-address)
+                label.pug Please paste your EVM address here.
+                input.pug(style=style placeholder="EVM address" on-change=eth-address-onhange value=eth-address)
     )
 convert = ({ store, web3t })->
     lang = get-lang store
@@ -129,10 +131,8 @@ convert = ({ store, web3t })->
             .pug.close(on-click=go-back)
                 img.icon-svg.pug(src="#{icons.arrow-left}")
             burger store, web3t
-            epoch store, web3t
-            switch-account store, web3t
         .pug.wrapper
             .pug.sub-header
-                span.pug.head(style=text) Convert VLX2ETH
+                span.pug.head(style=text) Convert address
             AddressUtil.pug
 module.exports = convert
