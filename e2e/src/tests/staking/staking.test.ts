@@ -56,7 +56,7 @@ test.describe('Staking', () => {
       assert.equal(helpers.toFixedNumber((await velasNative.getBalance(newlyAddedStakingAccountAddress)).VLX), stakingAmount);
 
       // wait for staking account will be cached
-      await helpers.sleep(5000);
+      await helpers.sleep(15_000);
     });
 
     test('Delegate stake', async ({ page, staking }) => {
@@ -92,7 +92,7 @@ test.describe('Staking', () => {
       //   await staking.waitForLoaded();
       //   undelegateButtonAppears = await staking.accounts.undelegateButton.isVisible();
       // }
-      await helpers.sleep(20_000);
+      await helpers.sleep(25_000);
     });
 
     test('Undelegate stake', async ({ page, staking }) => {
@@ -130,7 +130,7 @@ test.describe('Staking', () => {
       // }
 
       // TODO: implement smart refresh instead of sleep
-      await helpers.sleep(20_000);
+      await helpers.sleep(25_000);
     });
 
     test('Split stake', async ({ page, staking }) => {
@@ -159,7 +159,7 @@ test.describe('Staking', () => {
       // await page.waitForSelector('" Funds withdrawn successfully"', { timeout: 20000 });
       // await staking.modals.clickOK();
       // wait for splitting to finish (2 accoutns are created)
-      await helpers.sleep(20_000);
+      await helpers.sleep(25_000);
     });
 
     test('Withdraw stake', async ({ page, staking }) => {
@@ -193,7 +193,7 @@ test.describe('Staking', () => {
       await staking.waitForLoaded(); 
 
       // wait for withdrawal completion
-      await helpers.sleep(20_000);
+      await helpers.sleep(25_000);
     });
 
     // TODO

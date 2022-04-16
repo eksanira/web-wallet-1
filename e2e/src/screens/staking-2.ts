@@ -12,7 +12,7 @@ export class Staking2Screen extends BaseScreen {
   container = this.page.locator('.staking2');
 
   waitForLoaded = async (): Promise<void> => {
-    await this.validatorsList.loader.waitFor({ state: 'detached', timeout: 25000 });
+    await this.validatorsList.loader.waitFor({ state: 'detached', timeout: 30000 });
     await this.validatorsList.validator.first().waitFor();
     await this.page.waitForTimeout(500);
   }
@@ -59,7 +59,7 @@ export class Staking2Screen extends BaseScreen {
 
     stakedValidatorsAmountIsVisible: async (amount: number): Promise<boolean> => await this.page.locator(`"Staked Validators (${amount})"`).isVisible(),
 
-    refreshStakesUntilStakedValidatorAppears: async (timeout: number = 30000): Promise<void> => {
+    refreshStakesUntilStakedValidatorAppears: async (timeout: number = 35000): Promise<void> => {
       const startTime = new Date().getTime();
       while (!await this.validatorsList.stakedValidatorsAmountIsVisible(1) && new Date().getTime() < startTime + timeout) {
         await this.validatorsList.reload();
@@ -68,7 +68,7 @@ export class Staking2Screen extends BaseScreen {
       if (!await this.validatorsList.stakedValidatorsAmountIsVisible(1)) throw new Error(`Staked validator does not appear within ${timeout / 1000} seconds`);
     },
 
-    refreshStakesUntilStakedValidatorDisappears: async (timeout: number = 30000): Promise<void> => {
+    refreshStakesUntilStakedValidatorDisappears: async (timeout: number = 35000): Promise<void> => {
       const startTime = new Date().getTime();
       while (await this.validatorsList.stakedValidatorsAmountIsVisible(1) && new Date().getTime() < startTime + timeout) {
         await this.validatorsList.reload();
@@ -97,7 +97,7 @@ export class Staking2Screen extends BaseScreen {
       return textContainingStakeValue.split(' VLX')[0];
     },
 
-    waitForStakeValueUpdate: async (params: { fromValue?: string, toValue?: string }, timeout = 30000): Promise<string> => {
+    waitForStakeValueUpdate: async (params: { fromValue?: string, toValue?: string }, timeout = 35000): Promise<string> => {
       log.info(`Wait for staking update from ${params.fromValue || 'any'} to ${params.toValue || 'any'} value`);
 
       if (!params.fromValue && !params.toValue) throw new Error(`At lease one param should be passed: ${helpers.stringify(params)}`);
@@ -221,14 +221,14 @@ export class Staking2Screen extends BaseScreen {
         await this.validator.staked.clickrequestWithdraw();
         await this.stakeForm.useMaxButton.click();
         await this.stakeForm.withdrawButton.click();
-        await this.stakeForm.successfulWithdraRequestMessage.waitFor({ timeout: 15000 });
+        await this.stakeForm.successfulWithdraRequestMessage.waitFor({ timeout: 20000 });
         await this.stakeForm.okButton.click();
       }
 
       // final withdrawal
       await this.validator.tab.withdrawals.click();
       await this.validator.withdrawals.withdrawButton.click();
-      await this.stakeForm.successfulWithdrawMessage.waitFor({ timeout: 16000 });
+      await this.stakeForm.successfulWithdrawMessage.waitFor({ timeout: 20000 });
     }
   }
 }
