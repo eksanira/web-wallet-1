@@ -131,11 +131,11 @@ export class StakingScreen extends BaseScreen {
   async waitForStakesAmountUpdated(params: { initialStakesAmount: number, stakeType?: Stake | 'all', timeout?: number }): Promise<number> {
     const { initialStakesAmount } = params;
     const stakeType = params.stakeType || 'all';
-    const timeout = params.timeout || 30000;
+    const timeout = params.timeout || 35_000;
 
     let finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);
     const startTime = new Date().getTime();
-    while (finalAmountOfStakingAccounts === initialStakesAmount && (new Date().getTime() - startTime < 11000)) {
+    while (finalAmountOfStakingAccounts === initialStakesAmount && (new Date().getTime() - startTime < timeout)) {
       // await this.refresh();
       log.debug(`Amount of stake accounts still the same - ${finalAmountOfStakingAccounts}. Wait for WS message...`);
       // await this.page.waitForTimeout(500);

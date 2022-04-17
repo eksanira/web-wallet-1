@@ -102,7 +102,7 @@ test.describe('Staking', () => {
 
       await staking.accounts.clickUndelegate();
       await staking.modals.confirmPrompt();
-      await page.waitForSelector('" Funds undelegated successfully"', { timeout: 10000 });
+      await page.waitForSelector('" Funds undelegated successfully"', { timeout: 15_000 });
       await staking.modals.clickOK();
       await staking.waitForLoaded();
 
