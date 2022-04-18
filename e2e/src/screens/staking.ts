@@ -136,7 +136,6 @@ export class StakingScreen extends BaseScreen {
     let finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);
     const startTime = new Date().getTime();
     while (finalAmountOfStakingAccounts === initialStakesAmount && (new Date().getTime() - startTime < timeout)) {
-      // await this.refresh();
       log.debug(`Amount of stake accounts still the same - ${finalAmountOfStakingAccounts}. Wait for WS message...`);
       // await this.page.waitForTimeout(500);
       finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);
@@ -144,6 +143,9 @@ export class StakingScreen extends BaseScreen {
         throw new Error(`You expected "${stakeType}" stakes amount to be changed. But no changes during ${timeout / 1000} sec.
         "${stakeType}" stakes amount: initial=${initialStakesAmount}, final=${finalAmountOfStakingAccounts}.`);
       }
+      await this.page.waitForTimeout(500);
+      await this.refresh();
+      await this.waitForLoaded();
     }
     log.debug(`Great! Amount of "${params.stakeType}" stake accounts has changed: ${initialStakesAmount} > ${finalAmountOfStakingAccounts}.`);
     return finalAmountOfStakingAccounts;
