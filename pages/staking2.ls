@@ -55,12 +55,40 @@ require! {
             display: contents
             background: transparent
             border: none
+    .index-style-box-size
+        width: 70% !important
+        position: relative
+        top: 0
+        left: 0
+        transform: none
+        margin-top: 10px
+        @media(max-width:800px)
+            width: 600px
+        @media(max-width: $mobile)
+            width: 95%
+            display: contents
+            background: transparent
+            border: none
     .style-container
         min-width: 430px
         @media(max-width:$mobile)
             min-width: auto
             width: 90%
             top: 375px !important
+    .style-container-size
+        min-width: 430px
+        position: relative
+        top: 0
+        left: 0
+        transform: none
+        margin-top: 10px
+        @media(max-width:$mobile)
+            min-width: auto
+            width: 90%
+            top: 375px !important
+    select option
+        background-color: #1b1b1be6 !important
+        color: white !important
     .css-5o0em1
         @media(max-width:$mobile)
             min-width: 90%
