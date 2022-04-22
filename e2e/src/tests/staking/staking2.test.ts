@@ -157,7 +157,7 @@ test.describe('Staking 2', () => {
       await staking2.validator.staked.clickrequestWithdraw();
       await staking2.stakeForm.useMaxButton.click();
       await staking2.stakeForm.withdrawButton.click();
-      await staking2.stakeForm.successfulWithdraRequestMessage.waitFor({ timeout: 15000 });
+      await staking2.stakeForm.successfulWithdraRequestMessage.waitFor({ timeout: 20000 });
       await staking2.stakeForm.okButton.click();
     });
 
@@ -171,7 +171,7 @@ test.describe('Staking 2', () => {
       await staking2.validatorsList.selectFirstValidator();
       await staking2.validator.tab.withdrawals.click();
       await staking2.validator.withdrawals.withdrawButton.click();
-      await staking2.stakeForm.successfulWithdrawMessage.waitFor({ timeout: 15000 });
+      await staking2.stakeForm.successfulWithdrawMessage.waitFor({ timeout: 20000 });
       await staking2.stakeForm.okButton.click();
       await staking2.validator.goBack();
 

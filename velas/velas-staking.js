@@ -1,4 +1,5 @@
-const velasSolanaWeb3 = require("../../web3t/providers/solana/index.cjs");
+//const velasSolanaWeb3 = require("../../web3t/providers/solana/index.cjs");
+const velasSolanaWeb3 = require("@velas/web3");
 let PublicKey, Connection, StakeProgram, Authorized, Lockup, STAKE_INSTRUCTION_LAYOUTS, TransactionInstruction;
 PublicKey = velasSolanaWeb3.PublicKey;
 Connection = velasSolanaWeb3.Connection;
@@ -10,12 +11,13 @@ Transaction = velasSolanaWeb3.Transaction;
 Account = velasSolanaWeb3.Account;
 STAKE_INSTRUCTION_LAYOUTS = velasSolanaWeb3.STAKE_INSTRUCTION_LAYOUTS;
 TransactionInstruction = velasSolanaWeb3.TransactionInstruction;
+const BN = require('bn.js');
 
 class VelasStaking {
 
     // validate options.authorization;
     constructor(options) {
-        this.connection    = new Connection(options.NODE_HOST, 'singleGossip');
+        this.connection    = new Connection(options.NODE_HOST, 'confirmed');
         this.authorization = {}
         this.sol           = 1000000000;
         this.min_stake     = 1;
@@ -100,13 +102,12 @@ class VelasStaking {
             stakePubkey,
             authorizedPubkey,
             splitStakePubkey,
-            lamports: lamports + rent,
+            lamports: new BN((lamports + rent), 10),
             seed,
-            base: authorizedPubkey
+            basePubkey: authorizedPubkey
         };
-        
         try {
-            transaction.add(StakeProgram.split(params));
+            transaction.add(StakeProgram.splitWithSeed(params));
         } catch (e) {
             return {
                 error: "split_stake_account_error",

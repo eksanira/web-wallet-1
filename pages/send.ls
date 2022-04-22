@@ -585,6 +585,8 @@ send = ({ store, web3t })->
     inline-style =
         display: "inline"
         min-width: "30px"
+    amount-send-fee-rounded = round-human(send.amount-send-fee, {decimals:8})
+    console.log "amount-send-fee #{amount-send-fee-rounded}"
     /* Render */
     .pug.content
         loader {loading: store.current.send.checking-allowed, text: "Please wait, approving bridge contract..."}
@@ -676,7 +678,7 @@ send = ({ store, web3t })->
                         tr.pug.orange
                             td.pug #{lang.fee}
                             td.pug
-                                span.pug(class="#{placeholder-class}" title="#{send.amount-send-fee}" style=inline-style) #{round-human send.amount-send-fee}
+                                span.pug(class="#{placeholder-class}" title="#{send.amount-send-fee}" style=inline-style) #{amount-send-fee-rounded}
                                     img.label-coin.pug(src="#{fee-coin-image}")
                                     span.pug(title="#{send.amount-send-fee}") #{fee-token-display}
                                 .pug.usd $ #{round-human send.amount-send-fee-usd}
