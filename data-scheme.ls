@@ -69,6 +69,9 @@ url-hash-params =
     | window? => qs.parse window.location.hash.replace('#', '')
     | _ => {}
 store =
+    showTooltip: false
+    tooltipCoordinates: { x: 0, y: 0 }
+    tooltipMessage: "" 
     stakingStore: null
     loading-wallet: no
     inputCaretPosition: 0

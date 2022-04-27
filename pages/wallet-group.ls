@@ -42,7 +42,6 @@ require! {
             height: 60px
         $mt: 20px
         box-sizing: border-box
-        overflow: hidden
         transition: height .5s
         border: 0px
         &:first-child
@@ -104,7 +103,7 @@ require! {
             color: #677897
             font-size: 14px
             text-align: center
-            overflow: hidden
+            overflow: visible
             >*
                 display: inline-block
                 box-sizing: border-box
@@ -112,6 +111,21 @@ require! {
                 padding-top: 12px
                 height: $card-top-height
                 line-height: 16px
+            >.tooltips
+                >.tooltip
+                    position: absolute;
+                    top: 37%;
+                    right: 40px;
+                    z-index: 1;
+                    >.tooltipIcon
+                        width: 13px;
+                        height: 13px;
+                        font-size: 12px;
+                        line-height: 15px;
+                        border-radius: 30px;
+                        background: #CCC;
+                        color: var(--bgspare)
+                        opacity: 0.55;
             >.top-left
                 width: 30%
                 text-align: left
@@ -279,7 +293,7 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
             swap-click = swap(store, wallet)
             token = wallet.coin.token
             is-custom = wallet?coin?custom is yes
-            token-display = 
+            token-display =
                 | is-custom is yes => (wallet.coin.name ? "").to-upper-case!
                 | _ => (wallet.coin.nickname ? "").to-upper-case!
             makeDisabled = store.current.refreshing
@@ -288,6 +302,13 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
             wallet-is-disabled = isNaN(wallet.balance)
             send-swap-disabled = wallet-is-disabled or is-loading
             is-custom = wallet.coin.custom is yes
+            
+            toggleTooltipVisible = (isHovered) -> (event) ->
+                store.showTooltip = isHovered
+                if isHovered then
+                  store.tooltipCoordinates = { x: event.pageX, y: event.pageY }
+                  store.tooltipMessage = lang["tooltip_#{wallet.coin.token}"]
+
             /* Render */
             .wallet.pug.wallet-item(class="#{big} #{disabled-class}" key="#{token}" style=border-style id="token-#{token}")
                 .wallet-top.pug(on-click=expand)
@@ -302,19 +323,12 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
                                     span.pug #{ token-display }
                             if is-custom
                                 .price.pug(class="#{placeholder}" title="#{balance-usd}")
-                                    span.pug(style=custom-style) CUSTOM   
+                                    span.pug(style=custom-style) CUSTOM
                             else
                                 .price.pug(class="#{placeholder}" title="#{balance-usd}")
                                     span.pug #{ round-human balance-usd}
                                     span.pug USD
-                    if store.current.device is \mobile
-                        .top-middle.pug(style=wallet-style)
-                            if +wallet.pending-sent is 0
-                                .balance.pug.title(class="#{placeholder}") #{name}
-                            .balance.pug(class="#{placeholder}")
-                                span.pug(title="#{wallet.balance}") #{ round-human wallet.balance }
-                                    img.label-coin.pug(class="#{placeholder-coin}" src="#{wallet.coin.image}")
-                                    span.pug #{ token-display }
-                                if +wallet.pending-sent >0
-                                    .pug.pending
-                                        span.pug -#{ pending }               
+                    if token in <[ vlx_native vlx_evm vlx2 bsc_vlx vlx_erc20 vlx_huobi ]>
+                        .tooltips.pug
+                            .tooltip.pug(style=wallet-style onMouseEnter=toggleTooltipVisible(true) onMouseLeave=toggleTooltipVisible(false))
+                                .tooltipIcon.pug.title(class="#{placeholder}") \?
