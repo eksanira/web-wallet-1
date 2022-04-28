@@ -208,6 +208,14 @@ module.exports = ({ store, web3t })->
         | _ => ""
     open-menu = ->
         store.current.open-menu = not store.current.open-menu
+    detect-network-change = !->
+        el = document.getElementById("offline-notification")
+        return if not el?
+        store.forceReload = yes
+        store.forceReloadTxs = yes
+        <- web3t.refresh
+        store.forceReload = no
+        store.forceReloadTxs = no
     .pug
         define-root store
         description store
@@ -227,5 +235,5 @@ module.exports = ({ store, web3t })->
                 left-menu store, web3t
             current-page { store, web3t }
             hovered-address { store }
-            Offline.pug
-                .notification.fixed-n-centered.error-no-connection.pug Warning! You have no internet connection!\nOffline mode is on!
+            Offline.pug(onChange=detect-network-change)
+                .notification.fixed-n-centered.error-no-connection.pug(id="offline-notification") Warning! You have no internet connection!\nOffline mode is on!
