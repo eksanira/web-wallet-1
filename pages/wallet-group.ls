@@ -74,7 +74,6 @@ require! {
             height: 60px
         $mt: 20px
         box-sizing: border-box
-        overflow: hidden
         transition: height .5s
         border: 0px
         &:first-child
@@ -136,7 +135,7 @@ require! {
             color: #677897
             font-size: 14px
             text-align: center
-            overflow: hidden
+            overflow: visible
             >*
                 display: inline-block
                 box-sizing: border-box
@@ -144,6 +143,28 @@ require! {
                 padding-top: 12px
                 height: $card-top-height
                 line-height: 16px
+            .name-holder
+                display: inline-block;
+                .balance.title
+                    float: left
+            .tooltips
+                display: inline-block
+                margin-left: 3px
+                margin-bottom: -2px
+                >.tooltip
+                    text-align: center
+                    top: 37%;
+                    right: 40px;
+                    z-index: 1;
+                    >.tooltipIcon
+                        width: 13px;
+                        height: 13px;
+                        font-size: 12px;
+                        line-height: 15px;
+                        border-radius: 30px;
+                        background: #CCC;
+                        color: var(--bgspare)
+                        opacity: 0.55;
             .top-left
                 width: 30%
                 text-align: left
@@ -293,6 +314,14 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
         padding: "2px 4px"
         font-size: "8px"
         color: "#71f4c0"
+    info-style =
+        width: "13px"
+        height: "13px"
+        font-size: "10px"
+        margin-left: "5px"
+        margin-top: "-1px"
+        float: "revert"
+        display: "block"
 
     is-loading = store.current.refreshing is yes
     group-name =
@@ -319,7 +348,7 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
             swap-click = swap(store, wallet)
             token = wallet.coin.token
             is-custom = wallet?coin?custom is yes
-            token-display = 
+            token-display =
                 | is-custom is yes => (wallet.coin.name ? "").to-upper-case!
                 | _ => (wallet.coin.nickname ? "").to-upper-case!
             makeDisabled = store.current.refreshing
@@ -333,9 +362,16 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
                 | _ => ""
             refresh = ->
                 err <- calc-certain-wallet(store, token)
+
+            toggleTooltipVisible = (isHovered) -> (event) ->
+                store.showTooltip = isHovered
+                if isHovered then
+                  store.tooltipCoordinates = { x: event.pageX, y: event.pageY }
+                  store.tooltipMessage = lang["tooltip_#{wallet.coin.token}"]
+
             /* Render */
             .wallet.pug.wallet-item(class="#{big}" key="#{token}" style=border-style id="token-#{token}")
-                if (wallet.state is "error" )
+                if (wallet.state is "error")
                     .pug.retry-container
                         button.pug.button.lock.mt-5.retry-button(on-click=refresh class="#{syncing}")
                             icon \Sync, 20
@@ -345,7 +381,12 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
                             .img.pug(class="#{placeholder-coin}")
                                 img.pug(src="#{wallet-icon}")
                             .info.pug
-                                .balance.pug.title(class="#{placeholder}") #{name}
+                                .name-holder.pug
+                                    .balance.pug.title(class="#{placeholder}") #{name}
+                                    if token in <[ vlx_native vlx_evm vlx2 bsc_vlx vlx_erc20 vlx_huobi ]>
+                                        .tooltips.pug
+                                            .tooltip.pug(style=wallet-style onMouseEnter=toggleTooltipVisible(true) onMouseLeave=toggleTooltipVisible(false))
+                                                img.tooltipIcon.pug(src="#{icons.info}" style=info-style)
                                 if store.current.device is \desktop
                                     .price.token.pug(class="#{placeholder}" title="#{wallet.balance}")
                                         span.pug #{ round-human wallet.balance }
@@ -357,14 +398,3 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
                                     .price.pug(class="#{placeholder}" title="#{balance-usd}")
                                         span.pug #{ round-human balance-usd}
                                         span.pug USD
-                        if store.current.device is \mobile
-                            .top-middle.pug(style=wallet-style)
-                                if +wallet.pending-sent is 0
-                                    .balance.pug.title(class="#{placeholder}") #{name}
-                                .balance.pug(class="#{placeholder}")
-                                    span.pug(title="#{wallet.balance}") #{ round-human wallet.balance }
-                                        img.label-coin.pug(class="#{placeholder-coin}" src="#{wallet.coin.image}")
-                                        span.pug #{ token-display }
-                                    if +wallet.pending-sent >0
-                                        .pug.pending
-                                            span.pug -#{ pending }
