@@ -12,6 +12,7 @@ require! {
     \./confirmation.ls : { alert }
     \../components/button.ls
     \../components/address-holder.ls
+    \../calc-certain-wallet.ls
 }
 .wallet-group
     @import scheme
@@ -26,6 +27,37 @@ require! {
         position: sticky
         top: 0
         z-index: 1
+    .wallet-item
+        .retry-button
+            cursor: pointer
+            background: rgba(0, 0, 0, 0.16)
+            border-radius: 50% !important
+            color: rgb(39, 106, 159)
+            border-radius: 50px
+            border: 0
+            padding: 5px
+            width: 30px
+            height: 30px
+            margin: 0px 5px 0
+            position: absolute
+            top: 0
+            right: 5px
+            bottom: 0
+            margin: auto
+            z-index: 3
+            transition: padding .5s
+            &:hover
+                filter: hue-rotate(323deg)
+            &.syncing
+                @keyframes spin
+                    from
+                        transform: rotate(0deg)
+                    to
+                        transform: rotate(360deg)
+                animation-name: spin
+                animation-duration: 4000ms
+                animation-iteration-count: infinite
+                animation-timing-function: linear
     .wallet
         @import scheme
         $cards-height: 324px
@@ -35,7 +67,7 @@ require! {
         cursor: pointer
         $card-height: 60px
         height: $card-height
-        &.disabled-wallet-item
+        .disabled-wallet-item
             opacity: 0.24
             cursor: no-drop
         &.last
@@ -96,7 +128,7 @@ require! {
                 padding-left: 10px
             a
                 text-align: left
-        >.wallet-top
+        .wallet-top
             padding: 0 12px
             box-sizing: border-box
             $card-top-height: 55px
@@ -112,11 +144,14 @@ require! {
                 padding-top: 12px
                 height: $card-top-height
                 line-height: 16px
-            >.top-left
+            .top-left
                 width: 30%
                 text-align: left
                 overflow: hidden
                 text-overflow: ellipsis
+                transition: all .2s ease-in-out
+                opacity: 1
+
                 @media screen and (min-width: 801px)
                     padding-top: 5px
                 @media screen and (max-width: 800px)
@@ -157,7 +192,7 @@ require! {
                         &.token
                             opacity: 1
                             font-size: 12px
-            >.top-middle
+            .top-middle
                 width: 30%
                 text-align: center
                 .label-coin
@@ -177,7 +212,7 @@ require! {
                             display: none
                     .title-balance
                         display: none
-            >.top-right
+            .top-right
                 width: 40%
                 text-align: right
                 .wallet-swap img
@@ -258,12 +293,7 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
         padding: "2px 4px"
         font-size: "8px"
         color: "#71f4c0"
-    placeholder =
-        | store.current.refreshing => "placeholder"
-        | _ => ""
-    placeholder-coin =
-        | store.current.refreshing => "placeholder-coin"
-        | _ => ""
+
     is-loading = store.current.refreshing is yes
     group-name =
         | wallets-group?0? => wallets-group.0
@@ -273,6 +303,16 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
         .pug.group-name #{group-name} Network
         wallets |> map (wallet)->
             { wallet-icon, button-style, uninstall, wallet, active, big, balance, balance-usd, pending, send, receive, swap, expand, usd-rate, last } = wallet-funcs store, web3t, wallets, wallet, wallets-groups, group-name
+            container-class =
+                | wallet.status is \loading => ""
+                | _ => "loaded"
+            placeholder =
+                | wallet.status is \loading && isNaN(wallet.balance) => "placeholder"
+                | _ => ""
+            placeholder-coin =
+                | wallet.status is \loading && isNaN(wallet.balance) => "placeholder-coin"
+                | _ => ""
+            withError = wallet.status is \error
             name = wallet.coin.name ? wallet.coin.token
             receive-click = receive(wallet)
             send-click = send(wallet)
@@ -288,33 +328,43 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
             wallet-is-disabled = isNaN(wallet.balance)
             send-swap-disabled = wallet-is-disabled or is-loading
             is-custom = wallet.coin.custom is yes
+            syncing =
+                | wallet.status is \loading => \syncing
+                | _ => ""
+            refresh = ->
+                err <- calc-certain-wallet(store, token)
             /* Render */
-            .wallet.pug.wallet-item(class="#{big} #{disabled-class}" key="#{token}" style=border-style id="token-#{token}")
-                .wallet-top.pug(on-click=expand)
-                    .top-left.pug(style=wallet-style)
-                        .img.pug(class="#{placeholder-coin}")
-                            img.pug(src="#{wallet-icon}")
-                        .info.pug
-                            .balance.pug.title(class="#{placeholder}") #{name}
-                            if store.current.device is \desktop
-                                .price.token.pug(class="#{placeholder}" title="#{wallet.balance}")
-                                    span.pug #{ round-human wallet.balance }
-                                    span.pug #{ token-display }
-                            if is-custom
-                                .price.pug(class="#{placeholder}" title="#{balance-usd}")
-                                    span.pug(style=custom-style) CUSTOM   
-                            else
-                                .price.pug(class="#{placeholder}" title="#{balance-usd}")
-                                    span.pug #{ round-human balance-usd}
-                                    span.pug USD
-                    if store.current.device is \mobile
-                        .top-middle.pug(style=wallet-style)
-                            if +wallet.pending-sent is 0
+            .wallet.pug.wallet-item(class="#{big}" key="#{token}" style=border-style id="token-#{token}")
+                if (wallet.state is "error" )
+                    .pug.retry-container
+                        button.pug.button.lock.mt-5.retry-button(on-click=refresh class="#{syncing}")
+                            icon \Sync, 20
+                .pug(class="inner-wallet-container #{disabled-class}")
+                    .wallet-top.pug(on-click=expand)
+                        .top-left.pug(style=wallet-style class="#{container-class}")
+                            .img.pug(class="#{placeholder-coin}")
+                                img.pug(src="#{wallet-icon}")
+                            .info.pug
                                 .balance.pug.title(class="#{placeholder}") #{name}
-                            .balance.pug(class="#{placeholder}")
-                                span.pug(title="#{wallet.balance}") #{ round-human wallet.balance }
-                                    img.label-coin.pug(class="#{placeholder-coin}" src="#{wallet.coin.image}")
-                                    span.pug #{ token-display }
-                                if +wallet.pending-sent >0
-                                    .pug.pending
-                                        span.pug -#{ pending }               
+                                if store.current.device is \desktop
+                                    .price.token.pug(class="#{placeholder}" title="#{wallet.balance}")
+                                        span.pug #{ round-human wallet.balance }
+                                        span.pug #{ token-display }
+                                if is-custom
+                                    .price.pug(class="#{placeholder}" title="#{balance-usd}")
+                                        span.pug(style=custom-style) CUSTOM
+                                else
+                                    .price.pug(class="#{placeholder}" title="#{balance-usd}")
+                                        span.pug #{ round-human balance-usd}
+                                        span.pug USD
+                        if store.current.device is \mobile
+                            .top-middle.pug(style=wallet-style)
+                                if +wallet.pending-sent is 0
+                                    .balance.pug.title(class="#{placeholder}") #{name}
+                                .balance.pug(class="#{placeholder}")
+                                    span.pug(title="#{wallet.balance}") #{ round-human wallet.balance }
+                                        img.label-coin.pug(class="#{placeholder-coin}" src="#{wallet.coin.image}")
+                                        span.pug #{ token-display }
+                                    if +wallet.pending-sent >0
+                                        .pug.pending
+                                            span.pug -#{ pending }

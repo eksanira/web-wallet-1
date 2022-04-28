@@ -295,6 +295,9 @@ store =
         applied: []
     releases: []
     current:
+        account: {
+            wallets: []
+        }
         switch-network: no
         search-language: ""
         current-network-details:

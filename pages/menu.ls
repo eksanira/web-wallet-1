@@ -1,6 +1,8 @@
 require! {
     \react
     \../tools.ls : { cut, money }
+    \../math.ls : { times, plus }
+    \prelude-ls : { map, foldl, filter, find }
     \./project-links.ls
     \../menu-funcs.ls
     \./your-account.ls
@@ -72,6 +74,65 @@ require! {
                 svg
                     width: 20px
                     cursor: pointer
+            .balance-warning-container
+                display: inline-block
+                font-size: 8px
+                letter-spacing: 1px
+                text-transform: capitalize
+                background: #f6931a5e
+                margin: auto
+                color: white
+                border-radius: 69px
+                border: 1px solid #f6931a
+                padding: 0 5px
+                line-height: 17px
+
+                .total-balance-warning-icon
+                    cursor: help
+                    &:hover
+                        .balance-warning-notification
+                            display: block
+
+                .balance-warning-notification
+                    z-index: 2
+                    display: none
+                    position: absolute
+                    box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.34)
+                    left: 100%
+                    top: 20%
+                    padding: 10px
+                    font-size: 11px
+                    min-width: 200px
+                    background: #1f1f1f
+                    text-transform: uppercase
+                    text-align: left
+                    z-index: 9
+
+                    @media (max-width: 800px)
+                        left: 80%
+
+                    @media (max-width: 735px)
+                        left: 50%
+                        top: 130%
+
+                    @media (max-width: 400px)
+                        left: 10%
+
+                    .triangle
+                        width: 0
+                        height: 0
+                        border-top: 5px solid transparent
+                        border-right: 8px solid #1f1f1f
+                        border-bottom: 5px solid transparent
+                        position: relative
+                        left: -18px
+                        top: -50px
+
+                        @media (max-width: 735px)
+                            display: none
+
+            .balance-text
+                display: inline-block
             >.menu
                 position: absolute
                 right: 0
@@ -103,7 +164,6 @@ require! {
                     text-transform: uppercase
                     letter-spacing: 2px
                     line-height: 24px
-                    opacity: .8
                     margin-top: 5px
             >.amount
                 font-size: 25px
@@ -170,18 +230,49 @@ module.exports = ({ store, web3t })->
     syncing =
         | store.current.refreshing => \syncing
         | _ => ""
+
     placeholder =
-        | store.current.refreshing => "placeholder"
+        | store.current.account.wallets |> find (-> it.status is "loading") => "placeholder"
         | _ => ""
+
+    usdBalances = store.current.account.wallets
+        |> filter (-> not isNaN(it.balanceUsd))
+        |> map (-> it.balanceUsd)
+        |> foldl plus, 0
+
+    not-loaded-balances-exists = store.current.account.wallets |> find (-> it.state in <[ error ]> )
+
+    totalBalance =
+        | not-loaded-balances-exists => "..."
+        | _ => round-human usdBalances
+
+    icon-style =
+        width: "15px"
+        height: "15px"
+        float: "right"
+        top: "1px"
+        position: "relative"
+        margin-left: 3px
+
     .menu.wallet-main.pug(style=menu-style)
         .menu-body.pug
             .pug.branding
                 img.pug(src="#{info.branding.logo-sm}" on-click=goto-wallet)
             .balance.pug
-                .currency.h1.pug #{lang.balance}
+                .currency.h1.pug
+                    .balance-text.pug #{lang.balance}
                 .amount.pug(class="#{placeholder}")
                     .symbol.pug $
-                    .number.pug(title="#{current.balance-usd}" id='balance-total') #{round-human current.balance-usd}
+                    .number.pug(title="#{current.balance-usd}" id='balance-total') #{totalBalance}
+                if not-loaded-balances-exists
+                    .pug
+                        .balance-warning-container.pug
+                            span.warning-text.pug The total balance is unavailable now
+                            span.total-balance-warning-icon.pug
+                                img.total-balance-warning-icon.pug(src="#{icons.warning2}" style=icon-style)
+                                .balance-warning-notification.pug
+                                    .pug The total balance is unavailable now because some of the tokens` balances could not be loaded.
+                                    .triangle.pug
                 .pug
                     if store.current.device is \desktop
                         if store.preference.refresh-visible is yes
