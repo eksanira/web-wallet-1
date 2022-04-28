@@ -133,7 +133,7 @@ export class Staking2Screen extends BaseScreen {
         await this.validator.reload();
       }
 
-      log.debug('IF YOU SEE THIS TEXT LOOKS LIKE SOME CASES WERE MISSED DURING THIS METHOD DEVELOPMENT. PLEASE FIX');
+      log.warn('IF YOU SEE THIS MESSAGE LOOKS LIKE SOME CASES WERE MISSED DURING THIS METHOD DEVELOPMENT. PLEASE FIX');
       if (await this.validator.getStakeValue() === startStakeValue) throw new Error(`Stake amount was not updated during ${timeout / 1000} seconds and equals to ${startStakeValue} VLX.`);
       return await this.validator.getStakeValue();
     },

@@ -51,7 +51,7 @@ test.describe('Staking 2', () => {
       expect(aprs).toEqual([...aprs].sort().reverse());
 
       /*
-      // BUG: https://velasnetwork.atlassian.net/browse/VLWA-1515
+      // !BUG: https://velasnetwork.atlassian.net/browse/VLWA-1515
       await staking2.validatorsList.sortBy('total staked');
       await staking2.validatorsList.totalStaked.first().waitFor();
       let totalStakes = await staking2.validatorsList.totalStaked.allInnerTexts();

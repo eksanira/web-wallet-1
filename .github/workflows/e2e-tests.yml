@@ -65,7 +65,7 @@ jobs:
       - name: build wallet
         run: npm run wallet-build
 
-#####
+##### don't copy to other testruns. should be executed only once
       - name: check token providers in default.conf
         run: npm run test:check-token-providers-in-default-conf
 #####
@@ -94,6 +94,7 @@ jobs:
           path: |
             e2e/test-report-swap/
           retention-days: 5
+
 
   stable-tests-on-feature-branch:
     concurrency:
@@ -260,7 +261,6 @@ jobs:
           path: |
             e2e/test-report-staking/
           retention-days: 5
-
 
 # - name: balances api health check
 #   run: CI=true npm run balances-api-health-check
