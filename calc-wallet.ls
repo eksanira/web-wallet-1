@@ -11,6 +11,8 @@ calc-wallet = (store, cb)->
     return cb "Store is required" if not store?
     { wallets } = store.current.account
     { rates } = store
+    return if calc-wallet.loading is yes
+    calc-wallet.loading = yes
 
     build-loader = (wallet)->
         <- set-timeout _, 1
@@ -60,5 +62,6 @@ calc-wallet = (store, cb)->
             cb!
         cb!
     store.current.account.wallets |> map build-loader
+    calc-wallet.loading = no
     cb null
 module.exports = calc-wallet

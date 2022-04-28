@@ -21,20 +21,15 @@ calc-wallet = (store, token, cb)->
     return cb null if not wallet?
     state =
         balance-usd: 0
-    build-loader = (wallet)->
-        wallet.status = 'loading'
-        <- set-timeout _, 1
+    build-loader = (wallet)-> task (cb)->
         { token } = wallet.coin
         token = wallet.coin.token.to-lower-case!
-        usd-rate =
-            | not rates[token]? =>  \..
-            | rates[token] is "" => \..
-            | _ => rates[token]
+        usd-rate = rates[token] ? \..
         # convert usd-rate to string because bigint does not like number type and can throw exception
         usd-rate = usd-rate + ''
         wallet.usd-rate =
-            | usd-rate is \.. => \..
-            | _ => usd-rate
+            | usd-rate is \.. => 0
+            | _ => round5 usd-rate
         eur-rate = \0.893191
         btc-rate = \0
         wallet.eur-rate =
@@ -69,7 +64,13 @@ calc-wallet = (store, token, cb)->
             wallet.state = "error"
             cb!
 
-    [wallet] |> map build-loader
+    loaders =
+        [wallet] |> map build-loader
+    tasks =
+        loaders
+            |> map -> [loaders.index-of(it).to-string!, it]
+            |> pairs-to-obj
+    <- run [tasks] .then
 
     if store.current.account.wallets[current.token-index]?
         store.current.account.wallets[current.token-index] = wallet
