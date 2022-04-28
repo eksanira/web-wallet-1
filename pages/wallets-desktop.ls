@@ -25,15 +25,14 @@ require! {
         z-index: 100;
         width: 19vw;
         position: absolute;
-        padding: 10px;
-        font-size: 11px
+        padding: 15px;
+        font-size: 12px
         font-weight: 100
         color: #fff
         margin-left: 25px
         margin-top: -16px
         background: #1f1f1f
         box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.34)
-        text-transform: uppercase
         text-align: left
         pointer-events: none
         opacity: 0;
@@ -51,8 +50,8 @@ require! {
                 border-right: 8px solid #1f1f1f
                 border-bottom: 5px solid transparent
                 position: absolute
-                left: -18px
-                top: 10%
+                left: -22.5px
+                top: 0%
 
             @media (max-width: 735px)
                 display: none

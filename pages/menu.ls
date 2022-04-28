@@ -104,7 +104,6 @@ require! {
                     font-size: 11px
                     min-width: 200px
                     background: #1f1f1f
-                    text-transform: uppercase
                     text-align: left
                     z-index: 9
 

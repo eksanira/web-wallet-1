@@ -76,6 +76,8 @@ require! {
         box-sizing: border-box
         transition: height .5s
         border: 0px
+        &:not(.big):hover
+            background: rgba(255, 255, 255,  0.04)
         &:first-child
             margin-top: 0
             box-shadow: none
@@ -145,6 +147,8 @@ require! {
                 line-height: 16px
             .name-holder
                 display: inline-block;
+                &:hover
+                    color: #dddddd
                 .balance.title
                     float: left
             .tooltips
@@ -162,7 +166,6 @@ require! {
                         font-size: 12px;
                         line-height: 15px;
                         border-radius: 30px;
-                        background: #CCC;
                         color: var(--bgspare)
                         opacity: 0.55;
             .top-left
