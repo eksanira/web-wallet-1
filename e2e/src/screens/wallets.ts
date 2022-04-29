@@ -201,18 +201,8 @@ export class WalletsScreen extends BaseScreen {
       await addTokenButton.scrollIntoViewIfNeeded();
       await this.page.waitForTimeout(500);
 
-      // // exclusion for BUSD in
-      // if (tokenName === 'token-vlx_busd') {
-      //   // @ts-expect-error
-      //   await this.page.evaluate(() => document.querySelector(`#add-token-vlx_busd button`).click());
-      // }
-
       await addTokenButton.click({ timeout: 15000, force: true });
       await this.page.waitForTimeout(500);
-
-      // TODO: investigate why click does not work and FIX
-      // repeat action if required
-      // if (await this.page.$(addTokenButtonSelector)) await addTokenButton?.click();
     },
   };
 

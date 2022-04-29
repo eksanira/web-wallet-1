@@ -16,7 +16,6 @@ test.describe('Staking', () => {
   // Don't remove "serial". Tests in this suite depend on each other
   test.describe.serial('Actions >', () => {
     const stakingAmount = 5;
-    let allTestsPassed = false;
 
     test('Cleanup beforeall', async ({ page, staking }) => {
       if (await page.isVisible('button[disabled]')) {
@@ -170,14 +169,9 @@ test.describe('Staking', () => {
       await staking.modals.confirmPrompt();
       await page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
       await staking.modals.clickOK();
-      await staking.waitForLoaded();
-
-      allTestsPassed = true;
     });
     
     test('Cleanup afterall', async ({ staking }) => {
-      test.skip(allTestsPassed);
-      // precondition: wait for validators api cache update
       await staking.waitForStakesAmountUpdated({ initialStakesAmount: 2, stakeType: 'Delegate' });
 
       await staking.cleanup.stakesToUndelegate();
@@ -203,7 +197,6 @@ test.describe('Staking', () => {
   });
 
 });
-
 
 // TODO: unite staking ations from cleanup with staking actions in tests;
 // e.g. if withdrawal is implemented in cleanup, no need to implement it in tests

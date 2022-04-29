@@ -298,52 +298,6 @@ export class StakingScreen extends BaseScreen {
     log.info(`Withdrawed staking account: ${address}`);
   }
 
-  // async refreshStakesToGetUpdatedCachedStatuses(stakeTypeToBeChanged: { from: Stake, to: Stake | null }, timeout = 20000): Promise<void> {
-  //   await this.refresh();
-  //   await this.page.waitForSelector('#staking-accounts h3:text("LOADING")');
-  //   await this.waitForLoaded();
-
-  //   // postcondition - refresh until undelegated stake appears
-  //   const fromStakesAmount = await this.getAmountOfStakes(stakeTypeToBeChanged.from);
-  //   let toStakesAmount: number;
-  //   if (stakeTypeToBeChanged.to === null) {
-  //     toStakesAmount = 0
-  //   } else {
-  //     toStakesAmount = await this.getAmountOfStakes(stakeTypeToBeChanged.to);
-  //   };
-
-  //   const stakesAmountAfterUpdate = {
-  //     from: fromStakesAmount,
-  //     to: toStakesAmount,
-  //   }
-
-  //   const startTime = new Date().getTime();
-
-  //   while (stakesAmountAfterUpdate.from !== fromStakesAmount - 1 && (stakesAmountAfterUpdate.to !== toStakesAmount + 1) && new Date().getTime() - startTime < timeout) {
-  //     await this.refreshStakes();
-  //     await this.page.waitForSelector('#staking-accounts h3:text("LOADING")');
-  //     await this.waitForLoaded();
-
-  //     stakesAmountAfterUpdate.from = await this.getAmountOfStakes(stakeTypeToBeChanged.from);
-  //     if (stakeTypeToBeChanged.to !== null) stakesAmountAfterUpdate.to = await this.getAmountOfStakes(stakeTypeToBeChanged.to);
-  //   }
-
-  //   if (stakeTypeToBeChanged.to === null) {
-  //     while (stakesAmountAfterUpdate.from !== fromStakesAmount - 1 && new Date().getTime() - startTime < timeout) {
-  //       await this.refreshStakes();
-  //       await this.page.waitForSelector('#staking-accounts h3:text("LOADING")');
-  //       await this.waitForLoaded();
-
-  //       stakesAmountAfterUpdate.from = await this.getAmountOfStakes(stakeTypeToBeChanged.from);
-  //     }
-  //   } else {
-  //     toStakesAmount = await this.getAmountOfStakes(stakeTypeToBeChanged.to);
-  //   };
-
-  //   stakesAmountAfterUpdate.to !== toStakesAmount + 1 &&
-  //   stakesAmountAfterUpdate.to = await this.getAmountOfStakes(stakeTypeToBeChanged.to);
-  // }
-
   cleanup = {
     stakesToUndelegate: async () => {
       let toUndelegateStakesAmount = await this.getAmountOfStakes('Undelegate');

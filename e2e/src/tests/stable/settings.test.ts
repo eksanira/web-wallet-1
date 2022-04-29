@@ -75,15 +75,10 @@ test.describe.parallel('Settings', () => {
       en: ['Manage Account', 'English'],
       kr: ['계정 관리', '한국어'],
       cn: ['管理帐户', '中文語言'],
-      // in:
       es: ['Administrar Cuenta', 'Español'],
       ua: ['Управління аккаунтом', 'Українська'],
       ru: ['Управлять аккаунтом', 'Русский'],
       ar: ['إدارة الحساب', 'عربى'],
-      // id:
-      // ph:
-      // yr:
-      // vn:
     };
 
     const languages = Object.keys(headerTexts) as Language[];
