@@ -1,10 +1,10 @@
 require! {
     \react
     \../tools.ls : { money }
-    \prelude-ls : { each, filter, foldl, map, obj-to-pairs, group-by, keys }
+    \prelude-ls : { each, filter, foldl, map, obj-to-pairs, group-by, keys, take, reverse }
     \../wallet-funcs.ls
     \../get-lang.ls
-    \../math.ls : { plus }
+    \../math.ls : { plus, div, times, minus }
     \./icon.ls
     \../get-primary-info.ls
     \../../web3t/providers/superagent.js : { get }
@@ -16,6 +16,9 @@ require! {
     \./wallet-stats.ls
     \./loading.ls
     \./confirmation.ls : { confirm }
+    \react-chartjs-2 : { Line }
+    \../round-number.ls
+    \moment
 }
 .wallet-detailed
     @import scheme
@@ -129,6 +132,27 @@ require! {
                     .pending
                         font-size: 14px
                         color: orange
+                .graph-container
+                    position: relative
+                    .percent
+                        position: absolute
+                        color: white
+                        font-size: 11px
+                        margin: auto
+                        left: 0
+                        right: 0
+                        text-align: center
+                        top: 0
+                        bottom: 0
+                        height: 12px
+                        background: rgba(0, 0, 0, 0.47)
+                        display: inline-table
+                        padding: 3px
+                        font-weight: 500
+                        &.positive
+                            color: white
+                        &.negative
+                            color: white
                 .counts
                     margin-bottom: 5px
                     .label
@@ -160,6 +184,149 @@ require! {
             >*
                 height: inherit
                 width: inherit
+
+
+Graph = (props)->
+    { wallet } = props
+    marketHistoryPrices =
+        | wallet.marketHistoryPrices? => wallet.marketHistoryPrices?data?points ? {}
+        | _ => {}
+    historyPrices =
+        marketHistoryPrices
+            |> obj-to-pairs
+            |> map (it)-> {ts: it.0, ...it.1}
+            #|> reverse
+            #|> take 100
+    last = historyPrices[0]
+    prev = historyPrices[historyPrices.length - 1]
+    last-price = last?v?0 ? 0
+    prev-price = prev?v?0 ? 0
+
+    /* Line color */
+    borderColor =
+        | last-price > prev-price => 'rgba(255, 0, 80, 0.9)'
+        | _ => 'rgb(108, 253, 73)'
+
+    percent =
+        | not prev-price? or not last-price? => ""
+        | _ => '100' `minus` ((prev-price `times` 100 ) `div` last-price)
+
+    percent-rounded = round-number(percent, { decimals: 2})
+    percent-display =
+        | percent < 0 => "+" + Math.abs(percent-rounded)
+        | percent > 0 => "-" + Math.abs(percent-rounded)
+        | _ => ""
+    percent-display += "%" if percent isnt ""
+    percent-class =
+        | percent > 0 => "negative"
+        | _ => "positive"
+
+    /* get gradient */
+    getGradient = (ctx, chartArea)->
+        chartWidth = chartArea.right - chartArea.left
+        chartHeight = chartArea.bottom - chartArea.top
+        if (gradient === null || width !== chartWidth || height !== chartHeight)
+            #Create the gradient because this is either the first render
+            #or the size of the chart has changed
+            width = chartWidth
+            height = chartHeight
+            gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0 )
+            if last-price > prev-price then
+                gradient.addColorStop(0, "rgba(255, 0, 80, 0.01)")
+                gradient.addColorStop(0.7, "rgba(255, 0, 80, 0.1)")
+                gradient.addColorStop(1, "rgba(255, 0, 80, 0.3)")
+            else
+                gradient.addColorStop(0, "rgba(119, 255, 0, 0.01)")
+                gradient.addColorStop(0.7, "rgba(30, 255, 6, 0.11)")
+                gradient.addColorStop(1, "rgba(4, 255, 14, 0.14)")
+        gradient
+
+    default-data =
+        datasets: [{}]
+        labels: []
+
+    [$data, setData] = react.use-state default-data
+
+    /* History Prices Linear Graph */
+    build-data = (items)->
+        data = items
+            |> map (it)->
+                round-number(it?v?0, {decimals:4})
+        labels = items
+            .map (it, index)->
+                moment(it.ts * 1000).format('hh:mm a')
+
+
+        datasets: [{
+            data
+            backgroundColor2: (context)->
+                 chart = context.chart
+                 {ctx, chartArea} = chart
+                 if (!chartArea)
+                     #This case happens on initial chart load
+                     return null;
+                 return getGradient(ctx, chartArea)
+            borderColor
+            borderWidth: 1
+            lineTension: 0
+            grid:
+                borderColor
+            label: ""
+            #backgroundColor: ['transparent']
+            pointRadius: 1
+        }]
+        labels: labels
+
+    buildGraphData = react.useCallback (!~>>
+        data = build-data historyPrices
+        setData(data)
+        return ), [mountedRef]
+    return-fn = ->
+        mountedRef.current = no
+    mountedRef = react.useRef(true)
+    react.useEffect (->
+        return if not wallet.marketHistoryPrices?
+        buildGraphData!
+        return return-fn if wallet.marketHistoryPrices? ), [buildGraphData]
+
+    fn-cb = (tooltipItem)->
+        tooltipItem.formattedValue + " USD"
+
+    options = {
+        title: {
+            display: false,
+            text: ""
+        }
+        legend: {
+            display: no
+        }
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: fn-cb
+                }
+            }
+        }
+        tooltips: {
+            callbacks: {
+               label: fn-cb
+            }
+        }
+        scales: {
+            xAxes: {}
+            yAxes: {}
+        }
+    }
+    legend =
+        display: false
+        position: "top"
+
+    return null if not wallet.marketHistoryPrices?
+
+    .pug.graph-container
+        .percent.pug(class="#{percent-class}") #{percent-display}
+        Line.pug(data=$data options=options width=200 height=150 legend=legend)
+
 cb = console~log
 module.exports = (store, web3t, wallets, wallet)-->
     style = get-primary-info store
@@ -255,6 +422,11 @@ module.exports = (store, web3t, wallets, wallet)-->
     color-label2=
         background: style.app.primary1
         background-color: style.app.primary1-spare
+
+
+
+
+
     .wallet-detailed.pug(key="#{token}" style=wallet-style)
         .wallet-part.left.pug(style=text)
             .wallet-header.pug
@@ -306,13 +478,7 @@ module.exports = (store, web3t, wallets, wallet)-->
                                     .pug.course(class="#{placeholder}" title="#{usd-rate}") $#{ round-human usd-rate}
                         wallet-stats store, web3t
                 .wallet-header-part.right.pug(style=text)
-                    .pug.counts
-                        .pug.label-icon(style=color-label)
-                            img.icon-svg.pug(src="#{icons.send}")
-                        .pug(class="#{placeholder}") #{ total-sent + ' ' token-display }
-                        .pug.label(style=color1) #{lang.totalSent}
-                    .pug.counts
-                        .pug.label-icon(style=color-label2)
-                            img.icon-svg.pug(src="#{icons.get}")
-                        .pug(class="#{placeholder}") #{ total-received + ' ' token-display }
-                        .pug.label(style=color2) #{lang.totalReceived}
+                    if wallet.marketHistoryPrices?
+                        Graph.pug(wallet=wallet)
+
+
