@@ -195,7 +195,6 @@ require! {
             -webkit-mask-position: right
         100%
             -webkit-mask-position: left
-
 dapps = (store, web3t)->
     lang = get-lang store
     { go-back } = history-funcs store, web3t
@@ -210,7 +209,6 @@ dapps = (store, web3t)->
         navigate store, web3t, \offlinewallets
     goto-util = ->
         navigate store, web3t, \util
-
     .pug.panel-content
         .pug.platform(style=resource on-click=goto-staking)
             img.pug.title-icons-small(src="#{icons.staking}")
@@ -224,7 +222,6 @@ dapps = (store, web3t)->
             img.pug.title-icons(src="#{icons.convert}")
             .pug.title Legacy address conversion
             .pug.subtitle Convert VLX Legacy address format to EVM format
-
 search = ({ store, web3t })->
     lang = get-lang store
     { go-back } = history-funcs store, web3t
@@ -242,7 +239,6 @@ search = ({ store, web3t })->
             .pug.close(on-click=go-back)
                 img.icon-svg.pug(src="#{icons.arrow-left}")
             burger store, web3t
-
         .pug.wrapper
             dapps store, web3t
 module.exports = search

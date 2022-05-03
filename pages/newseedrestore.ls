@@ -194,7 +194,6 @@ newseed = ({ store, web3t })->
         seedmem.del!
         store.current.pin = ""
         store.current.pin-trial = 0
-
     random = -> Math.random!
     restore-wallet = (count)-> ->
         reset-wallet store
