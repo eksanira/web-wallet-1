@@ -148,8 +148,7 @@ export class StakingScreen extends BaseScreen {
     const accountsElementsList = await this.page.$$('#staking-accounts tr');
     const errorText = `No accounts in the list of required type – "${type}"`;
 
-    for (let i = 0; i < accountsElementsList.length; i++) {
-      const accountElement = accountsElementsList[i];
+    for (const accountElement of accountsElementsList) {
       let buttonText: string;
 
       switch (type) {
@@ -218,15 +217,16 @@ export class StakingScreen extends BaseScreen {
   } | null> {
     currentAccountsAddressesList = currentAccountsAddressesList || await this.getStakingAccountsAddresses();
     const diff = helpers.getArraysDiff(initialAccountsAddressesList, currentAccountsAddressesList);
-    log.debug(`This is log of getStakingAccountsUpdate function
-    
-    initialAccountsAddressesList:
-    ${initialAccountsAddressesList || '<empty>'};
+    log.debug(`<<<<<
+This is log of getStakingAccountsUpdate function
 
-    finalAccountsAddressesList:
-    ${currentAccountsAddressesList || '<empty>'};
+initialAccountsAddressesList:
+${initialAccountsAddressesList || '<empty>'};
+finalAccountsAddressesList:
+${currentAccountsAddressesList || '<empty>'};
 
-    diff: ${diff || '<no diff>'}`);
+diff: ${diff || '<no diff>'}
+>>>>>`);
     if (diff.length === 0) return null;
     return currentAccountsAddressesList.length > initialAccountsAddressesList.length ? { added: diff[0] } : { removed: diff[0] };
   }
@@ -234,8 +234,7 @@ export class StakingScreen extends BaseScreen {
   async selectAccount(type: Stake): Promise<void> {
     const accountsList = await this.page.$$('#staking-accounts .stake-account-item');
     let accountFound = false;
-    for (let i = 0; i < accountsList.length; i++) {
-      const account = accountsList[i];
+    for (const account of accountsList) {
       const buttonAccordingToType = await account.$(`"${type}"`);
       if (buttonAccordingToType) {
         const accountAddress = await account.$('.inner-address-holder div a');
@@ -251,9 +250,7 @@ export class StakingScreen extends BaseScreen {
     await this.waitForLoaded();
     const accountsElementsList = await this.page.$$('#staking-accounts tr');
 
-    for (let i = 0; i < accountsElementsList.length; i++) {
-      const accountElement = accountsElementsList[i];
-
+    for (const accountElement of accountsElementsList) {
       const accountAddress = await (await accountElement.$('td[title]'))?.getAttribute('title');
       if (typeof accountAddress !== 'string') throw new Error(`Invalid account address: "${accountAddress}"`);
       if (accountAddress === address) {

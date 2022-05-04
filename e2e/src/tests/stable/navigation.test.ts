@@ -11,9 +11,7 @@ test.describe.parallel('Navigation', () => {
 
     const screens = ['settings', 'search', 'staking', 'swap', 'send'];
 
-    for (let i = 0; i < screens.length; i++) {
-      const screen = screens[i];
-
+    for (const screen of screens) {
       // check that navigation doesn't get broken by locking screen
       await page.reload();
       await auth.pinForLoggedOutAcc.typeAndConfirm('111222');

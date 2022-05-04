@@ -121,8 +121,7 @@ export class WalletsScreen extends BaseScreen {
       'token-bsc_vlx': null,
     };
 
-    for (let i = 0; i < walletElements.length; i++) {
-      const walletElement = walletElements[i];
+    for (const walletElement of walletElements) {
       const tokenId: Currency = (await this.getTokenIdOfWalletItemElement(
         walletElement,
       )) as Currency;

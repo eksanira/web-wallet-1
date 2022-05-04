@@ -59,7 +59,7 @@ export class Staking2Screen extends BaseScreen {
 
     stakedValidatorsAmountIsVisible: async (amount: number): Promise<boolean> => await this.page.locator(`"Staked Validators (${amount})"`).isVisible(),
 
-    refreshStakesUntilStakedValidatorAppears: async (timeout: number = 40_000): Promise<void> => {
+    refreshStakesUntilStakedValidatorAppears: async (timeout = 40_000): Promise<void> => {
       const startTime = new Date().getTime();
       while (!await this.validatorsList.stakedValidatorsAmountIsVisible(1) && new Date().getTime() < startTime + timeout) {
         await this.validatorsList.reload();
@@ -68,7 +68,7 @@ export class Staking2Screen extends BaseScreen {
       if (!await this.validatorsList.stakedValidatorsAmountIsVisible(1)) throw new Error(`Staked validator does not appear within ${timeout / 1000} seconds`);
     },
 
-    refreshStakesUntilStakedValidatorDisappears: async (timeout: number = 35000): Promise<void> => {
+    refreshStakesUntilStakedValidatorDisappears: async (timeout = 35000): Promise<void> => {
       const startTime = new Date().getTime();
       while (await this.validatorsList.stakedValidatorsAmountIsVisible(1) && new Date().getTime() < startTime + timeout) {
         await this.validatorsList.reload();

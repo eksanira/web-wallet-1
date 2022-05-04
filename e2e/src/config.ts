@@ -14,9 +14,9 @@ export const config = {
 };
 
 export function getWalletURL(params?: { environment?: Environment, network?: Network, host?: string }) {
-  const environment = params?.environment || config.environment;
-  const network = params?.network || config.network;
-  const host = params?.host || data.walletHosts[environment];
-  return `${host}?network=${network}`;
+  const _environment = params?.environment || config.environment;
+  const _network = params?.network || config.network;
+  const host = params?.host || data.walletHosts[_environment];
+  return `${host}?network=${_network}`;
 }
 export const walletURL = getWalletURL();
