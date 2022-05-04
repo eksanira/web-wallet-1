@@ -121,7 +121,7 @@ test.describe('Staking 2', () => {
       await staking2.stakeForm.nextButton.click();
       await staking2.modals.confirmPrompt();
 
-      await page.locator('"Stake account has been created successfully"').waitFor();
+      await page.locator('"Stake account has been created successfully"').waitFor({ timeout: 15000 });
       await staking2.stakeForm.okButton.click();
       await staking2.validator.goBack();
       await staking2.validatorsList.refreshStakesUntilStakedValidatorAppears();

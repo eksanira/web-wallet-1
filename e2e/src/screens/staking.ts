@@ -125,7 +125,7 @@ export class StakingScreen extends BaseScreen {
   async waitForStakesAmountUpdated(params: { initialStakesAmount: number, stakeType?: Stake | 'all', timeout?: number }): Promise<number> {
     const stakeType = params.stakeType || 'all';
     const initialStakesAmount = params.initialStakesAmount ?? await this.getAmountOfStakes(stakeType);
-    const timeout = params.timeout || 35_000;
+    const timeout = params.timeout || 40_000;
 
     let finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);
     const startTime = new Date().getTime();
