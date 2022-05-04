@@ -91,6 +91,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
+      - name: install latest npm
+        run: npm install -g npm@latest
       - name: install npm modules
         run: npm i
       - name: run tests
@@ -118,6 +120,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
+      - name: install latest npm
+        run: npm install -g npm@latest
       - name: install npm modules
         run: npm i
       - name: run tests
@@ -134,7 +138,7 @@ jobs:
     concurrency:
       group: js-wallet-e2e-tests-staking
       cancel-in-progress: false
-    needs: swap-tests-testnet
+    needs: deploy
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -145,6 +149,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
+      - name: install latest npm
+        run: npm install -g npm@latest
       - name: install npm modules
         run: npm i
       - name: run tests
