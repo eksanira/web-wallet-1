@@ -161,7 +161,7 @@ export class Staking2Screen extends BaseScreen {
      */
     reload: async (): Promise<void> => {
       await this.page.locator('[data-testid="CachedIcon"]').click();
-      await this.page.locator('.button-block-style').waitFor();
+      await this.page.locator('.button-block-style').waitFor({ timeout: 10000 });
     },
     tab: {
       stake: this.page.locator('#tab-stake'),
