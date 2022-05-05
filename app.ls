@@ -17,6 +17,7 @@ require! {
     \./pages/confirmation.ls : { confirmation-control }
     \./pages/hovered-address.ls
     \./components/react-detect-offline : { Offline, Online }
+    \./navigate.ls
 }
 .app
     button
@@ -208,14 +209,10 @@ module.exports = ({ store, web3t })->
         | _ => ""
     open-menu = ->
         store.current.open-menu = not store.current.open-menu
-    detect-network-change = !->
-        el = document.getElementById("offline-notification")
-        return if not el?
-        store.forceReload = yes
-        store.forceReloadTxs = yes
-        <- web3t.refresh
-        store.forceReload = no
-        store.forceReloadTxs = no
+    detect-network-change = (isOnline)->
+        if not isOnline
+            navigate store, web3t, \locked
+
     .pug
         define-root store
         description store
