@@ -406,7 +406,7 @@ export class WalletsScreen extends BaseScreen {
     const txSignatureLink = await this.txListAfterSendOrSwap.linkToTxExecuted.getAttribute('href');
     if (!txSignatureLink) throw new Error('No txSignatureLink');
     let txSignature = txSignatureLink.replace(/^.*tx\//, '');
-    txSignature = txSignature.replace(/\/.*/, '');
+    txSignature = txSignature.replace(/\?cluster=testnet.*/, '');
     if (!txSignature) {
       throw new Error('Cannot get transaction signature from tx link');
     }

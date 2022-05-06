@@ -900,6 +900,9 @@
                 return send.network.api.url + ('/tx/' + data);
             }
           })();
+          if (send.network.api.cluster) {
+            store.current.lastTxUrl = store.current.lastTxUrl + "?cluster=" + send.network.api.cluster;
+          }
           navigate(store, web3t, 'sent');
           return web3t.refresh(function () {});
         });
