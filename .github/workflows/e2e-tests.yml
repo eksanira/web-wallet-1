@@ -71,7 +71,7 @@ jobs:
       - name: launch wallet
         run: |
             npm run wallet-start:no-watch &
-            echo '- - - - - Wallet is started'
+            echo '- - - - - Wallet is started - - - - -'
 
       - name: check that wallet has started
         run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check outputs of build/run wallet commands" && exit 1)
@@ -112,7 +112,7 @@ jobs:
         working-directory: ./e2e/wallet
         run: |
           npx http-server &
-          echo '- - - - - Wallet is started'
+          echo '- - - - - Wallet is started - - - - -'
 
       - name: install test npm modules
         working-directory: ./e2e
@@ -161,7 +161,7 @@ jobs:
         working-directory: ./e2e/wallet
         run: |
           npx http-server &
-          echo '- - - - - Wallet is started'
+          echo '- - - - - Wallet is started - - - - -'
 
       - name: install test npm modules
         working-directory: ./e2e
