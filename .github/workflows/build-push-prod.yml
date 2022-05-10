@@ -43,6 +43,7 @@ jobs:
         run: npm run wallet-build
 
       - name: launch wallet
+        working-directory: ./e2e/wallet
         run: |
             npm run wallet-start:no-watch &
             echo '- - - - - Wallet is started'
