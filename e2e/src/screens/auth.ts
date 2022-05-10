@@ -146,6 +146,7 @@ export class AuthScreen extends BaseScreen {
 
   wordByWordSeedInputForm = {
     fill: async (seedWords: string[], params: { fast: boolean } = { fast: false }): Promise<void> => {
+      log.error(seedWords);
       const elementWithWordNumberSelector = this.page.locator('.words [placeholder*="word #"]');
       for (const work of seedWords) {
         // example of "placeholder" attribute value: "word #1"

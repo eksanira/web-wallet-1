@@ -36,7 +36,6 @@ jobs:
       - name: copy web3 side by side to wallet
         working-directory: ../
         run: rm -rf web-wallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr web-wallet/.compiled-ssr/web3t/ ./
-
       - name: install wallet modules
         run: npm i --legacy-peer-deps
 
