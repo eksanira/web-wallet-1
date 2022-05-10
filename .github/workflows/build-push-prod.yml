@@ -43,6 +43,7 @@ jobs:
         run: npm run wallet-build
 
       - name: launch wallet
+        working-directory: ./e2e/wallet
         run: |
             npm run wallet-start:no-watch &
             echo '- - - - - Wallet is started'
@@ -61,12 +62,15 @@ jobs:
 
   stable-tests:
     runs-on: ubuntu-latest
+    needs: build-wallet
     concurrency:
       group: web-wallet-e2e-tests-stable
       cancel-in-progress: false
     steps:
       - name: checkout web-wallet
         uses: actions/checkout@v2
+      - name: install latest npm
+        run: npm install -g npm@latest
       - uses: actions/download-artifact@v3
         with:
           name: wallet
@@ -95,12 +99,15 @@ jobs:
 
   swap-tests:
     runs-on: ubuntu-latest
+    needs: build-wallet
     concurrency:
       group: web-wallet-e2e-tests-swap
       cancel-in-progress: false
     steps:
       - name: checkout web-wallet
         uses: actions/checkout@v2
+      - name: install latest npm
+        run: npm install -g npm@latest
       - uses: actions/download-artifact@v3
         with:
           name: wallet
@@ -129,12 +136,15 @@ jobs:
 
   staking-tests:
     runs-on: ubuntu-latest
+    needs: build-wallet
     concurrency:
       group: web-wallet-e2e-tests-staking
       cancel-in-progress: false
     steps:
       - name: checkout web-wallet
         uses: actions/checkout@v2
+      - name: install latest npm
+        run: npm install -g npm@latest
       - uses: actions/download-artifact@v3
         with:
           name: wallet
