@@ -6,7 +6,7 @@ concurrency:
   group: js-wallet-prod-deploy
   cancel-in-progress: true
 jobs:
-  build-wallet:
+  build-wallet-for-tests:
     runs-on: ubuntu-latest
     steps:
       - name: checkout web-wallet
@@ -45,8 +45,8 @@ jobs:
       - name: launch wallet
         working-directory: ./e2e/wallet
         run: |
-            npm run wallet-start:no-watch &
-            echo '- - - - - Wallet is started'
+          npx http-server &
+          echo '- - - - - Wallet is started'
 
       - name: check that wallet has started
         run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check outputs of build/run wallet commands" && exit 1)
