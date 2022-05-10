@@ -9,9 +9,6 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build-wallet:
-    concurrency:
-      group: js-wallet-e2e-tests-swap
-      cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
       - name: checkout web-wallet
@@ -92,7 +89,7 @@ jobs:
   stable-tests-on-feature-branch:
     needs: build-wallet
     concurrency:
-      group: js-wallet-e2e-tests-stable
+      group: web-wallet-e2e-tests-stable
       cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
@@ -141,7 +138,7 @@ jobs:
   swap-tests-on-feature-branch:
     needs: build-wallet
     concurrency:
-      group: js-wallet-e2e-tests-swap
+      group: web-wallet-e2e-tests-swap
       cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
@@ -189,7 +186,7 @@ jobs:
 
   staking-tests-on-feature-branch:
     concurrency:
-      group: js-wallet-e2e-tests-staking
+      group: web-wallet-e2e-tests-staking
       cancel-in-progress: false
     runs-on: ubuntu-latest
     needs: build-wallet
