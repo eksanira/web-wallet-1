@@ -243,6 +243,9 @@ jobs:
           helmfile -e prod -l namespace=${NAMESPACE},name=velas-wallet apply  --set image.tag=$IMAGE_TAG,image.repository=$ECR_REGISTRY/$ECR_REPOSITORY --skip-deps
 
   stable-tests-prod:
+    concurrency:
+      group: web-wallet-e2e-tests-stable
+      cancel-in-progress: false
     needs: deploy
     runs-on: ubuntu-latest
     defaults:
@@ -270,6 +273,9 @@ jobs:
           retention-days: 3
 
   swap-tests-prod:
+    concurrency:
+      group: web-wallet-e2e-tests-swap
+      cancel-in-progress: false
     needs: deploy
     runs-on: ubuntu-latest
     defaults:
@@ -297,6 +303,9 @@ jobs:
           retention-days: 3
 
   staking-tests-prod:
+    concurrency:
+      group: web-wallet-e2e-tests-staking
+      cancel-in-progress: false
     needs: deploy
     runs-on: ubuntu-latest
     defaults:
