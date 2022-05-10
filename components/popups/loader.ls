@@ -130,9 +130,10 @@ require! {
                 transform: rotateX(35deg) rotateY(55deg) rotateZ(0deg)
             100%
                 transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg)
-module.exports = ({loading, text})->
+module.exports = ({loading, text, styles})->
     return null if not loading
-    .loader-page.pug(key="loading")
+    loaderPageStyles = styles?loaderPage ? {}
+    .loader-page.pug(key="loading" style=loaderPageStyles)
         if text? and (text ? "").length > 0
             .pug.h3.loader-text #{text} 
         .loading-pulse.pug

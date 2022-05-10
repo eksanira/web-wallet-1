@@ -1,8 +1,8 @@
 require! {
     \react
-    \../send-funcs.ls
+    \../send-funcs.js
     \prelude-ls : { map, find, keys, filter, pairs-to-obj, obj-to-pairs }
-    \../calc-amount.ls : { calc-fee-before-send }
+    \../calc-amount.js : { calc-fee-before-send }
     \../get-primary-info.ls
     \./icon.ls
     \../get-lang.ls
@@ -558,6 +558,7 @@ send = ({ store, web3t })->
         if err?
             store.current.send.error = err
             return cb err
+        amount-change { target: { value: store.current.send.amountSend }}
         cb null
     before-amount-change = (e)->
         { TYPING_THRESHOLD_MS, typing-amount-time-ms, fee-calculating } = send
@@ -586,7 +587,6 @@ send = ({ store, web3t })->
         display: "inline"
         min-width: "30px"
     amount-send-fee-rounded = round-human(send.amount-send-fee, {decimals:8})
-    console.log "amount-send-fee #{amount-send-fee-rounded}"
     /* Render */
     .pug.content
         loader {loading: store.current.send.checking-allowed, text: "Please wait, approving bridge contract..."}

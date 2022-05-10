@@ -198,7 +198,6 @@ require! {
             margin: 5px
             @media(max-width:800px)
                 text-align: center
-
 staking2 = ({ store, web3t })->
     lang = get-lang store
     { go-back } = history-funcs store, web3t
@@ -224,8 +223,6 @@ staking2 = ({ store, web3t })->
         border-radius: info.app.border-btn
     show-class =
         if store.current.open-menu then \hide else \ ""
-
-
     /* Render */
     .pug.staking2
         .pug.title(style=border-style)
@@ -233,15 +230,11 @@ staking2 = ({ store, web3t })->
             burger store, web3t
         .container.pug
             Staking.pug(stakingStore=store.stakingStore lang=lang info=info)
-
-
 staking2.init = ({store, web3t}, cb)->
     wallet_native = store.current.account.wallets |> find (-> it.coin.token is \vlx_native)
     nativeData = wallet_native?network?api
-
     wallet_evm = store.current.account.wallets |> find (-> it.coin.token is \vlx_evm)
     evmData = wallet_evm?network?api
-
     config = {
         API_HOST: nativeData.apiUrl,
         evmAPI: evmData.web3Provider,
@@ -255,10 +248,7 @@ staking2.init = ({store, web3t}, cb)->
         fetchAccountsFromBackend: no
         refresh: yes
     }
-
-
     stakingStore = new StakingStore(config)
     store.stakingStore = stakingStore;
     cb null
-
 module.exports = staking2

@@ -54,12 +54,12 @@ test.describe.parallel('Settings', () => {
     await wallets.selectWallet('token-btc');
     await page.waitForTimeout(1000);
     assert.equal(await wallets.getWalletAddress(), '1PV8RPEL8kNBnQytq2881TE3bSZJbJazDw', 'Mainnet BTC address on UI does not equal expected');
-    
+
     await wallets.openMenu('settings');
     await settings.networkSwitcher.click();
     await wallets.totalBalance.waitFor();
     assert.isTrue(await wallets.testnetMenuItem.isVisible());
-    
+
     await wallets.openMenu('wallets');
     await wallets.selectWallet('token-btc');
     await page.waitForTimeout(500);
@@ -75,21 +75,15 @@ test.describe.parallel('Settings', () => {
       en: ['Manage Account', 'English'],
       kr: ['계정 관리', '한국어'],
       cn: ['管理帐户', '中文語言'],
-      // in:
       es: ['Administrar Cuenta', 'Español'],
       ua: ['Управління аккаунтом', 'Українська'],
       ru: ['Управлять аккаунтом', 'Русский'],
       ar: ['إدارة الحساب', 'عربى'],
-      // id:
-      // ph:
-      // yr:
-      // vn:
     };
 
     const languages = Object.keys(headerTexts) as Language[];
 
-    for (let i = 0; i < languages.length; i++) {
-      const language = languages[i];
+    for (const language of languages) {
       log.info(language);
       await settings.switchLanguageButon.click();
 

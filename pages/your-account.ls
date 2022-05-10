@@ -289,6 +289,8 @@ module.exports = (store, web3t)->
             store.current.switch-account = no
             store.staking.fetchAccounts = yes
             store.staking.getAccountsFromCashe = no
+            store.transactions.all = []
+            store.transactions.applied = []
             <- web3t.refresh
         default-account-name = -> "Account #{index}"
         current-account-name = ->

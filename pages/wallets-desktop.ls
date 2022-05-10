@@ -21,6 +21,25 @@ require! {
 }
 .wallets-container
     @import scheme
+    >.tooltipContent
+        z-index: 100;
+        width: 19vw;
+        position: absolute;
+        line-height: 14px
+        font-size: 12px
+        font-weight: 600
+        color: #fff
+        padding: 8px 3px;
+        margin-left: 16px
+        margin-top: -16px
+        background: #000
+        pointer-events: none
+        opacity: 0;
+        display: none;
+        @media screen and (max-width: 1400px)
+            width: 16vw;
+        @media screen and (max-width: 1000px)
+            width: 19vw;
     >.left-side
         margin-left: $menu
         @media(max-width: $ipad)
@@ -232,6 +251,14 @@ mobile = ({ store, web3t })->
         margin-left: "10px"
     border-right=
         border-right: "1px solid #{style.app.border}"
+    tooltipVisibility = if (store.showTooltip) then
+        top: "#{store.tooltipCoordinates.y}px"
+        left: "#{store.tooltipCoordinates.x}px"
+        opacity: 1
+        display: "block"
+    else
+        opacity: 0
+        display: "none"
     open-account = ->
         store.current.switch-account = not store.current.switch-account
     edit-account-name = ->
@@ -283,6 +310,7 @@ mobile = ({ store, web3t })->
     wallet-detail = group-wallets |> find (-> group-wallets.index-of(it) is store.current.wallet-index)
     #return null if not wallet-detail?
     .wallets-container.pug(key="wallets")
+        .pug.tooltipContent(style=tooltipVisibility) #{store.tooltipMessage}
         header store, web3t
         .pug.left-side(style=row)
             .pug(style=left-side)

@@ -2,19 +2,18 @@ export const helpers = {
   getArraysDiff: (a1: any[], a2: any[]) => {
     const a: any[] = []; const diff = [];
 
-    for (let i = 0; i < a1.length; i++) {
-      a[a1[i]] = true;
+    for (const item1 of a1) {
+      a[item1] = true;
     }
 
-    for (let i = 0; i < a2.length; i++) {
-      if (a[a2[i]]) {
-        delete a[a2[i]];
+    for (const item2 of a2) {
+      if (a[item2]) {
+        delete a[item2];
       } else {
-        a[a2[i]] = true;
+        a[item2] = true;
       }
     }
 
-    // @ts-ignore
     for (const k in a) {
       diff.push(k);
     }
@@ -22,14 +21,15 @@ export const helpers = {
     return diff;
   },
 
-  toFixedNumber(number: Number, fractionDigits: Number = -1) {
+  toFixedNumber(num: number, fractionDigits = -1) {
     const re = new RegExp(`^-?\\d+(?:\.\\d{0,${fractionDigits}})?`);
-    const match = number.toString().match(re);
+    const match = num.toString().match(re);
     const fixedNumber = Number(match);
-    if (!fixedNumber) throw new Error(`Failed to trim decimal\'s fractional part from number: ${number}`);
+    if (!fixedNumber) throw new Error(`Failed to trim decimal's fractional part from number: ${num}`);
     return fixedNumber;
   },
-
+  /* eslint-disable no-useless-escape */
+  
   async sleep(miliSeconds = 1000): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, miliSeconds));
   },

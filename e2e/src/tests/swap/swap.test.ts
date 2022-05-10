@@ -124,9 +124,7 @@ test.describe('Swap', () => {
     test('VLX Native > EVM', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_native', 'token-vlx_evm', 0.0001);
       await wallets.txListAfterSendOrSwap.linkToTxExecuted.waitFor({ timeout: 30000 });
-      const txSignatureLink = await wallets.txListAfterSendOrSwap.linkToTxExecuted.getAttribute('href');
-      if (!txSignatureLink) throw new Error('No txSignatureLink');
-      const txSignature = txSignatureLink.replace('https://native.velas.com/tx/', '');
+      const txSignature = await wallets.getTxHashFromTxlink();
       log.debug(`txSignature: ${txSignature}`);
 
       transactionsInProgress.push(velasNative.waitForConfirmedTransaction(txSignature));

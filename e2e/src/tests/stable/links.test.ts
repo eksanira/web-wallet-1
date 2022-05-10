@@ -16,8 +16,7 @@ test.describe('Links', () => {
     await page.waitForSelector('.platforms');
 
     const donwloadLinks = await page.$$('a');
-    for (let i = 0; i < donwloadLinks.length; i++) {
-      const linkElement = donwloadLinks[i];
+    for (const linkElement of  donwloadLinks) {
       const downloadLink = await linkElement.getAttribute('href');
       assert.isTrue(downloadLink?.includes('https://github.com/velas/JsWalletDesktop'), `${await linkElement.textContent()} doesn't lead to correct destination`);
     }
