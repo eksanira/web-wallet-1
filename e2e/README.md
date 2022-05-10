@@ -12,7 +12,7 @@
 
 Build and run wallet: `npm run wallet-start`.
 
-More about wallet start in JsWallet/README.md.
+More about wallet start in web-wallet/README.md.
 
 # Run tests
 `npx playwright test <path or test name>`

@@ -14,7 +14,7 @@ jobs:
       cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
-      - name: checkout JsWallet
+      - name: checkout web-wallet
         uses: actions/checkout@v2
 
       - name: get branch name
@@ -58,7 +58,7 @@ jobs:
 
       - name: copy web3 side by side to wallet
         working-directory: ../
-        run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
+        run: rm -rf web-wallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr web-wallet/.compiled-ssr/web3t/ ./
 
       - name: install wallet modules
         run: npm i --legacy-peer-deps
@@ -96,7 +96,7 @@ jobs:
       cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
-      - name: checkout JsWallet
+      - name: checkout web-wallet
         uses: actions/checkout@v2
 
       - uses: actions/setup-node@v2
@@ -145,7 +145,7 @@ jobs:
       cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
-      - name: checkout JsWallet
+      - name: checkout web-wallet
         uses: actions/checkout@v2
 
       - uses: actions/setup-node@v2
@@ -194,7 +194,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-wallet
     steps:
-      - name: checkout JsWallet
+      - name: checkout web-wallet
         uses: actions/checkout@v2
 
       - uses: actions/setup-node@v2
