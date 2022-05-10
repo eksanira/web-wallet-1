@@ -699,7 +699,7 @@
               if (err != null) {
                 const errorMessage = err.toString();
                 if (err.toLowerCase().indexOf('code:-26')) {
-                  store.current.send.error = err;
+                  store.current.send.error = errorMessage;
                   setTimeout(() => {
                     store.current.send.error = '';
                     store.current.send.parseError = '';
