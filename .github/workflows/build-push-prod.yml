@@ -91,7 +91,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: stable-test-report
+          name: stable-test-report-before-deploy
           path: |
             e2e/stable-test-report
           retention-days: 4
@@ -128,7 +128,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: swap-test-report
+          name: swap-test-report-before-deploy
           path: |
             e2e/swap-test-report
           retention-days: 4
@@ -165,7 +165,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: staking-test-report
+          name: staking-test-report-before-deploy
           path: |
             e2e/staking-test-report
           retention-days: 4
@@ -267,7 +267,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: stable-test-report
+          name: stable-test-report-after-deploy
           path: |
             e2e/stable-test-report
           retention-days: 3
@@ -297,7 +297,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: swap-test-report
+          name: swap-test-report-after-deploy
           path: |
             e2e/swap-test-report
           retention-days: 3
@@ -327,7 +327,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: staking-test-report
+          name: staking-test-report-after-deploy
           path: |
             e2e/staking-test-report
           retention-days: 3
