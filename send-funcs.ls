@@ -93,13 +93,15 @@ module.exports = (store, web3t)->
         return cb null if not agree
         err, tx <- push-tx { token, tx-type, network, ...tx-data }
         if err?
-            if (err.toString()).indexOf("Insufficient priority. Code:-26. Please try to increase fee") then
-                store.current.send.error = err
-                <- set-timeout _, 2000
+            errorMessage = err.toString()
+            if errorMessage.toLowerCase().indexOf("code:-26") then
+                store.current.send.parseError = errorMessage
+                <- set-timeout _, 7500
                 store.current.send.error = ""
-            if (err.toString()).indexOf("Unexpected token < in JSON at position 0") then
+                store.current.send.parseError = ""
+            else if errorMessage.indexOf("Unexpected token < in JSON at position 0") then
                 store.current.send.parseError = "Please retry later or write to our support and we will figure it out"
-                <- set-timeout _, 5000
+                <- set-timeout _, 7500
                 store.current.send.error = ""
                 store.current.send.parseError = ""
             return cb err
