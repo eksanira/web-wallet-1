@@ -29,6 +29,7 @@ module.exports = (store, mnemonic="", cb)->
             wallet-or-null.balance-usd = \..
             wallet-or-null.pending-sent = \..
             wallet-or-null.balance = \..
+            wallet-or-null.txs-status = \not-loaded
             wallet-or-null.status = \loading
             wallet-or-null.state = ''
         err, wallets <- generate-coin-wallets rest

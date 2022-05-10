@@ -352,6 +352,8 @@ module.exports = (store, web3t)->
         color: style.app.text
     goto-mainnet = ->
         return if store.current.refreshing is yes
+        store.transactions.all = []
+        store.transactions.applied = []
         web3t.use \mainnet
         store.current.wallet-index = 0
         store.current.group-index = 0    

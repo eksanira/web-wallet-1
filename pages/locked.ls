@@ -250,7 +250,6 @@ validate-password = (store, cb)->
     is-secure-encoding = /^[0-9a-zA-Z$&+,:;=?@#|'<>.^*()%!-_]{6,}$/.test(store.current.pin)
     return cb "Password must contain only latin characters and/or special characters and digits" if not is-secure-encoding
     cb null
-
 input = (store, web3t)->
     style = get-primary-info store
     button-primary1-style=
@@ -345,7 +344,6 @@ setup-button = (store, web3t)->
     lang = get-lang store
     style = get-primary-info store
     { open-language } = menu-funcs store, web3t
-
     setup = ->
         err <- validate-password store
         return alert(store, err) if err?

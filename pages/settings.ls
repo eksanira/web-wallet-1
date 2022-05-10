@@ -443,6 +443,8 @@ switch-network = (store, web3t)->
         value = it.target.value is \true
         store.forceReload = yes
         store.forceReloadTxs = yes
+        store.transactions.all = []
+        store.transactions.applied = []
         web3t.use networks-reverted[not value]
         store.current.wallet-index = 0
         store.current.group-index = 0

@@ -73,8 +73,8 @@ export class AuthScreen extends BaseScreen {
       const wordsElements = await this.page.$$('div.words .word span:nth-child(2)');
       const seedWords: string[] = [];
 
-      for (let i = 0; i < wordsElements.length; i++) {
-        const word = await wordsElements[i].textContent() as string;
+      for (const wordElement of wordsElements) {
+        const word = await wordElement.textContent() as string;
         seedWords.push(word.trim());
       }
 
@@ -146,8 +146,9 @@ export class AuthScreen extends BaseScreen {
 
   wordByWordSeedInputForm = {
     fill: async (seedWords: string[], params: { fast: boolean } = { fast: false }): Promise<void> => {
+      log.error(seedWords);
       const elementWithWordNumberSelector = this.page.locator('.words [placeholder*="word #"]');
-      for (let i = 0; i < seedWords.length; i++) {
+      for (const work of seedWords) {
         // example of "placeholder" attribute value: "word #1"
         const placeholderValue = await elementWithWordNumberSelector.getAttribute('placeholder');
         // cut text "word #" and leave only number at the end of string

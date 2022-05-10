@@ -12,6 +12,7 @@ require! {
     \./confirmation.ls : { alert }
     \../components/button.ls
     \../components/address-holder.ls
+    \../transactions.ls : { load-wallet-transactions }
     \../calc-certain-wallet.ls
 }
 .wallet-group
@@ -349,6 +350,11 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
             receive-click = receive(wallet)
             send-click = send(wallet)
             swap-click = swap(store, wallet)
+            expand-click = (e)->
+                store.current.wallet = wallet
+                expand(e)
+                err <- load-wallet-transactions(store, web3t, wallet.coin.token)
+                console.error err if err?
             token = wallet.coin.token
             is-custom = wallet?coin?custom is yes
             token-display =
@@ -373,13 +379,13 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
                   store.tooltipMessage = lang["tooltip_#{wallet.coin.token}"]
 
             /* Render */
-            .wallet.pug.wallet-item(class="#{big}" key="#{token}" style=border-style id="token-#{token}")
+            .wallet.pug.wallet-item(class="#{big} #{disabled-class}" key="#{token}" style=border-style id="token-#{token}")
                 if (wallet.state is "error")
                     .pug.retry-container
                         button.pug.button.lock.mt-5.retry-button(on-click=refresh class="#{syncing}")
                             icon \Sync, 20
                 .pug(class="inner-wallet-container #{disabled-class}")
-                    .wallet-top.pug(on-click=expand)
+                    .wallet-top.pug(on-click=expand-click)
                         .top-left.pug(style=wallet-style class="#{container-class}")
                             .img.pug(class="#{placeholder-coin}")
                                 img.pug(src="#{wallet-icon}")
@@ -401,3 +407,7 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
                                     .price.pug(class="#{placeholder}" title="#{balance-usd}")
                                         span.pug #{ round-human balance-usd}
                                         span.pug USD
+                        if token in <[ vlx_native vlx_evm vlx2 bsc_vlx vlx_erc20 vlx_huobi ]>
+                            .tooltips.pug
+                                .tooltip.pug(style=wallet-style onMouseEnter=toggleTooltipVisible(true) onMouseLeave=toggleTooltipVisible(false))
+                                    .tooltipIcon.pug.title(class="#{placeholder}") \?

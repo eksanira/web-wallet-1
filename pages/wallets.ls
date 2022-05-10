@@ -7,6 +7,7 @@ require! {
     \./wallets-desktop.ls : desktop
     \./wallets-mobile.ls : mobile
     \../components/sign-transaction.ls
+    \prelude-ls : { map, take, drop, filter, find, group-by, sort-by, obj-to-pairs, keys }
 }
 wallets = ({ store, web3t })->
     func = choise[store.current.device]
@@ -21,13 +22,12 @@ wallets.init = ({ store, web3t }, cb)->
     seedmem.mnemonic = seedmem.get!
     return cb null if store.current.account?
     err <- web3t.init
-    #console.log err
     cb null
     <- set-immediate
     if store.url-hash-params.page?
         store.current.page = store.url-hash-params.page
 wallets.focus = ({ store, web3t }, cb)->
     err <- web3t.refresh
-    cb err
+    cb err, null
 choise = { mobile, desktop }
 module.exports = wallets

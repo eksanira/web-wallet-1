@@ -59,7 +59,7 @@ export class Staking2Screen extends BaseScreen {
 
     stakedValidatorsAmountIsVisible: async (amount: number): Promise<boolean> => await this.page.locator(`"Staked Validators (${amount})"`).isVisible(),
 
-    refreshStakesUntilStakedValidatorAppears: async (timeout: number = 40_000): Promise<void> => {
+    refreshStakesUntilStakedValidatorAppears: async (timeout = 40_000): Promise<void> => {
       const startTime = new Date().getTime();
       while (!await this.validatorsList.stakedValidatorsAmountIsVisible(1) && new Date().getTime() < startTime + timeout) {
         await this.validatorsList.reload();
@@ -68,7 +68,7 @@ export class Staking2Screen extends BaseScreen {
       if (!await this.validatorsList.stakedValidatorsAmountIsVisible(1)) throw new Error(`Staked validator does not appear within ${timeout / 1000} seconds`);
     },
 
-    refreshStakesUntilStakedValidatorDisappears: async (timeout: number = 35000): Promise<void> => {
+    refreshStakesUntilStakedValidatorDisappears: async (timeout = 35000): Promise<void> => {
       const startTime = new Date().getTime();
       while (await this.validatorsList.stakedValidatorsAmountIsVisible(1) && new Date().getTime() < startTime + timeout) {
         await this.validatorsList.reload();
@@ -133,7 +133,7 @@ export class Staking2Screen extends BaseScreen {
         await this.validator.reload();
       }
 
-      log.debug('IF YOU SEE THIS TEXT LOOKS LIKE SOME CASES WERE MISSED DURING THIS METHOD DEVELOPMENT. PLEASE FIX');
+      log.warn('IF YOU SEE THIS MESSAGE LOOKS LIKE SOME CASES WERE MISSED DURING THIS METHOD DEVELOPMENT. PLEASE FIX');
       if (await this.validator.getStakeValue() === startStakeValue) throw new Error(`Stake amount was not updated during ${timeout / 1000} seconds and equals to ${startStakeValue} VLX.`);
       return await this.validator.getStakeValue();
     },
@@ -161,7 +161,7 @@ export class Staking2Screen extends BaseScreen {
      */
     reload: async (): Promise<void> => {
       await this.page.locator('[data-testid="CachedIcon"]').click();
-      await this.page.locator('.button-block-style').waitFor();
+      await this.page.locator('.button-block-style').waitFor({ timeout: 12000 });
     },
     tab: {
       stake: this.page.locator('#tab-stake'),

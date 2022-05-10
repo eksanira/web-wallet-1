@@ -38,6 +38,7 @@ calc-wallet = (store, token, cb)->
         wallet.btc-rate =
             | usd-rate is \.. => \..
             | _ => round5 (usd-rate `times` btc-rate)
+        wallet.status = \loading
         try
             err, balance <- get-balance { wallet.address, wallet.network, token, account: { wallet.address, wallet.private-key } }
             console.error "#{token} get-balance error:" err if err?
