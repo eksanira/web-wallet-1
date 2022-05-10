@@ -89,7 +89,7 @@ test.describe('Staking', () => {
       assert.equal(stakeAccOnBlockchain.state, 'activating');
 
     });
-    
+
     test('Undelegate stake', async ({ page, staking }) => {
       // precondition: wait for validators api cache update
       await staking.waitForStakesAmountUpdated({ initialStakesAmount: 0, stakeType: 'Undelegate' });
@@ -115,7 +115,7 @@ test.describe('Staking', () => {
       assert.equal(stakeAccOnBlockchain.state, 'inactive');
 
     });
-    
+
     test('Split stake', async ({ page, staking }) => {
       // precondition: wait for validators api cache update
       await staking.waitForStakesAmountUpdated({ initialStakesAmount: 1, stakeType: 'Undelegate' });
@@ -138,7 +138,7 @@ test.describe('Staking', () => {
       const addedAfterSplitAccountAddress = (await staking.getStakingAccountsUpdate(stakingAccountAddresses))?.added;
       if (!addedAfterSplitAccountAddress) throw new Error('No staking accounts appears. But it was expected after staking');
     });
-    
+
     test('Withdraw stake', async ({ page, staking }) => {
       // precondition: wait for validators api cache update
       await staking.waitForStakesAmountUpdated({ initialStakesAmount: 1, stakeType: 'Delegate' });
@@ -170,7 +170,7 @@ test.describe('Staking', () => {
       await page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
       await staking.modals.clickOK();
     });
-    
+
     test('Cleanup afterall', async ({ staking }) => {
       await staking.waitForStakesAmountUpdated({ initialStakesAmount: 2, stakeType: 'Delegate' });
 

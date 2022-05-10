@@ -1,7 +1,7 @@
 require! {
     \mobx : { toJS }
     \./math.ls : { times, minus, div }
-    \./calc-amount.ls : { change-amount-invoice, calc-crypto }
+    \./calc-amount.js : { change-amount-invoice, calc-crypto }
     \./browser/window.ls
     \./navigate.ls
     \./close.ls

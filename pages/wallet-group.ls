@@ -12,6 +12,7 @@ require! {
     \./confirmation.ls : { alert }
     \../components/button.ls
     \../components/address-holder.ls
+    \../transactions.ls : { load-wallet-transactions }
 }
 .wallet-group
     @import scheme
@@ -291,6 +292,11 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
             receive-click = receive(wallet)
             send-click = send(wallet)
             swap-click = swap(store, wallet)
+            expand-click = (e)->
+                store.current.wallet = wallet
+                expand(e)
+                err <- load-wallet-transactions(store, web3t, wallet.coin.token)
+                console.error err if err?
             token = wallet.coin.token
             is-custom = wallet?coin?custom is yes
             token-display =
@@ -311,7 +317,7 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
 
             /* Render */
             .wallet.pug.wallet-item(class="#{big} #{disabled-class}" key="#{token}" style=border-style id="token-#{token}")
-                .wallet-top.pug(on-click=expand)
+                .wallet-top.pug(on-click=expand-click)
                     .top-left.pug(style=wallet-style)
                         .img.pug(class="#{placeholder-coin}")
                             img.pug(src="#{wallet-icon}")

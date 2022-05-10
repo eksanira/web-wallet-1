@@ -99,6 +99,8 @@ module.exports = (store, web3t)->
     switch-network = ->
         store.forceReload = yes
         store.forceReloadTxs = yes
+        store.transactions.all = []
+        store.transactions.applied = []
         network =
             | store.current.network is \mainnet => \testnet
             | _ => \mainnet
@@ -136,12 +138,13 @@ module.exports = (store, web3t)->
         store.current.account-index += 1
         refresh!
     change-account-index = (event)->
-        console.log("change-account-index")
         return if not event?target
         val = event.target.value
         return if not val.match(/[0-9]+/)?
         val = parse-int val
         val = 0 if val < 0 or val > 999999999
+        store.transactions.all = []
+        store.transactions.applied = []
         store.forceReload = yes
         store.forceReloadTxs = yes
         store.current.account-index = val

@@ -1,4 +1,4 @@
-FROM node:12.16.2-alpine as build-stage
+FROM node:15.14-alpine as build-stage
 RUN apk add --no-cache --update \
       python \
       python-dev \
@@ -8,7 +8,13 @@ RUN apk add --no-cache --update \
       sudo
 WORKDIR /app
 
-RUN npm install -g npm@latest
+# Install python/pip
+ENV PYTHONUNBUFFERED=1
+RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
+RUN python3 -m ensurepip
+RUN pip3 install --no-cache --upgrade pip setuptools
+
+RUN npm install -g npm@7
 RUN git clone https://github.com/velas/web3t.git web3t
 RUN cd web3t
 
@@ -25,7 +31,7 @@ RUN cp -pr /app/web3t .compiled-ssr/web3t
 RUN mkdir -p /app/wallet/.compiled-ssr/web3t/providers /app/wallet/.compiled-ssr/web3t/node_modules_embed/ethereumjs-tx
 RUN npm install --ignore-scripts --legacy-peer-deps
 # npm install is failed sometimes; added retry in case of fail
-RUN npm install -g --unsafe-perm node-sass https://github.com/askucher/lsxc livescript
+RUN npm i lsxc -g
 RUN mkdir -p /app/wallet/.compiled-ssr/web3t/node_modules_embed/scryptsy/lib
 RUN npm rebuild node-sass
 RUN npm -g run wallet-build
