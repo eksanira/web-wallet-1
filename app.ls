@@ -211,6 +211,8 @@ module.exports = ({ store, web3t })->
         store.current.open-menu = not store.current.open-menu
     detect-network-change = (isOnline)->
         if not isOnline
+            navigate store, web3t, \no_internet_banner
+        else
             navigate store, web3t, \locked
 
     .pug

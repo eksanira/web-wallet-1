@@ -39,6 +39,7 @@ require! {
     \./pages/poolchoosing.ls
     \./pages/stake/account_details.ls
     \./pages/staking2.ls
+    \./pages/no_internet_banner.ls
 }
 is-in-iframe = window != window.parent
 if is-in-iframe
@@ -98,3 +99,4 @@ else
     export reviewwords
     export vote
     export util
+    export no_internet_banner
