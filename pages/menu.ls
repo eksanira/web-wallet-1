@@ -92,6 +92,8 @@ require! {
                     &:hover
                         .balance-warning-notification
                             display: block
+                .full-warning-notification-text
+                    text-transform: initial
 
                 .balance-warning-notification
                     z-index: 2
@@ -270,7 +272,7 @@ module.exports = ({ store, web3t })->
                             span.total-balance-warning-icon.pug
                                 img.total-balance-warning-icon.pug(src="#{icons.warning2}" style=icon-style)
                                 .balance-warning-notification.pug
-                                    .pug The total balance is unavailable now because some of the tokens` balances could not be loaded.
+                                    .pug.full-warning-notification-text The total balance is unavailable now because some of the tokens` balances could not be loaded.
                                     .triangle.pug
                 .pug
                     if store.current.device is \desktop

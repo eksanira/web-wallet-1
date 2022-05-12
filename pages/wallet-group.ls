@@ -144,7 +144,6 @@ require! {
                 box-sizing: border-box
                 vertical-align: top
                 padding-top: 12px
-                height: $card-top-height
                 line-height: 16px
             .name-holder
                 display: inline-block;
@@ -162,8 +161,8 @@ require! {
                     right: 40px;
                     z-index: 1;
                     >.tooltipIcon
-                        width: 13px;
-                        height: 13px;
+                        width: 12px;
+                        height: 12px;
                         font-size: 12px;
                         line-height: 15px;
                         border-radius: 30px;
