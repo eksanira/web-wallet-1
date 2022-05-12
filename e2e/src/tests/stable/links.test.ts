@@ -18,7 +18,8 @@ test.describe('Links', () => {
     const donwloadLinks = await page.$$('a');
     for (const linkElement of  donwloadLinks) {
       const downloadLink = await linkElement.getAttribute('href');
-      assert.isTrue(downloadLink?.includes('https://github.com/velas/JsWalletDesktop'), `${await linkElement.textContent()} doesn't lead to correct destination`);
+      const linkText = await linkElement.textContent();
+      assert.isTrue(downloadLink?.includes('https://github.com/velas/JsWalletDesktop'), `${linkText} doesn't lead to correct destination`);
     }
   });
 });
