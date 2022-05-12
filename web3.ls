@@ -16,7 +16,7 @@ require! {
     \./mirror.ls
     \./plugin-loader.ls : { get-coins }
     \./velas/velas-api.ls
-    \./send-funcs.js
+    \./send-funcs.ls
     \./pages.ls
     \./themes.ls
     \localStorage
