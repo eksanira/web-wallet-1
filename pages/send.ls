@@ -1,6 +1,6 @@
 require! {
     \react
-    \../send-funcs.js
+    \../send-funcs.ls
     \prelude-ls : { map, find, keys, filter, pairs-to-obj, obj-to-pairs }
     \../calc-amount.js : { calc-fee-before-send }
     \../get-primary-info.ls
