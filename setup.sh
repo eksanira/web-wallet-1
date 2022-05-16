@@ -2,14 +2,13 @@
 
 npm i lsxc -g
 
-git clone https://github.com/velas/web-wallet
-git clone http://github.com/velas/web3t
+cd .. && git clone http://github.com/velas/web3t
 
 cd web3t && npm i
 
 # Delete git cache and copy web3t to web-wallet:
 cd .. && rm -rf web-wallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web-wallet/.compiled-ssr/ && cp -pr web3t/ web-wallet/.compiled-ssr/web3t/
-cd web-wallet && npm i
+cd web-wallet && npm i --legacy-peer-deps
 
 # Build and run wallet
 npm run wallet-build 
