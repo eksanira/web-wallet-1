@@ -629,6 +629,11 @@
         (gas = arg$.gas),
         (swap = arg$.swap);
       token = send.coin.token;
+      if (swap) {
+        if (!data) {
+          return alert('No data! Data must be setted!');
+        }
+      }
       if (+amountSendFee === 0) {
         return cb('Fee amount must be more than 0');
       }
@@ -901,7 +906,8 @@
             }
           })();
           if (send.network.api.cluster) {
-            store.current.lastTxUrl = store.current.lastTxUrl + "?cluster=" + send.network.api.cluster;
+            store.current.lastTxUrl =
+              store.current.lastTxUrl + '?cluster=' + send.network.api.cluster;
           }
           navigate(store, web3t, 'sent');
           return web3t.refresh(function () {});
@@ -1786,6 +1792,7 @@
           }
           send.data = data;
           store.current.send.contractAddress = HECO_SWAP__HOME_BRIDGE;
+          return cb(null);
         }
         /* DONE! */
         /* Swap from HECO to VELAS EVM */
@@ -1857,6 +1864,7 @@
           })();
           send.data = data;
           send.contractAddress = FOREIGN_BRIDGE_TOKEN;
+          return cb(null);
         }
         /* DONE! */
         /* Swap from VELAS EVM to HECO */
@@ -1982,6 +1990,7 @@
               })();
               send.data = data;
               send.contractAddress = FOREIGN_BRIDGE_TOKEN;
+              return cb(null);
             }
           );
         }
@@ -2022,6 +2031,7 @@
           }
           data = contract.relayTokens.getData(receiver);
           send.data = data;
+          return cb(null);
         }
         /* DONE! */
         /* Swap from ETHEREUM (VELAS) to ETH  */
@@ -2064,6 +2074,7 @@
           );
           send.data = data;
           send.contractAddress = FOREIGN_BRIDGE_TOKEN;
+          return cb(null);
         }
         /* DONE */
         /* Swap from VLX ERC20 to COIN VLX */
@@ -2148,6 +2159,7 @@
           }
           send.data = data;
           store.current.send.contractAddress = HOME_BRIDGE;
+          return cb(null);
         }
         /* DONE */
         /* Swap into native */
@@ -2174,9 +2186,9 @@
             web3t.velas.EvmToNativeBridge.transferToNative.getData(ethAddress);
           store.current.send.contractAddress =
             web3t.velas.EvmToNativeBridge.address;
+          send.data = data;
+          return cb(null);
         }
-        send.data = data;
-        return cb(null);
       });
     };
     beforeSendAnyway = function () {
