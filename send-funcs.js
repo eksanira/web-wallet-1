@@ -630,8 +630,32 @@
         (swap = arg$.swap);
       token = send.coin.token;
       if (swap) {
-        if (!data) {
-          return alert('No data! Data must be setted!');
+        if (
+          !(
+            chosenNetwork == null ||
+            chosenNetwork.referTo === 'vlx_native' ||
+            (token === 'vlx_native' &&
+              ((ref2$ = chosenNetwork.referTo) === 'vlx' ||
+                ref2$ === 'vlx2' ||
+                ref2$ === 'vlx_evm')) ||
+            ((token === 'vlx' || token === 'vlx_evm') &&
+              ((ref2$ = chosenNetwork.referTo) === 'vlx_native' ||
+                ref2$ === 'vlx2')) ||
+            ((token === 'vlx2' ||
+              token === 'vlx_native' ||
+              token === 'vlx_evm') &&
+              ((ref2$ = chosenNetwork.referTo) === 'vlx_native' ||
+                ref2$ === 'vlx2' ||
+                ref2$ === 'vlx_evm')) ||
+            (token === 'vlx_native' &&
+              ((ref2$ = chosenNetwork.referTo) === 'vlx' ||
+                ref2$ === 'vlx2' ||
+                ref2$ === 'vlx_evm'))
+          )
+        ) {
+          if (!data) {
+            return alert('No data! Data must be setted!');
+          }
         }
       }
       if (+amountSendFee === 0) {
@@ -2187,6 +2211,29 @@
           store.current.send.contractAddress =
             web3t.velas.EvmToNativeBridge.address;
           send.data = data;
+          return cb(null);
+        }
+        if (
+          chosenNetwork == null ||
+          chosenNetwork.referTo === 'vlx_native' ||
+          (token === 'vlx_native' &&
+            ((ref2$ = chosenNetwork.referTo) === 'vlx' ||
+              ref2$ === 'vlx2' ||
+              ref2$ === 'vlx_evm')) ||
+          ((token === 'vlx' || token === 'vlx_evm') &&
+            ((ref2$ = chosenNetwork.referTo) === 'vlx_native' ||
+              ref2$ === 'vlx2')) ||
+          ((token === 'vlx2' ||
+            token === 'vlx_native' ||
+            token === 'vlx_evm') &&
+            ((ref2$ = chosenNetwork.referTo) === 'vlx_native' ||
+              ref2$ === 'vlx2' ||
+              ref2$ === 'vlx_evm')) ||
+          (token === 'vlx_native' &&
+            ((ref2$ = chosenNetwork.referTo) === 'vlx' ||
+              ref2$ === 'vlx2' ||
+              ref2$ === 'vlx_evm'))
+        ) {
           return cb(null);
         }
       });
