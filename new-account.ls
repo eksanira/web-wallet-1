@@ -21,7 +21,8 @@ module.exports = (store, mnemonic="", cb)->
     generate-coin-wallets = ([coin, ...rest], cb)->
         return cb null, [] if not coin?
         err, wallet-or-null <- generate-coin-wallet coin
-        return cb err if err?
+        # Do not return callback with error if exists, because it stops generate next wallets
+        #return cb err if err?
         if wallet-or-null?
             coin.wallet = wallet-or-null
             wallet-or-null.usd-rate = \..
