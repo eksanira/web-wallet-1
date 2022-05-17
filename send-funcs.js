@@ -2150,6 +2150,7 @@
           if (+send.amountSend > +maxPerTx) {
             return cb('Max amount per transaction is ' + maxPerTx + ' VLX');
           }
+          return cb(null);
         }
         /* DONE */
         /* Swap from COIN VLX to VLX ERC20 */
