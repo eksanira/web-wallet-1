@@ -2238,6 +2238,23 @@
         ) {
           return cb(null);
         }
+
+        if (
+          (token === 'usdt_erc20' && chosenNetwork.id === 'vlx_usdt') ||
+          /* Swap from USDT ETHEREUM to USDT VELAS  */
+          (token === 'vlx_usdt' && chosenNetwork.id === 'usdt_erc20') ||
+          /* Swap from USDT VELAS to USDT ETHEREUM */
+          (token === 'busd' && chosenNetwork.id === 'vlx_busd') ||
+          /* Swap from BUSD to BUSD VELAS */
+          (token === 'vlx_busd' && chosenNetwork.id === 'busd') ||
+          /* Swap from BUSD VELAS to BUSD */
+          (token === 'usdc' && chosenNetwork.id === 'vlx_usdc') ||
+          /* Swap from USDC to USDC VELAS */
+          (token === 'vlx_usdc' && chosenNetwork.id === 'usdc')
+          /* Swap from USDC VELAS to USDC */
+        ) {
+          return cb(null);
+        }
       });
     };
     beforeSendAnyway = function () {
