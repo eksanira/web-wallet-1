@@ -52,7 +52,7 @@ test.describe.parallel('Auth', () => {
       await auth.welcome.restore();
       await auth.restoreFrom.seed('12');
       await auth.pinForNewAcc.fillAndConfirm('111222');
-      const seed12Words: string[] = { ...data.wallets.login.seedArr };
+      const seed12Words: string[] = [...data.wallets.login.seedArr];
       seed12Words.length = 12;
       await auth.wordByWordSeedInputForm.fill(seed12Words);
 
@@ -108,10 +108,10 @@ test.describe.parallel('Auth', () => {
         // yr: 'Kaabo!',
         // vn: 'Chào mừng!'
       };
+
       const languages = Object.keys(welcomeTexts) as Language[];
 
-      for (let i = 0; i < languages.length; i++) {
-        const language = languages[i];
+      for (const language of languages) {
         log.info(language);
         await auth.language.select(language);
         const actualWelcomeText = (await auth.language.welcomeText.textContent())?.trim();

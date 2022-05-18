@@ -71,8 +71,8 @@ export abstract class BaseScreen {
   }
 
   async setSeedToLocalStorage(encryptedSeed: string): Promise<void> {
-    await this.page.evaluate((encryptedSeed) => {
-      localStorage.setItem('sseed', encryptedSeed);
+    await this.page.evaluate((encryptedSeedPhrase) => {
+      localStorage.setItem('sseed', encryptedSeedPhrase);
     }, encryptedSeed);
   }
 

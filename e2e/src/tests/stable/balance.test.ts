@@ -15,8 +15,7 @@ test.describe('Balance', () => {
     const balances = await wallets.getWalletsBalances();
     const walletsList = Object.keys(balances) as Currency[];
 
-    for (let i = 0; i < walletsList.length; i++) {
-      const currency = walletsList[i];
+    for (const currency of walletsList) {
       const VLXNativeBalanceOnBlockchain = (await velasNative.getBalance(data.wallets.withFunds.address)).VLX;
       const balanceUpdateAmount = 0.001;
       const amountOfTokens = balances[currency];
@@ -24,21 +23,23 @@ test.describe('Balance', () => {
       // if no balance – skip currency
       if (amountOfTokens === null) continue;
 
-      switch (walletsList[i]) {
+      switch (currency) {
         case 'token-vlx2':
           assert.equal(amountOfTokens, '80.999895');
           break;
         case 'token-vlx_native':
-          assert.equal(amountOfTokens, String(VLXNativeBalanceOnBlockchain));
-          const tx = await velasNative.transfer({
-            lamports: balanceUpdateAmount * 10 ** 9,
-            payerSeed: data.wallets.payer.seed,
-            toAddress: data.wallets.withFunds.address,
-          });
-          await velasNative.waitForConfirmedTransaction(tx);
-          await wallets.refreshBalances();
-          const amountOfTokensAfterUpdate = helpers.toFixedNumber(Number((await wallets.getWalletsBalances())['token-vlx_native']), 6);
-          assert.equal(amountOfTokensAfterUpdate, helpers.toFixedNumber((VLXNativeBalanceOnBlockchain + balanceUpdateAmount), 6), 'Velas Native wallet balance was not updated after funding it');
+          (async () => {
+            assert.equal(amountOfTokens, String(VLXNativeBalanceOnBlockchain));
+            const tx = await velasNative.transfer({
+              lamports: balanceUpdateAmount * 10 ** 9,
+              payerSeed: data.wallets.payer.seed,
+              toAddress: data.wallets.withFunds.address,
+            });
+            await velasNative.waitForConfirmedTransaction(tx);
+            await wallets.refreshBalances();
+            const amountOfTokensAfterUpdate = helpers.toFixedNumber(Number((await wallets.getWalletsBalances())['token-vlx_native']), 6);
+            assert.equal(amountOfTokensAfterUpdate, helpers.toFixedNumber((VLXNativeBalanceOnBlockchain + balanceUpdateAmount), 6), 'Velas Native wallet balance was not updated after funding it');
+          })();
           break;
         case 'token-btc':
           try {

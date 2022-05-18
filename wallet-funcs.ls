@@ -103,6 +103,8 @@ module.exports = (store, web3t, wallets, wallet, wallets-groups, group-name)->
     big = 
         | index is store.current.wallet-index and group-index is store.current.group-index=> \big
         | _ => ""
+    status = wallet.status
+
     balance = round5(wallet.balance) + ' ' + wallet.coin.token.to-upper-case!
     balance-usd = wallet.balance `times` usd-rate
     pending = round5(wallet.pending-sent) + ' ' + wallet.coin.token.to-upper-case!
@@ -117,4 +119,4 @@ module.exports = (store, web3t, wallets, wallet, wallets-groups, group-name)->
     last = 
         | wallets.length < 4 and index + 1 is wallets.length => \last
         | _ => ""
-    { wallet-icon, button-style, wallet, active, big, balance, balance-usd, pending, send, swap, expand, usd-rate, last, receive, uninstall }
+    { wallet-icon, button-style, wallet, active, status, big, balance, balance-usd, pending, send, swap, expand, usd-rate, last, receive, uninstall }

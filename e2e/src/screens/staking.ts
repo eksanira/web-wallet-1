@@ -13,10 +13,13 @@ export class StakingScreen extends BaseScreen {
   }
 
   vlxNativeBalance = this.page.locator('#vlx-native-balance');
+  loader = this.page.locator('.item.blink').first();
 
-  async refreshStakes() {
+  async refresh() {
     const refreshStakesButton = this.page.locator('.balance .button.lock');
     await refreshStakesButton.click();
+    await this.loader.waitFor();
+    await this.waitForLoaded();
   }
 
   accounts = {
@@ -87,7 +90,7 @@ export class StakingScreen extends BaseScreen {
     await this.creatingStakingAccountLoader.waitFor();
     let accountCreationIsInProgress = await this.creatingStakingAccountLoader.isVisible();
     while (accountCreationIsInProgress && (new Date().getTime() - startTime < 25000)) {
-      await this.page.waitForTimeout(100);
+      await this.page.waitForTimeout(500);
       accountCreationIsInProgress = await this.creatingStakingAccountLoader.isVisible();
     }
     log.debug(`Staking account was created. It took ${((new Date().getTime() - startTime) / 1000).toFixed()} seconds`);
@@ -99,21 +102,12 @@ export class StakingScreen extends BaseScreen {
   };
 
   async waitForLoaded(): Promise<void> {
-    try {
-      const pageLoaderSelector = this.page.locator('.loading-pulse');
-      while (await pageLoaderSelector.isVisible()) {
-        await this.page.waitForTimeout(100);
-      }
-      while (await this.page.isVisible('LOADING')) {
-        await this.page.waitForTimeout(100);
-      }
-      while (await this.accounts.loader.isVisible()) {
-        await this.page.waitForTimeout(100);
-      }
-    } catch (e) {
-      log.debug('No loading after opening staking. Looks like it\'s already fully loaded.');
+    while (await this.loader.isVisible()) {
+      await this.page.waitForTimeout(500);
     }
-
+    while (await this.accounts.loader.isVisible()) {
+      await this.page.waitForTimeout(500);
+    }
     // wait staking account item or make sure there are no accounts
     await this.page.waitForSelector(`#staking-accounts [datacolumn="Staker Address"], ${this.accounts.emptyListSelector}`);
     await this.page.waitForTimeout(500);
@@ -129,31 +123,24 @@ export class StakingScreen extends BaseScreen {
   }
 
   async waitForStakesAmountUpdated(params: { initialStakesAmount: number, stakeType?: Stake | 'all', timeout?: number }): Promise<number> {
-    const { initialStakesAmount } = params;
     const stakeType = params.stakeType || 'all';
-    const timeout = params.timeout || 35_000;
+    const initialStakesAmount = params.initialStakesAmount ?? await this.getAmountOfStakes(stakeType);
+    const timeout = params.timeout || 40_000;
 
     let finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);
     const startTime = new Date().getTime();
-    while (finalAmountOfStakingAccounts === initialStakesAmount && (new Date().getTime() - startTime < timeout)) {
-      log.debug(`Amount of stake accounts still the same - ${finalAmountOfStakingAccounts}. Wait for WS message...`);
-      // await this.page.waitForTimeout(500);
-      finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);
-      if (new Date().getTime() - startTime < timeout) {
+    while (finalAmountOfStakingAccounts === initialStakesAmount) {
+      if (new Date().getTime() - startTime > timeout) {
         throw new Error(`You expected "${stakeType}" stakes amount to be changed. But no changes during ${timeout / 1000} sec.
         "${stakeType}" stakes amount: initial=${initialStakesAmount}, final=${finalAmountOfStakingAccounts}.`);
       }
-      await this.page.waitForTimeout(500);
+      log.debug(`Amount of stake accounts still the same - ${finalAmountOfStakingAccounts}. Refreshing...`);
+      await this.page.waitForTimeout(1000);
       await this.refresh();
-      await this.waitForLoaded();
+      finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);
     }
-    log.debug(`Great! Amount of "${params.stakeType}" stake accounts has changed: ${initialStakesAmount} > ${finalAmountOfStakingAccounts}.`);
+    log.debug(`Great! Amount of "${params.stakeType}" stakes amount has changed: ${initialStakesAmount} > ${finalAmountOfStakingAccounts}.`);
     return finalAmountOfStakingAccounts;
-  }
-
-  async refresh(): Promise<void> {
-    await this.page.click('[title="refresh"]');
-    await this.waitForLoaded();
   }
 
   async getFirstStakingAccountAddressFromTheList(type: Stake): Promise<string> {
@@ -161,8 +148,7 @@ export class StakingScreen extends BaseScreen {
     const accountsElementsList = await this.page.$$('#staking-accounts tr');
     const errorText = `No accounts in the list of required type – "${type}"`;
 
-    for (let i = 0; i < accountsElementsList.length; i++) {
-      const accountElement = accountsElementsList[i];
+    for (const accountElement of accountsElementsList) {
       let buttonText: string;
 
       switch (type) {
@@ -231,15 +217,16 @@ export class StakingScreen extends BaseScreen {
   } | null> {
     currentAccountsAddressesList = currentAccountsAddressesList || await this.getStakingAccountsAddresses();
     const diff = helpers.getArraysDiff(initialAccountsAddressesList, currentAccountsAddressesList);
-    log.debug(`This is log of getStakingAccountsUpdate function
-    
-    initialAccountsAddressesList:
-    ${initialAccountsAddressesList || '<empty>'};
+    log.debug(`<<<<<
+This is log of getStakingAccountsUpdate function
 
-    finalAccountsAddressesList:
-    ${currentAccountsAddressesList || '<empty>'};
+initialAccountsAddressesList:
+${initialAccountsAddressesList || '<empty>'};
+finalAccountsAddressesList:
+${currentAccountsAddressesList || '<empty>'};
 
-    diff: ${diff || '<no diff>'}`);
+diff: ${diff || '<no diff>'}
+>>>>>`);
     if (diff.length === 0) return null;
     return currentAccountsAddressesList.length > initialAccountsAddressesList.length ? { added: diff[0] } : { removed: diff[0] };
   }
@@ -247,8 +234,7 @@ export class StakingScreen extends BaseScreen {
   async selectAccount(type: Stake): Promise<void> {
     const accountsList = await this.page.$$('#staking-accounts .stake-account-item');
     let accountFound = false;
-    for (let i = 0; i < accountsList.length; i++) {
-      const account = accountsList[i];
+    for (const account of accountsList) {
       const buttonAccordingToType = await account.$(`"${type}"`);
       if (buttonAccordingToType) {
         const accountAddress = await account.$('.inner-address-holder div a');
@@ -264,9 +250,7 @@ export class StakingScreen extends BaseScreen {
     await this.waitForLoaded();
     const accountsElementsList = await this.page.$$('#staking-accounts tr');
 
-    for (let i = 0; i < accountsElementsList.length; i++) {
-      const accountElement = accountsElementsList[i];
-
+    for (const accountElement of accountsElementsList) {
       const accountAddress = await (await accountElement.$('td[title]'))?.getAttribute('title');
       if (typeof accountAddress !== 'string') throw new Error(`Invalid account address: "${accountAddress}"`);
       if (accountAddress === address) {
@@ -311,52 +295,6 @@ export class StakingScreen extends BaseScreen {
     log.info(`Withdrawed staking account: ${address}`);
   }
 
-  // async refreshStakesToGetUpdatedCachedStatuses(stakeTypeToBeChanged: { from: Stake, to: Stake | null }, timeout = 20000): Promise<void> {
-  //   await this.refreshStakes();
-  //   await this.page.waitForSelector('#staking-accounts h3:text("LOADING")');
-  //   await this.waitForLoaded();
-
-  //   // postcondition - refresh until undelegated stake appears
-  //   const fromStakesAmount = await this.getAmountOfStakes(stakeTypeToBeChanged.from);
-  //   let toStakesAmount: number;
-  //   if (stakeTypeToBeChanged.to === null) {
-  //     toStakesAmount = 0
-  //   } else {
-  //     toStakesAmount = await this.getAmountOfStakes(stakeTypeToBeChanged.to);
-  //   };
-
-  //   const stakesAmountAfterUpdate = {
-  //     from: fromStakesAmount,
-  //     to: toStakesAmount,
-  //   }
-
-  //   const startTime = new Date().getTime();
-
-  //   while (stakesAmountAfterUpdate.from !== fromStakesAmount - 1 && (stakesAmountAfterUpdate.to !== toStakesAmount + 1) && new Date().getTime() - startTime < timeout) {
-  //     await this.refreshStakes();
-  //     await this.page.waitForSelector('#staking-accounts h3:text("LOADING")');
-  //     await this.waitForLoaded();
-
-  //     stakesAmountAfterUpdate.from = await this.getAmountOfStakes(stakeTypeToBeChanged.from);
-  //     if (stakeTypeToBeChanged.to !== null) stakesAmountAfterUpdate.to = await this.getAmountOfStakes(stakeTypeToBeChanged.to);
-  //   }
-
-  //   if (stakeTypeToBeChanged.to === null) {
-  //     while (stakesAmountAfterUpdate.from !== fromStakesAmount - 1 && new Date().getTime() - startTime < timeout) {
-  //       await this.refreshStakes();
-  //       await this.page.waitForSelector('#staking-accounts h3:text("LOADING")');
-  //       await this.waitForLoaded();
-
-  //       stakesAmountAfterUpdate.from = await this.getAmountOfStakes(stakeTypeToBeChanged.from);
-  //     }
-  //   } else {
-  //     toStakesAmount = await this.getAmountOfStakes(stakeTypeToBeChanged.to);
-  //   };
-
-  //   stakesAmountAfterUpdate.to !== toStakesAmount + 1 &&
-  //   stakesAmountAfterUpdate.to = await this.getAmountOfStakes(stakeTypeToBeChanged.to);
-  // }
-
   cleanup = {
     stakesToUndelegate: async () => {
       let toUndelegateStakesAmount = await this.getAmountOfStakes('Undelegate');
@@ -366,12 +304,9 @@ export class StakingScreen extends BaseScreen {
         await this.modals.confirmPrompt();
         await this.page.waitForSelector('" Funds undelegated successfully"');
         await this.modals.clickOK();
-        
-        // refresh stakes
-        await this.page.waitForTimeout(30000);
-        await this.refreshStakes();
-        await this.page.waitForSelector('#staking-accounts h3:text("LOADING")');
-        await this.waitForLoaded();
+
+        await this.refresh();
+        await this.waitForStakesAmountUpdated({ stakeType: 'Undelegate', initialStakesAmount: toUndelegateStakesAmount });
         toUndelegateStakesAmount = await this.getAmountOfStakes('Undelegate');
       }
     },
@@ -384,13 +319,9 @@ export class StakingScreen extends BaseScreen {
         await this.page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
         await this.modals.clickOK();
 
-        // refresh stakes
-        await this.page.waitForTimeout(30000);
-        await this.refreshStakes();
-        await this.page.waitForSelector('#staking-accounts h3:text("LOADING")');
-        await this.waitForLoaded();
-
-        toWithdrawStakesAmount = await this.getAmountOfStakes('Delegate');
+        await this.refresh();
+        await this.waitForStakesAmountUpdated({ stakeType: 'Withdraw', initialStakesAmount: toWithdrawStakesAmount });
+        toWithdrawStakesAmount = await this.getAmountOfStakes('Withdraw');
       }
     },
 
@@ -402,15 +333,10 @@ export class StakingScreen extends BaseScreen {
         await this.stakeAccount.withdrawButton.click();
         await this.modals.confirmPrompt();
         await this.page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
-        await this.page.click('" Ok"');
-        // await this.refreshStakesToGetUpdatedCachedStatuses({ from: 'Undelegate', to: null })
+        await this.modals.clickOK();
 
-        // refresh stakes
-        await this.page.waitForTimeout(30000);
-        await this.refreshStakes();
-        await this.page.waitForSelector('#staking-accounts h3:text("LOADING")');
-        await this.waitForLoaded();
-
+        await this.refresh();
+        await this.waitForStakesAmountUpdated({ stakeType: 'Delegate', initialStakesAmount: notDelegatedStakesAmount });
         notDelegatedStakesAmount = await this.getAmountOfStakes('Delegate');
       }
     },

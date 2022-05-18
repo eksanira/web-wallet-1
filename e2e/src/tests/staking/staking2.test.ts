@@ -51,7 +51,7 @@ test.describe('Staking 2', () => {
       expect(aprs).toEqual([...aprs].sort().reverse());
 
       /*
-      // BUG: https://velasnetwork.atlassian.net/browse/VLWA-1515
+      // !BUG: https://velasnetwork.atlassian.net/browse/VLWA-1515
       await staking2.validatorsList.sortBy('total staked');
       await staking2.validatorsList.totalStaked.first().waitFor();
       let totalStakes = await staking2.validatorsList.totalStaked.allInnerTexts();
@@ -121,7 +121,7 @@ test.describe('Staking 2', () => {
       await staking2.stakeForm.nextButton.click();
       await staking2.modals.confirmPrompt();
 
-      await page.locator('"Stake account has been created successfully"').waitFor();
+      await page.locator('"Stake account has been created successfully"').waitFor({ timeout: 15000 });
       await staking2.stakeForm.okButton.click();
       await staking2.validator.goBack();
       await staking2.validatorsList.refreshStakesUntilStakedValidatorAppears();

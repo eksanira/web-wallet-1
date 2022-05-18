@@ -6,7 +6,7 @@ import { AuthScreen, WalletsScreen } from '../screens';
 let wallets: WalletsScreen;
 let auth: AuthScreen;
 
-test.describe(' > ', () => {
+test.describe('Console', () => {
   test.beforeEach(async ({ page }) => {
     wallets = new WalletsScreen(page);
     auth = new AuthScreen(page);

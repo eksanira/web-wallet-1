@@ -107,7 +107,6 @@ module.exports = ({ store, wallet, type, url, text })->
         filter: style.app.filterIcon
     icon1=
         filter: style.app.icon1
-
     address-title =
         | store.current.refreshing is no => get-address-title wallet, address-suffix
         | _ => "..."

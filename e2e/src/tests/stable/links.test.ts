@@ -19,7 +19,8 @@ test.describe('Links', () => {
     for (let i = 0; i < donwloadLinks.length; i++) {
       const linkElement = donwloadLinks[i];
       const downloadLink = await linkElement.getAttribute('href');
-      assert.isTrue(downloadLink?.includes('https://github.com/velas/JsWalletDesktop'), `${await linkElement.textContent()} doesn't lead to correct destination`);
+      const linkText = await linkElement.textContent();
+      assert.isTrue(downloadLink?.includes('https://github.com/velas/JsWalletDesktop'), `${linkText} doesn't lead to correct destination`);
     }
   });
 });

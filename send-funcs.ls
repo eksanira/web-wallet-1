@@ -2,7 +2,7 @@ require! {
     \mobx : { toJS }
     \./math.ls : { times, minus, div, plus }
     \./api.ls : { create-transaction, push-tx, get-transaction-info }
-    \./calc-amount.ls : { change-amount-calc-fiat, change-amount-send, change-amount, calc-crypto-from-eur, calc-crypto-from-usd, change-amount-without-fee }
+    \./calc-amount.js : { change-amount-calc-fiat, change-amount-send, change-amount, calc-crypto-from-eur, calc-crypto-from-usd, change-amount-without-fee }
     \./send-form.ls : { notify-form-result }
     \./get-name-mask.ls
     \./resolve-address.ls

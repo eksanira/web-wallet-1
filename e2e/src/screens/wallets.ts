@@ -121,8 +121,7 @@ export class WalletsScreen extends BaseScreen {
       'token-bsc_vlx': null,
     };
 
-    for (let i = 0; i < walletElements.length; i++) {
-      const walletElement = walletElements[i];
+    for (const walletElement of walletElements) {
       const tokenId: Currency = (await this.getTokenIdOfWalletItemElement(
         walletElement,
       )) as Currency;
@@ -201,18 +200,8 @@ export class WalletsScreen extends BaseScreen {
       await addTokenButton.scrollIntoViewIfNeeded();
       await this.page.waitForTimeout(500);
 
-      // // exclusion for BUSD in
-      // if (tokenName === 'token-vlx_busd') {
-      //   // @ts-expect-error
-      //   await this.page.evaluate(() => document.querySelector(`#add-token-vlx_busd button`).click());
-      // }
-
       await addTokenButton.click({ timeout: 15000, force: true });
       await this.page.waitForTimeout(500);
-
-      // TODO: investigate why click does not work and FIX
-      // repeat action if required
-      // if (await this.page.$(addTokenButtonSelector)) await addTokenButton?.click();
     },
   };
 
@@ -417,7 +406,7 @@ export class WalletsScreen extends BaseScreen {
     const txSignatureLink = await this.txListAfterSendOrSwap.linkToTxExecuted.getAttribute('href');
     if (!txSignatureLink) throw new Error('No txSignatureLink');
     let txSignature = txSignatureLink.replace(/^.*tx\//, '');
-    txSignature = txSignature.replace(/\/.*/, '');
+    txSignature = txSignature.replace(/\?cluster=testnet.*/, '');
     if (!txSignature) {
       throw new Error('Cannot get transaction signature from tx link');
     }

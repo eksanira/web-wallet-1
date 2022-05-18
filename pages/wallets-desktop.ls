@@ -25,14 +25,15 @@ require! {
         z-index: 100;
         width: 19vw;
         position: absolute;
-        line-height: 14px
+        padding: 15px;
         font-size: 12px
-        font-weight: 600
+        font-weight: 100
         color: #fff
-        padding: 8px 3px;
-        margin-left: 16px
+        margin-left: 25px
         margin-top: -16px
-        background: #000
+        background: #1f1f1f
+        box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.34)
+        text-align: left
         pointer-events: none
         opacity: 0;
         display: none;
@@ -40,6 +41,20 @@ require! {
             width: 16vw;
         @media screen and (max-width: 1000px)
             width: 19vw;
+        .inner-tooltip
+            position: relative
+            .triangle
+                width: 0
+                height: 0
+                border-top: 5px solid transparent
+                border-right: 8px solid #1f1f1f
+                border-bottom: 5px solid transparent
+                position: absolute
+                left: -22.5px
+                top: 0%
+
+            @media (max-width: 735px)
+                display: none
     >.left-side
         margin-left: $menu
         @media(max-width: $ipad)
@@ -310,7 +325,10 @@ mobile = ({ store, web3t })->
     wallet-detail = group-wallets |> find (-> group-wallets.index-of(it) is store.current.wallet-index)
     #return null if not wallet-detail?
     .wallets-container.pug(key="wallets")
-        .pug.tooltipContent(style=tooltipVisibility) #{store.tooltipMessage}
+        .pug.tooltipContent(style=tooltipVisibility)
+            .inner-tooltip.pug
+                .pug #{store.tooltipMessage}
+                .triangle.pug
         header store, web3t
         .pug.left-side(style=row)
             .pug(style=left-side)
