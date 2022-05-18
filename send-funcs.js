@@ -1959,6 +1959,7 @@
           }
           send.data = data;
           store.current.send.contractAddress = BSC_SWAP__HOME_BRIDGE;
+          return cb(null);
         }
         /* Swap from BSC VELAS to VELAS EVM */
         if (token === 'bsc_vlx' && chosenNetwork.id === 'vlx_evm') {
