@@ -91,7 +91,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: stable-test-report
+          name: stable-test-report-before-deploy
           path: |
             e2e/stable-test-report
           retention-days: 4
@@ -128,7 +128,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: swap-test-report
+          name: swap-test-report-before-deploy
           path: |
             e2e/swap-test-report
           retention-days: 4
@@ -165,7 +165,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: staking-test-report
+          name: staking-test-report-before-deploy
           path: |
             e2e/staking-test-report
           retention-days: 4
@@ -242,7 +242,10 @@ jobs:
           ECR_REGISTRY=${account_id}.dkr.ecr.${ECR_REGION}.amazonaws.com
           helmfile -e prod -l namespace=${NAMESPACE},name=velas-wallet apply  --set image.tag=$IMAGE_TAG,image.repository=$ECR_REGISTRY/$ECR_REPOSITORY --skip-deps
 
-  e2e-tests-prod:
+  stable-tests-prod:
+    concurrency:
+      group: web-wallet-e2e-tests-stable
+      cancel-in-progress: false
     needs: deploy
     runs-on: ubuntu-latest
     defaults:
@@ -259,14 +262,73 @@ jobs:
       - name: install npm modules
         run: npm i
       - name: run tests
-        run: CI=true LOG_LEVEL=debug ENVIRONMENT=prod NETWORK=testnet npm run test
+        run: CI=true LOG_LEVEL=debug ENVIRONMENT=prod NETWORK=testnet npm run test:stable
       - name: upload artifacts
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: test-report
+          name: stable-test-report-after-deploy
           path: |
             e2e/stable-test-report
+          retention-days: 3
+
+  swap-tests-prod:
+    concurrency:
+      group: web-wallet-e2e-tests-swap
+      cancel-in-progress: false
+    needs: deploy
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./e2e
+    steps:
+      - name: checkout web-wallet
+        uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - name: install latest npm
+        run: npm install -g npm@latest
+      - name: install npm modules
+        run: npm i
+      - name: run tests
+        run: CI=true LOG_LEVEL=debug ENVIRONMENT=prod NETWORK=testnet npm run test:swap
+      - name: upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: swap-test-report-after-deploy
+          path: |
             e2e/swap-test-report
+          retention-days: 3
+
+  staking-tests-prod:
+    concurrency:
+      group: web-wallet-e2e-tests-staking
+      cancel-in-progress: false
+    needs: deploy
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./e2e
+    steps:
+      - name: checkout web-wallet
+        uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - name: install latest npm
+        run: npm install -g npm@latest
+      - name: install npm modules
+        run: npm i
+      - name: run tests
+        run: CI=true LOG_LEVEL=debug ENVIRONMENT=prod NETWORK=testnet npm run test:staking
+      - name: upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: staking-test-report-after-deploy
+          path: |
             e2e/staking-test-report
-          retention-days: 7
+          retention-days: 3
+

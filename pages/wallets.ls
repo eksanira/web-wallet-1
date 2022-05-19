@@ -18,8 +18,6 @@ wallets.init = ({ store, web3t }, cb)->
     store.current.send?tx-type = \regular
     store.current.send.is-swap = no
     store.current.send.chosen-network = null
-    console.log "insex", store.current.account-index, store.current.group-index
-
     #TODO: fix this seedmem.get! but before need to ask users to make backup wallets
     seedmem.mnemonic = seedmem.get!
     return cb null if store.current.account?
