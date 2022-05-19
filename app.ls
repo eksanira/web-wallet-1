@@ -4,6 +4,7 @@ require! {
     \react
     \./pages.ls
     \./pages/header.ls
+    \./pages/no_internet_banner.ls
     \./pages/mobilemenu.ls
     \./components/default-alert.ls
     #\./pages/side-menu.ls
@@ -211,9 +212,13 @@ module.exports = ({ store, web3t })->
         store.current.open-menu = not store.current.open-menu
     detect-network-change = (isOnline)->
         if not isOnline
-            navigate store, web3t, \no_internet_banner
+            store.walletIsOffline = yes
         else
-            navigate store, web3t, \locked
+            store.walletIsOffline = no
+            if store.current.page not in <[ chooseinit newseedrestore reviewwords verifyseed restorewords ]>
+                return navigate store, web3t, \locked
+            if store.current.seed-words.length is 0
+                return navigate store, web3t, \chooseinit
 
     .pug
         define-root store
@@ -224,15 +229,14 @@ module.exports = ({ store, web3t })->
             copy-message store, web3t
             default-alert store
             #banner store, web3t
-            if no
-                if store.current.device is \mobile
-                    header store, web3t
             if store.current.device is \mobile
                 mobilemenu store, web3t
             if store.current.device is \desktop
                 # side-menu store, web3t
                 left-menu store, web3t
             current-page { store, web3t }
+            if store.walletIsOffline is yes
+                no_internet_banner {store, web3t}
             hovered-address { store }
             Offline.pug(onChange=detect-network-change)
                 .notification.fixed-n-centered.error-no-connection.pug(id="offline-notification") Warning! You have no internet connection!\nOffline mode is on!

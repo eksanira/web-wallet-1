@@ -16,6 +16,11 @@ require! {
     overflow: hidden
     z-index: 999999999
     height: 100vh
+    position: fixed
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
 
     .iron
         -webkit-mask-image: linear-gradient(75deg, rgba(0, 0, 0, 0.6) 30%, #000 50%, rgba(0, 0, 0, 0.6) 70%)
@@ -78,7 +83,8 @@ require! {
             text-transform: uppercase
             color: orange
 
-module.exports = ({ store, web3 }, cb)->
+module.exports = ({ store, web3 })->
+    console.log "[no internaet page]"
     style = get-primary-info store
     lang = get-lang store
     offline-mode-banner-style =
