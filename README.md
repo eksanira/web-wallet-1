@@ -5,6 +5,10 @@
 node version 14.16+
 npm version 7+
 
+Run `npm run setup`
+
+OR follow next steps
+
 1. Install lsxc: `npm i lsxc -g`
 2. `git clone https://github.com/velas/web-wallet`
 3. `git clone http://github.com/velas/web3t`
@@ -14,6 +18,9 @@ npm version 7+
 6. `npm i`
 7. Build and run wallet: `npm run wallet-start`
 8. Open `127.0.0.1:8080/main-index.html`
+
+You can also specify network by adding it as parameter: `?network=testnet`.
+Do not open `localhost`, use `127.0.0.1`. Otherwise some wallet functions may work incorrectly.
 
 ## Run e2e tests
 Please refer to e2e/README.md

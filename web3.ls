@@ -202,6 +202,7 @@ module.exports = (store, config)->
         <- page.init { store, web3t, call-again: no }
         return cb null if typeof! page.focus isnt \Function
         <- page.focus { store, web3t }
+        cb null
     refresh = (cb)->
         #return if store.current.refreshing
         err <- refresh-interface
