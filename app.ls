@@ -239,4 +239,5 @@ module.exports = ({ store, web3t })->
                 no_internet_banner {store, web3t}
             hovered-address { store }
             Offline.pug(onChange=detect-network-change)
+                no_internet_banner {store, web3t}
                 .notification.fixed-n-centered.error-no-connection.pug(id="offline-notification") Warning! You have no internet connection!\nOffline mode is on!
