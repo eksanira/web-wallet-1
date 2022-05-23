@@ -16,7 +16,7 @@ require! {
     \./mirror.ls
     \./plugin-loader.ls : { get-coins }
     \./velas/velas-api.ls
-    \./send-funcs.js
+    \./send-funcs.ls
     \./pages.ls
     \./themes.ls
     \localStorage
@@ -202,6 +202,7 @@ module.exports = (store, config)->
         <- page.init { store, web3t, call-again: no }
         return cb null if typeof! page.focus isnt \Function
         <- page.focus { store, web3t }
+        cb null
     refresh = (cb)->
         #return if store.current.refreshing
         err <- refresh-interface

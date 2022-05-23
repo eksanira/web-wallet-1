@@ -87,7 +87,6 @@ test.describe('Staking', () => {
       assert.equal(stakeAccOnBlockchain.active, 0);
       assert.equal(stakeAccOnBlockchain.inactive, stakingAmount * 10 ** 9);
       assert.equal(stakeAccOnBlockchain.state, 'activating');
-
     });
 
     test('Undelegate stake', async ({ page, staking }) => {
@@ -113,7 +112,6 @@ test.describe('Staking', () => {
       assert.equal(stakeAccOnBlockchain.active, 0);
       assert.equal(stakeAccOnBlockchain.inactive, stakingAmount * 10 ** 9);
       assert.equal(stakeAccOnBlockchain.state, 'inactive');
-
     });
 
     test('Split stake', async ({ page, staking }) => {

@@ -931,7 +931,7 @@ stringify = (value) ->
     else
         '..'
 validators.init = ({ store, web3t }, cb)!->
-    err <- calc-wallet(store)
+    err <- calc-certain-wallet(store, 'vlx_native')
     #return cb null if store.staking.pools-are-loading is yes
     if store.staking.fetchAccounts is no then
         store.staking.fetchAccounts = yes

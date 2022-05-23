@@ -4,7 +4,7 @@ require! {
     \../get-lang.ls
     \../pages/icon.ls
     \../icons.ls
-    \../send-funcs.js
+    \../send-funcs.ls
     \../numbers.js : {parseNum}
     \react-currency-input-field : { default: CurrencyInput }
 }
