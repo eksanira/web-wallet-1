@@ -16,8 +16,8 @@ require! {
     \./alert-demo.ls
     \../components/burger.ls
     \prelude-ls : { find }
-    \staking.2.0 : Staking
-    'staking.2.0/lib/modules/staking-store.js' : { StakingStore }
+    \@velas/staking.2.0 : Staking
+    '@velas/staking.2.0/lib/modules/staking-store.js' : { StakingStore }
 }
 .staking2
     $mobile: 500px
