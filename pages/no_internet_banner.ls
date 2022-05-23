@@ -84,7 +84,6 @@ require! {
             color: orange
 
 module.exports = ({ store, web3 })->
-    console.log "[no internaet page]"
     style = get-primary-info store
     lang = get-lang store
     offline-mode-banner-style =
