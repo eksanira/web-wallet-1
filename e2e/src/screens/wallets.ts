@@ -208,7 +208,7 @@ export class WalletsScreen extends BaseScreen {
   async swapTokens(
     fromToken: Currency,
     toToken: Currency,
-    transactionAmount: number | 'use max',
+    transactionAmount: number | string | 'use max',
     params: { customAddress?: string, confirm: boolean } = { confirm: true },
   ): Promise<void> {
     if (fromToken === toToken) {
@@ -218,7 +218,7 @@ export class WalletsScreen extends BaseScreen {
     await this.addToken(fromToken);
     await this.addToken(toToken);
     await this.selectWallet(fromToken);
-    await this.swapButton.click({ timeout: 15000 });
+    await this.swapButton.click({ timeout: 20000 });
     await this.swapForm.networkSelector.waitFor({ timeout: 20000 });
     await this.swapActions.chooseDestinationNetwork(toToken);
 
@@ -229,7 +229,7 @@ export class WalletsScreen extends BaseScreen {
     if (transactionAmount === 'use max') {
       await this.useMax();
     } else {
-      await this.swapActions.fill(String(transactionAmount));
+      await this.swapActions.typeAmount(String(transactionAmount));
     }
 
     // wait for amount error disappears
@@ -263,8 +263,10 @@ export class WalletsScreen extends BaseScreen {
   };
 
   private swapActions = {
-    fill: async (transactionAmount: string) => {
-      await this.swapForm.amountInput.fill(transactionAmount);
+    typeAmount: async (transactionAmount: string) => {
+      await this.swapForm.amountInput.waitFor();
+      await this.page.waitForTimeout(200);
+      await this.swapForm.amountInput.type(transactionAmount);
     },
     getDestinationNetworkForTokenName: async (swapToToken: Currency): Promise<string> => {
       switch (swapToToken) {
