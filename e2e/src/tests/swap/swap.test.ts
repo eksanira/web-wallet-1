@@ -135,7 +135,7 @@ test.describe('Swap', () => {
       await wallets.swapTokens('token-eth', 'token-vlx_eth', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
       log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: false }));
     });
 
     test('USDC (Ethereum) > USDC VRC-20 (Velas)', async ({ wallets }) => {

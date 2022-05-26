@@ -30,12 +30,12 @@ export default class ExplorersAPI {
     return response.data.result;
   }
 
-  async waitForTx(params: { txHash: string, waitForConfirmation?: boolean, milliseconds?: number, testName?: string }): Promise<void> {
+  async waitForTx(params: { txHash: string, waitForConfirmation?: boolean, timeout?: number, testName?: string }): Promise<void> {
     const waitForConfirmation = params.waitForConfirmation ?? true;
-    const milliseconds = params.milliseconds || 120_000;
+    const timeout = params.timeout || 120_000;
     const startTime = Date.now();
     let tx;
-    while (!tx && (Date.now() - startTime) < milliseconds) {
+    while (!tx && (Date.now() - startTime) < timeout) {
       tx = await this.getTxByHash(params.txHash);
       await helpers.sleep(2000);
     }
@@ -44,7 +44,7 @@ export default class ExplorersAPI {
     if (!waitForConfirmation) return;
 
     let isTxConfirmed = false;
-    while (!isTxConfirmed && (Date.now() - startTime) < milliseconds) {
+    while (!isTxConfirmed && (Date.now() - startTime) < timeout) {
       const txReceipt = await this.getTransactionReceipt(params.txHash);
       isTxConfirmed = txReceipt.result?.status === '0x1';
       log.debug(`Tx status: ${txReceipt.result?.status}`);
