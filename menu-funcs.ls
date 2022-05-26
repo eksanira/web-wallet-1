@@ -41,6 +41,8 @@ module.exports = (store, web3t)->
         console.log("menu-funcs refresh")
         store.forceReload = yes
         store.forceReloadTxs = yes
+        store.transactions.all = []
+        store.transactions.applied = []
         <- web3t.refresh
         store.forceReload = no
         store.forceReloadTxs = no
@@ -66,6 +68,9 @@ module.exports = (store, web3t)->
     #pages =
     #    * \wallets
     #    * \history
+
+    balancesAreCalculated = !(store.current.account.wallets |> find (-> it.status in <[ error loading ]>))?
+
     change-seed = (event)->
         state.timeout = clear-timeout state.timeout
         current.seed = event.target.value
@@ -170,4 +175,4 @@ module.exports = (store, web3t)->
         message = "This is your Private KEY"
         copy-to-clipboard wallet.private-key 
         notify store, "Your Private KEY is copied into your clipboard", cb
-    { export-private-key, check-pin, change-account-index, account-left, account-right, open-account, close-account, open-migration, close-migration, open-language, close-language, current, wallet-style, info, activate-s1, activate-s2, activate-s3, switch-network, generate, enter-pin, cancel-try, edit-seed, save-seed, change-seed, refresh, lock }
+    { export-private-key, balancesAreCalculated, check-pin, change-account-index, account-left, account-right, open-account, close-account, open-migration, close-migration, open-language, close-language, current, wallet-style, info, activate-s1, activate-s2, activate-s3, switch-network, generate, enter-pin, cancel-try, edit-seed, save-seed, change-seed, refresh, lock }

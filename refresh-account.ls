@@ -66,13 +66,10 @@ export background-refresh-account = (web3, store, cb)->
             | _ => store.current.wallet-index 
         wallet-index = 0 if not wallet-index?
         wallet = store.current.account.wallets[wallet-index]
-        return if not wallet?
-        store.rates = bg-store.rates
-        store.current.account = store.current.account
+        return cb null if not wallet?
         store.current.filter.filter-txs-types = <[IN OUT]>
         store.current.filter = {token: wallet.coin.token}
-        store.current.balance-usd = store.current.balance-usd
         <- refresh-txs(web3, store)
-        store.transactions = bg-store.transactions
         apply-transactions store
+        cb null
     cb null
