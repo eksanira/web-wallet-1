@@ -80,7 +80,8 @@ test.describe('Swap', () => {
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
-    test('USDC (Velas) > USDC (Ethereum) @smoke', async ({ wallets }) => {
+    // TODO: no tokens! need replenishment
+    test.skip('USDC (Velas) > USDC (Ethereum) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_usdc', 'token-usdc', '0.001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
