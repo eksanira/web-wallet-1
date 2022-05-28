@@ -3,10 +3,10 @@ import {
   bscchain, evmchain, hecochain, ropsten,
 } from '../../api/explorers-api';
 import { data, test } from '../../common-test-exports';
-import { log } from '../../tools/logger';
 
-test.describe('Swap', () => {
+test.describe.parallel('Swap', () => {
   const transactionsInProgress: Promise<any>[] = [];
+  const isSmokeRun = process.env.SMOKE === 'true';
 
   test.beforeEach(async ({ auth, wallets }) => {
     await auth.goto();
@@ -23,7 +23,6 @@ test.describe('Swap', () => {
       await wallets.swapTokens('token-vlx_native', 'token-vlx_evm', '0.0001');
       await wallets.txListAfterSendOrSwap.linkToTxExecuted.waitFor({ timeout: 30000 });
       const txSignature = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txSignature: ${txSignature}`);
       transactionsInProgress.push(velasNative.waitForConfirmedTransaction(txSignature));
     });
 
@@ -33,81 +32,70 @@ test.describe('Swap', () => {
       const txSignatureLink = await wallets.txListAfterSendOrSwap.linkToTxExecuted.getAttribute('href');
       if (!txSignatureLink) throw new Error('No txSignatureLink');
       const txSignature = txSignatureLink.replace('https://native.velas.com/tx/', '');
-      log.debug(`${test.name} txSignature: ${txSignature}`);
       transactionsInProgress.push(velasNative.waitForConfirmedTransaction(txSignature));
     });
 
     test('VLX EVM (Velas) > VLX Native (Velas) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_evm', 'token-vlx_native', '0.0001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
     test('VLX EVM (Velas) > VLX Legacy (Velas) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_evm', 'token-vlx2', '0.0001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
     test('VLX Legacy (Velas) > VLX Native (Velas) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx2', 'token-vlx_native', '0.0001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
     test('VLX Legacy (Velas) > VLX EVM (Velas) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx2', 'token-vlx_evm', '0.0001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
   });
 
-  test.describe('From Velas network @smoke', async () => {
-    test('VLX EVM (Velas) > VLX ERC-20 (Ethereum)', async ({ wallets }) => {
+  test.describe('From Velas network', async () => {
+    test('VLX EVM (Velas) > VLX ERC-20 (Ethereum) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_evm', 'token-vlx_erc20', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
-    // bsc is down too often
+    // bsc is down too often; test may be unstable
     test('VLX EVM (Velas) > VLX BEP-20 (BSC) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_evm', 'token-bsc_vlx', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
     test('VLX EVM (Velas) > VLX HRC-20 (Heco) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_evm', 'token-vlx_huobi', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
-    test('USDC (Velas) > USDC (Ethereum)', async ({ wallets }) => {
+    test('USDC (Velas) > USDC (Ethereum) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_usdc', 'token-usdc', '0.001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
     test('ETH VRC-20 (Velas) > ETH (Ethereum) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_eth', 'token-eth', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
     test('USDT (Velas) > USDT (Ethereum)', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_usdt', 'token-usdt_erc20', '0.001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
     // to run this test, min amount per tx should be larger that bridge fee, but now its smaller
@@ -125,40 +113,35 @@ test.describe('Swap', () => {
     test('BUSD (Velas) > BUSD (Ethereum) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_busd', 'token-busd', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
   });
 
   test.describe('From Ethereum network', async () => {
-    test('ETH (Ethereum) > ETH VRC-20 (Velas) @smoke', async ({ wallets }) => {
+    // ETH ropsten testnet has a huge gas price (111,363 Gwei)
+    test.skip('ETH (Ethereum) > ETH VRC-20 (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-eth', 'token-vlx_eth', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: false }));
+      transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
     test('USDC (Ethereum) > USDC VRC-20 (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-usdc', 'token-vlx_usdc', '0.001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
     // BUG: 0 fee error
     test.skip('VLX ERC-20 (Ethereum) > VLX EVM (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_erc20', 'token-vlx_evm', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: false }));
+      transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
-    // not enough funds
     test('USDT (Ethereum) > USDT VRC-20 (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-usdt_erc20', 'token-vlx_usdt', '0.001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
   });
 
@@ -166,15 +149,13 @@ test.describe('Swap', () => {
     test('VLX BEP-20 (BSC) > VLX EVM (Velas) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-bsc_vlx', 'token-vlx_evm', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      await bscchain.waitForTx({ txHash, testName: test.info().title });
+      await bscchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun });
     });
 
-    test('BUSD (BSC) > BUSD VRC-20 (Velas) @smoke', async ({ wallets }) => {
+    test('BUSD (BSC) > BUSD VRC-20 (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-busd', 'token-vlx_busd', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      await bscchain.waitForTx({ txHash, testName: test.info().title });
+      await bscchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun});
     });
   });
 
@@ -182,8 +163,7 @@ test.describe('Swap', () => {
     test('VLX HRC-20 (Heco) > VLX EVM (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_huobi', 'token-vlx_evm', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
-      log.debug(`${test.name} txHash: ${txHash}`);
-      transactionsInProgress.push(hecochain.waitForTx({ txHash, testName: test.info().title }));
+      transactionsInProgress.push(hecochain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
   });
 });
