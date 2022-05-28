@@ -99,6 +99,8 @@ test.describe('Swap', () => {
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
+    // TODO: not enough funds error (login with account with zero funds on any or all tokens)
+
     // to run this test, min amount per tx should be larger that bridge fee, but now its smaller
     test.skip('USDT (Velas) > USDT (Ethereum): min amount per tx error', async ({ page, wallets }) => {
       await wallets.swapTokens('token-vlx_usdt', 'token-usdt_erc20', '0.00000001', { confirm: false });
