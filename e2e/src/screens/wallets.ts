@@ -405,6 +405,7 @@ export class WalletsScreen extends BaseScreen {
   }
 
   async getTxHashFromTxlink(): Promise<string> {
+    await this.txListAfterSendOrSwap.linkToTxExecuted.waitFor({ timeout: 20000 });
     const txSignatureLink = await this.txListAfterSendOrSwap.linkToTxExecuted.getAttribute('href');
     if (!txSignatureLink) throw new Error('No txSignatureLink');
     let txSignature = txSignatureLink.replace(/^.*tx\//, '');

@@ -108,7 +108,9 @@ test.describe('Swap', () => {
       await page.locator('" Min amount per transaction is 0.1 USDT"').waitFor();
     });
 
-    test('USDT (Velas) > USDT (Ethereum): amount is less than bridge fee @smoke', async ({ page, wallets }) => {
+    // to run this test bridge fee should be larger than min amount
+    // TODO: run on mainnnet
+    test.skip('USDT (Velas) > USDT (Ethereum): amount is less than bridge fee @smoke', async ({ page, wallets }) => {
       await wallets.swapTokens('token-vlx_usdt', 'token-usdt_erc20', '0.000001', { confirm: false });
       await page.locator('" Amount 0.000001 is less than bridge fee (0.001)"').waitFor();
     });
