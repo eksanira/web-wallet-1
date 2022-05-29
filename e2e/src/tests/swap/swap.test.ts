@@ -154,13 +154,13 @@ test.describe('Swap', () => {
     test('VLX BEP-20 (BSC) > VLX EVM (Velas) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-bsc_vlx', 'token-vlx_evm', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
-      await bscchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun });
+      transactionsInProgress.push(bscchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }))
     });
 
     test('BUSD (BSC) > BUSD VRC-20 (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-busd', 'token-vlx_busd', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
-      await bscchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun});
+      transactionsInProgress.push(bscchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun}));
     });
   });
 
