@@ -4,7 +4,7 @@ import {
 } from '../../api/explorers-api';
 import { data, test } from '../../common-test-exports';
 
-test.describe('Swap', () => {
+test.describe.parallel('Swap', () => {
   const transactionsInProgress: Promise<any>[] = [];
   const isSmokeRun = process.env.SMOKE === 'true';
 
