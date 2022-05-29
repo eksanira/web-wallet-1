@@ -47,13 +47,13 @@ test.describe('Swap', () => {
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
-    test('VLX Legacy (Velas) > VLX Native (Velas) @smoke', async ({ wallets }) => {
+    test('VLX Legacy (Velas) > VLX Native (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx2', 'token-vlx_native', '0.0001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
-    test('VLX Legacy (Velas) > VLX EVM (Velas) @smoke', async ({ wallets }) => {
+    test('VLX Legacy (Velas) > VLX EVM (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx2', 'token-vlx_evm', '0.0001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
