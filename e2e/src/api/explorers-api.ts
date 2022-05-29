@@ -52,6 +52,9 @@ export default class ExplorersAPI {
       log.debug(`Tx status: ${txReceipt.result?.status}`);
       await helpers.sleep(2000);
     }
+
+    log.debug(`Tx ${params.txHash} was confirmed in ${((Date.now() - startTime) / 1000).toFixed(0)} seconds`);
+
     if (!isTxConfirmed) throw new Error(`Tx with hash ${params.txHash} exists but not confirmed. Tx data:\n${helpers.stringify(tx)}\nTest with name: "${params.testName || ''}" failed!`);
   }
 
