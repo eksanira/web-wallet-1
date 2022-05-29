@@ -164,8 +164,8 @@ test.describe('Swap', () => {
     });
   });
 
-  test.describe('From HECO network @smoke', async () => {
-    test('VLX HRC-20 (Heco) > VLX EVM (Velas)', async ({ wallets }) => {
+  test.describe('From HECO network', async () => {
+    test('VLX HRC-20 (Heco) > VLX EVM (Velas) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_huobi', 'token-vlx_evm', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(hecochain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
