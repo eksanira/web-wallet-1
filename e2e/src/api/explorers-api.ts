@@ -49,7 +49,6 @@ export default class ExplorersAPI {
     while (!isTxConfirmed && (Date.now() - startTime) < timeout) {
       const txReceipt = await this.getTransactionReceipt(params.txHash);
       isTxConfirmed = txReceipt.result?.status === '0x1';
-      log.debug(`Tx status: ${txReceipt.result?.status}`);
       await helpers.sleep(2000);
     }
 
