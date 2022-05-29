@@ -241,7 +241,7 @@ export class WalletsScreen extends BaseScreen {
       } catch {
         log.error(`Attention! This could be an expected error from try/catch.
         Test could pass even if this error is thrown.
-        <swap ${fromToken}>${toToken} failed on attempt to confirm>`);
+        | swap ${fromToken} >> ${toToken} failed on attempt to confirm |`);
       }
     }
   }
@@ -305,7 +305,7 @@ export class WalletsScreen extends BaseScreen {
       await this.waitForSelectorDisappears('.switch-menu', 25000);
     },
     confirm: async () => {
-      await this.sendButton.waitFor({ timeout: 3000 });
+      await this.sendButton.waitFor();
       await this.page.waitForTimeout(500);
       await this.sendButton.click();
       await this.modals.confirmPrompt();

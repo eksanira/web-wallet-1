@@ -26,7 +26,7 @@ test.describe('Swap', () => {
       transactionsInProgress.push(velasNative.waitForConfirmedTransaction(txSignature));
     });
 
-    test('VLX Native (Velas) > VLX Legacy (Velas) @smoke', async ({ wallets }) => {
+    test('VLX Native (Velas) > VLX Legacy (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_native', 'token-vlx2', '0.0001');
       await wallets.txListAfterSendOrSwap.linkToTxExecuted.waitFor({ timeout: 30000 });
       const txSignatureLink = await wallets.txListAfterSendOrSwap.linkToTxExecuted.getAttribute('href');
@@ -41,7 +41,7 @@ test.describe('Swap', () => {
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
-    test('VLX EVM (Velas) > VLX Legacy (Velas) @smoke', async ({ wallets }) => {
+    test('VLX EVM (Velas) > VLX Legacy (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_evm', 'token-vlx2', '0.0001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
@@ -115,7 +115,7 @@ test.describe('Swap', () => {
       await page.locator('" Amount 0.000001 is less than bridge fee (0.001)"').waitFor();
     });
 
-    test('BUSD (Velas) > BUSD (Ethereum) @smoke', async ({ wallets }) => {
+    test('BUSD (Velas) > BUSD (BSC) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_busd', 'token-busd', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
@@ -143,7 +143,7 @@ test.describe('Swap', () => {
       transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
-    test('USDT (Ethereum) > USDT VRC-20 (Velas)', async ({ wallets }) => {
+    test('USDT (Ethereum) > USDT VRC-20 (Velas) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-usdt_erc20', 'token-vlx_usdt', '0.001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
