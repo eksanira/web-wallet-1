@@ -31,7 +31,7 @@ export default class ExplorersAPI {
   }
 
   async waitForTx(params: { txHash: string, waitForConfirmation?: boolean, timeout?: number, testName?: string }): Promise<void> {
-    const waitForConfirmation = params.waitForConfirmation ?? true;
+    const waitForConfirmation = params.waitForConfirmation ?? false;
     const timeout = params.timeout || 120_000;
     const startTime = Date.now();
     let tx;
@@ -40,6 +40,8 @@ export default class ExplorersAPI {
       await helpers.sleep(2000);
     }
     if (!tx) throw new Error(`No tx found with hash ${params.txHash} during runnint test: "${params.testName || ''}"`);
+
+    log.debug(`Tx ${params.txHash} was created in ${((Date.now() - startTime) / 1000).toFixed(0)} seconds`);
 
     if (!waitForConfirmation) return;
 

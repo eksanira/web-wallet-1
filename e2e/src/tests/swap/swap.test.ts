@@ -143,7 +143,7 @@ test.describe('Swap', () => {
       transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
-    test('USDT (Ethereum) > USDT VRC-20 (Velas) @smoke', async ({ wallets }) => {
+    test('USDT (Ethereum) > USDT VRC-20 (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-usdt_erc20', 'token-vlx_usdt', '0.001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
