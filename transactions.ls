@@ -32,7 +32,6 @@ make-not-pending = (store, tx)->
     err, result <- remove-tx { store, tx.token, tx.network, tx: tx.tx }
     apply-transactions store
 check-transaction-task = (bg-store, web3, network, token, ptx)-> (store, cb)->
-    console.log('inside check-transaction-task', token, ptx, network)
     check = web3[token]?get-transaction-receipt
     return cb null if not check?
     err, data <- check ptx.0
