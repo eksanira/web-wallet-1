@@ -61,6 +61,6 @@ test.describe.parallel('Transactions', () => {
 
     await wallets.sendTx('token-eth_legacy', '0xb322f01cb6a191974e7291600a4dc1b46f00f752', 0.00001);
     const txSignature = await wallets.getTxHashFromTxlink();
-    await ropsten.waitForTx({ txHash: txSignature, waitForConfirmation: false });
+    await ropsten.waitForTx({ txHash: txSignature });
   });
 });
