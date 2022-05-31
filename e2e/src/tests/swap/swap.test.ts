@@ -28,6 +28,11 @@ test.describe('Swap', () => {
       transactionsInProgress.push(velasNative.waitForConfirmedTransaction(txSignature));
     });
 
+    test('Error: Not enough funds @smoke', async ({ page, wallets }) => {
+      await wallets.swapTokens('token-vlx_native', 'token-vlx_evm', '9999999999', { confirm: false });
+      await page.locator('" Not Enough Funds"').waitFor();
+    });
+
     test('VLX Native (Velas) > VLX Legacy (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_native', 'token-vlx2', '0.0001');
       await wallets.txListAfterSendOrSwap.linkToTxExecuted.waitFor({ timeout: 30000 });
@@ -83,7 +88,7 @@ test.describe('Swap', () => {
     });
 
     // TODO: no tokens! need replenishment
-    test.skip('USDC (Velas) > USDC (Ethereum) @smoke', async ({ wallets }) => {
+    test('USDC (Velas) > USDC (Ethereum) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_usdc', 'token-usdc', '0.001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
@@ -101,17 +106,20 @@ test.describe('Swap', () => {
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
 
-    // TODO: not enough funds error (login with account with zero funds on any or all tokens)
-
     // to run this test, min amount per tx should be larger that bridge fee, but now its smaller
-    test.skip('USDT (Velas) > USDT (Ethereum): min amount per tx error', async ({ page, wallets }) => {
-      await wallets.swapTokens('token-vlx_usdt', 'token-usdt_erc20', '0.00000001', { confirm: false });
+    // TODO: run on mainnet
+    test.skip('USDT (Velas) > USDT (Ethereum): min amount per tx error', async ({ auth, page, wallets }) => {
+      await auth.goto({ network: 'mainnet' });
+      await auth.pinForLoggedOutAcc.typeAndConfirm('111222');
+      await wallets.waitForWalletsDataLoaded();
+
+      await wallets.swapTokens('token-bsc_vlx', 'token-vlx_evm', '0.0000001', { confirm: false });
       await (page.locator('button :text("swap")')).click();
-      await page.locator('" Min amount per transaction is 0.1 USDT"').waitFor();
+      await page.locator('" Min amount per transaction is 1 VLX"').waitFor();
     });
 
     // to run this test bridge fee should be larger than min amount
-    // TODO: run on mainnnet
+    // TODO: maybe could be run on mainnnet
     test.skip('USDT (Velas) > USDT (Ethereum): amount is less than bridge fee @smoke', async ({ page, wallets }) => {
       await wallets.swapTokens('token-vlx_usdt', 'token-usdt_erc20', '0.000001', { confirm: false });
       await page.locator('" Amount 0.000001 is less than bridge fee (0.001)"').waitFor();
@@ -126,7 +134,7 @@ test.describe('Swap', () => {
 
   test.describe('From Ethereum network', async () => {
     // ETH ropsten testnet has a huge gas price (111,363 Gwei)
-    test.skip('ETH (Ethereum) > ETH VRC-20 (Velas)', async ({ wallets }) => {
+    test('ETH (Ethereum) > ETH VRC-20 (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-eth', 'token-vlx_eth', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
@@ -139,7 +147,7 @@ test.describe('Swap', () => {
     });
 
     // BUG: 0 fee error
-    test.skip('VLX ERC-20 (Ethereum) > VLX EVM (Velas)', async ({ wallets }) => {
+    test('VLX ERC-20 (Ethereum) > VLX EVM (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_erc20', 'token-vlx_evm', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
@@ -162,12 +170,12 @@ test.describe('Swap', () => {
     test('BUSD (BSC) > BUSD VRC-20 (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-busd', 'token-vlx_busd', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
-      transactionsInProgress.push(bscchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun}));
+      transactionsInProgress.push(bscchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
   });
 
   test.describe('From HECO network', async () => {
-    test.only('VLX HRC-20 (Heco) > VLX EVM (Velas) @smoke', async ({ wallets }) => {
+    test('VLX HRC-20 (Heco) > VLX EVM (Velas) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_huobi', 'token-vlx_evm', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(hecochain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
