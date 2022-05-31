@@ -7,19 +7,19 @@ test.describe('Swap', () => {
   const customAddress = '';
   const swapPairs: Currency[][] = [
     ['token-vlx_evm', 'token-vlx_erc20'],
-    // ['token-vlx_evm', 'token-bsc_vlx'],
-    // ['token-vlx_evm', 'token-vlx_huobi'],
-    // ['token-vlx_usdc', 'token-usdc'],
-    // ['token-vlx_usdt', 'token-usdt_erc20'],
-    // ['token-vlx_eth', 'token-eth'],
-    // ['token-vlx_busd', 'token-busd'],
-    // ['token-usdc', 'token-vlx_usdc'],
-    // ['token-eth', 'token-vlx_eth'],
-    // ['token-vlx_erc20', 'token-vlx_evm'],
-    // ['token-usdt_erc20', 'token-vlx_usdt'],
-    // ['token-bsc_vlx', 'token-vlx_evm'],
-    // ['token-busd', 'token-vlx_busd'],
-    // ['token-vlx_huobi', 'token-vlx_evm']
+    ['token-vlx_evm', 'token-bsc_vlx'],
+    ['token-vlx_evm', 'token-vlx_huobi'],
+    ['token-vlx_usdc', 'token-usdc'],
+    ['token-vlx_usdt', 'token-usdt_erc20'],
+    ['token-vlx_eth', 'token-eth'],
+    ['token-vlx_busd', 'token-busd'],
+    ['token-usdc', 'token-vlx_usdc'],
+    ['token-eth', 'token-vlx_eth'],
+    ['token-vlx_erc20', 'token-vlx_evm'],
+    ['token-usdt_erc20', 'token-vlx_usdt'],
+    ['token-bsc_vlx', 'token-vlx_evm'],
+    ['token-busd', 'token-vlx_busd'],
+    ['token-vlx_huobi', 'token-vlx_evm']
   ]
 
   test.beforeEach(async ({ auth, wallets }) => {
