@@ -3,10 +3,12 @@ import {
   bscchain, evmchain, hecochain, ropsten,
 } from '../../api/explorers-api';
 import { data, test } from '../../common-test-exports';
+import { log } from '../../tools/logger';
 
 test.describe('Swap', () => {
   const transactionsInProgress: Promise<any>[] = [];
   const isSmokeRun = process.env.SMOKE === 'true';
+  log.warn(`${isSmokeRun ? 'Only tests marked @smoke will be run' : 'All smoke tests will be run'}`);
 
   test.beforeEach(async ({ auth, wallets }) => {
     await auth.goto();
@@ -165,7 +167,7 @@ test.describe('Swap', () => {
   });
 
   test.describe('From HECO network', async () => {
-    test('VLX HRC-20 (Heco) > VLX EVM (Velas) @smoke', async ({ wallets }) => {
+    test.only('VLX HRC-20 (Heco) > VLX EVM (Velas) @smoke', async ({ wallets }) => {
       await wallets.swapTokens('token-vlx_huobi', 'token-vlx_evm', '0.00000001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(hecochain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
