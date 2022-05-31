@@ -209,7 +209,7 @@ export class WalletsScreen extends BaseScreen {
     fromToken: Currency,
     toToken: Currency,
     transactionAmount: number | string | 'use max',
-    params: { customAddress?: string, confirm: boolean } = { confirm: true },
+    params?: { customAddress?: string, confirm?: boolean }
   ): Promise<void> {
     if (fromToken === toToken) {
       throw TypeError('You can\'t swap to the same token you are swapping from');
@@ -235,7 +235,7 @@ export class WalletsScreen extends BaseScreen {
     // wait for amount error disappears
     await this.page.waitForTimeout(300);
 
-    if (params?.confirm) {
+    if (params?.confirm ?? true) {
       try {
         await this.swapActions.confirm();
       } catch {
