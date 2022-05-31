@@ -59,7 +59,7 @@ export const data = {
       address: '22VainsYdNmnre8XS91XoUipQ2YLNd4oPyobKvvN1zsu',
       seed: 'spin swamp chronic catalog lake retire vessel will truly assault rib few grocery able maple catalog dinner nice dance coast jelly swallow interest nothing',
     },
-    manual: {
+    manualSwap: {
       seed: 'cake wealth sudden fantasy spot stove clown apology own engine aisle clarify vessel indoor smoke tower horse scheme opinion train supply aspect pony wonder'
     },
   },
