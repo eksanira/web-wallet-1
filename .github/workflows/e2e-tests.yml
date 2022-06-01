@@ -172,7 +172,7 @@ jobs:
 
       - name: run tests swap
         working-directory: ./e2e
-        run: CI=true npm run test:swap
+        run: CI=true npm run test:swap:smoke
 
       - name: upload artifacts
         if: always()
