@@ -16,6 +16,7 @@ require! {
     \./wallet-stats.ls
     \./loading.ls
     \./confirmation.ls : { confirm }
+    \../plugin-loader.ls : { base-array }
 }
 .wallet-detailed
     @import scheme
@@ -261,7 +262,7 @@ module.exports = (store, web3t, wallets, wallet)-->
                 .wallet-header-part.right.pug
                     .pug
                         span.title.pug(class="#{placeholder}") #{name}
-                        if wallet?coin?token not in <[ btc vlx vlx_native vlx2 eth vlx_evm ]>
+                        if wallet?coin?token not in base-array
                             span.pug.uninstall(on-click=uninstall-action style=uninstall-style) #{label-uninstall}
                     .balance.pug(class="#{placeholder}")
                         .pug.token-balance(title="#{wallet?balance}")
