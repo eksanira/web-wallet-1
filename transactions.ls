@@ -47,10 +47,10 @@ check-transaction-task = (bg-store, web3, network, token, ptx)-> (store, cb)->
     return cb null if data?.status is \confirmed
     return cb null if data?.status is \reverted
     cb \pending
-check-ptx-in-background = (store, web3, network, token, ptx, cb)->
+export check-ptx-in-background = (store, web3, network, token, ptx, cb)->
     add-task ptx.0, check-transaction-task(store, web3, network, token, ptx)
     cb null
-check-ptxs-in-background = (store, web3, network, token, [ptx, ...rest], cb)->
+export check-ptxs-in-background = (store, web3, network, token, [ptx, ...rest], cb)->
     return cb null if not ptx?
     err <- check-ptx-in-background store, web3, network, token, ptx
     #return cb err if err?
