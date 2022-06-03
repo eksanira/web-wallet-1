@@ -60,11 +60,10 @@ export check-ptxs-in-background = (store, web3, network, token, [ptx, ...rest], 
     check-ptxs-in-background store, web3, network, token, rest, cb
 export rebuild-history = (store, web3, wallet, cb)->
     { address, network, coin, private-key } = wallet
-    err, data <- get-transactions { address, network, coin.token, account: { address, private-key } }
+    err1, data <- get-transactions { address, network, coin.token, account: { address, private-key } }
     #console.log \rebuild-history, coin.token, err, data
-    return cb err if err?
     ids =
-        data |> map (.tx.to-upper-case!)
+        (data ? []) |> map (.tx.to-upper-case!)
     dummy = (err, data)->
         console.log err, data
     err, ptxs <- get-pending-txs { network, store, coin.token }
@@ -82,14 +81,14 @@ export rebuild-history = (store, web3, wallet, cb)->
     txs
         |> filter (.token is coin.token)
         |> each -> txs.splice txs.index-of(it), 1
-    data
+    data ? []
         |> each extend { address, coin, network }
         |> each txs~push
     ptxs
         |> map transform-ptx { address, coin, network }
         |> each extend { address, coin, network, pending: yes, checked: 0 }
         |> each txs~push
-    cb!
+    cb err1
 
 
 export load-all-transactions = (store, web3, cb)->
