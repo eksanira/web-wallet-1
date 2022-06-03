@@ -206,8 +206,8 @@ module.exports = (store, web3t, wallets, wallet)-->
     token = (wallet?coin?token ? "").to-upper-case!
     tokenDisplay = (wallet?coin?nickname ? "").to-upper-case!
     locationWallet = if window.location.host is "wallet.testnet.velas.com" then 'wallet_testnet' else 'wallet_mainnet'
-    uri-prod = "https://buy.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
-    uri-test = "https://fiat-payments.testnet.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
+    uri-prod = "https://buy.velas.com/?address=#{wallet.address}&crypto_currency=#{token}&env=#{locationWallet}"
+    uri-test = "https://fiat-payments.testnet.velas.com/?address=#{wallet.address}&crypto_currency=#{token}&env=#{locationWallet}"
     uri_buy =
         | store.current.network is \testnet => uri-test
         | _ => uri-prod
