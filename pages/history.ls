@@ -1037,7 +1037,7 @@ module.exports = ({ store, web3t })->
                         .pug.err-message(style=err-message-style)
                             img.failed-txs-warning-icon.pug(src="#{icons.warning2}" style=icon-style)
                             .pug.failed-txs-warning-notification
-                                | An error occurred during getting transactions
+                                | Please update transactions’ history later, now it is not loading
                         button { store, classes: "retry-btn" text: \Retry , on-click: retry, icon: \retry }
             if length is 0 and wallet?txs-status is \loaded
                 text-style = 
