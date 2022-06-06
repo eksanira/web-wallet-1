@@ -100,11 +100,9 @@ module.exports = (store, web3t)->
                 store.current.send.parseError = ""
 
             if errorMessage.indexOf("Unexpected token < in JSON at position 0") then
-                console.log("IF")
                 store.current.send.parseError = "Invalid response. Code 11"
                 <- hideErrorMessage
             else
-                console.log("ELSE")
                 store.current.send.parseError = errorMessage
                 <- hideErrorMessage
             return cb err

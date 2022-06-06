@@ -697,24 +697,23 @@
             ),
             function (err, tx) {
               if (err != null) {
-                const errorMessage = err.toString();
-                if (err.toLowerCase().indexOf('code:-26')) {
-                  store.current.send.error = errorMessage;
+                const hideErrorMessage = () => {
                   setTimeout(() => {
                     store.current.send.error = '';
                     store.current.send.parseError = '';
                   }, 7500);
-                } else if (
+                };
+                const errorMessage = err.toString();
+                if (
                   errorMessage.indexOf(
                     'Unexpected token < in JSON at position 0'
                   )
                 ) {
-                  store.current.send.parseError =
-                    'Please retry later or write to our support and we will figure it out';
-                  setTimeout(function () {
-                    store.current.send.error = '';
-                    return (store.current.send.parseError = '');
-                  }, 7500);
+                  store.current.send.parseError = 'Invalid response. Code 11';
+                  hideErrorMessage();
+                } else {
+                  store.current.send.parseError = errorMessage;
+                  hideErrorMessage();
                 }
                 return cb(err);
               }
