@@ -18,7 +18,7 @@ require! {
     \./topup.ls
     \./get-primary-info.ls
     \./pending-tx.ls : { create-pending-tx }
-    \./transactions.ls : { rebuild-history }
+    \./transactions.ls : { check-ptx-in-background }
     \prelude-ls : { map, find }
     \./web3.ls
     \./api.ls : { calc-fee }
@@ -29,6 +29,7 @@ require! {
     \ethereumjs-util : {BN}
     \bs58
     \assert
+    \moment
     \./velas/velas-web3.ls
     \./icons.ls
 }
@@ -106,10 +107,29 @@ module.exports = (store, web3t)->
                 store.current.send.parseError = errorMessage
                 <- hideErrorMessage
             return cb err
+        err, pendingTxInfo <- create-pending-tx { store, token, recipient, network, tx, amount-send, amount-send-fee, send.to, from: wallet.address }
+        if err?
+            return cb err
 
-        err <- create-pending-tx { store, token, recipient, network, tx, amount-send, amount-send-fee, send.to, from: wallet.address }
-        store.forceReload = yes
-        store.forceReloadTxs = yes
+        currentTransanctionInfo = {
+          tx,
+          token,
+          network,
+          to: recipient,
+          from: send.wallet.address,
+          amount: new String(amount-send),
+          fee: amount-send-fee,
+          pending: true,
+          time: moment!.unix!,
+          recepientType: send.txType,
+          txType: null,
+          type: "OUT",
+          url: send.network.api.url + "/tx/#{tx}"
+        }
+        store.transactions.all = store.transactions.all.concat([currentTransanctionInfo])
+        apply-transactions store
+
+        <- check-ptx-in-background store, web3t, network, token, pendingTxInfo
         cb err, tx
     wallet-icon =
         | wallet.coin?custom is yes and icons.customWalletIcon? => icons.customWalletIcon
@@ -158,7 +178,6 @@ module.exports = (store, web3t)->
         store.current.last-tx-url = | send.network.api.linktx => send.network.api.linktx.replace \:hash, data
             | send.network.api.url => send.network.api.url + "/tx/#{data}"
         navigate store, web3t, \sent
-        <- web3t.refresh
     send-escrow = ->
         name = send.to
         amount-ethers = send.amount-send

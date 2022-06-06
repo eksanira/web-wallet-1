@@ -123,7 +123,7 @@ jobs:
         run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check outputs of build/run wallet commands" && exit 1)
       - name: run tests swap
         working-directory: ./e2e
-        run: CI=true npm run test:swap
+        run: CI=true npm run test:swap:smoke
       - name: upload artifacts
         if: always()
         uses: actions/upload-artifact@v2
@@ -292,7 +292,7 @@ jobs:
       - name: install npm modules
         run: npm i
       - name: run tests
-        run: CI=true LOG_LEVEL=debug ENVIRONMENT=prod NETWORK=testnet npm run test:swap
+        run: CI=true LOG_LEVEL=debug ENVIRONMENT=prod NETWORK=testnet npm run test:swap:smoke
       - name: upload artifacts
         if: always()
         uses: actions/upload-artifact@v2

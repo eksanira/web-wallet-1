@@ -16,6 +16,7 @@ require! {
     \./wallet-stats.ls
     \./loading.ls
     \./confirmation.ls : { confirm }
+    \../plugin-loader.ls : { base-array }
 }
 .wallet-detailed
     @import scheme
@@ -207,11 +208,11 @@ module.exports = (store, web3t, wallets, wallet)-->
     locationWallet = if window.location.host is "wallet.testnet.velas.com" then 'wallet_testnet' else 'wallet_mainnet'
     uri-prod = "https://buy.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
     uri-test = "https://fiat-payments.testnet.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
-    uri_simplex =
+    uri_buy =
         | store.current.network is \testnet => uri-test
         | _ => uri-prod
     buy = ->
-        window.open(uri_simplex)
+        window.open(uri_buy)
     style = get-primary-info store
     color1 =
         color: style.app.text
@@ -261,7 +262,7 @@ module.exports = (store, web3t, wallets, wallet)-->
                 .wallet-header-part.right.pug
                     .pug
                         span.title.pug(class="#{placeholder}") #{name}
-                        if wallet?coin?token not in <[ btc vlx vlx_native vlx2 eth vlx_evm ]>
+                        if wallet?coin?token not in base-array
                             span.pug.uninstall(on-click=uninstall-action style=uninstall-style) #{label-uninstall}
                     .balance.pug(class="#{placeholder}")
                         .pug.token-balance(title="#{wallet?balance}")
@@ -291,6 +292,9 @@ module.exports = (store, web3t, wallets, wallet)-->
                     .with-swap.pug
                         button { store, on-click=send-click, text: \send , icon: \send , type: \secondary, id: "wallets-send", makeDisabled=send-swap-disabled }
                         button { store, on-click=receive-click, text: \receive , icon: \get  , type : \primary, id: "wallets-receive", makeDisabled=no }
+                    .with-swap.pug
+                        if wallet?coin?token is "vlx_usdv"
+                            button { store, on-click=buy, text: \buy , icon: \buy  , id: "wallet-buy", classes="wallet-swap" }
             .details.pug
                 .price.pug(class="#{placeholder}" title="#{balance-usd}") $#{ round-human balance-usd }
                 .name.pug(class="#{placeholder}" title="#{usd-rate}") $#{ round-human usd-rate}
