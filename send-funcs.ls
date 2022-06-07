@@ -94,15 +94,18 @@ module.exports = (store, web3t)->
         return cb null if not agree
         err, tx <- push-tx { token, tx-type, network, ...tx-data }
         if err?
-            if (err.toString()).indexOf("Insufficient priority. Code:-26. Please try to increase fee") then
-                store.current.send.error = err
-                <- set-timeout _, 2000
-                store.current.send.error = ""
-            if (err.toString()).indexOf("Unexpected token < in JSON at position 0") then
-                store.current.send.parseError = "Please retry later or write to our support and we will figure it out"
-                <- set-timeout _, 5000
+            errorMessage = err.toString();
+            hideErrorMessage = ->
+                <- set-timeout _, 7500
                 store.current.send.error = ""
                 store.current.send.parseError = ""
+
+            if errorMessage.indexOf("Unexpected token < in JSON at position 0") then
+                store.current.send.parseError = "Invalid response. Code 11"
+                <- hideErrorMessage
+            else
+                store.current.send.parseError = errorMessage
+                <- hideErrorMessage
             return cb err
         err, pendingTxInfo <- create-pending-tx { store, token, recipient, network, tx, amount-send, amount-send-fee, send.to, from: wallet.address }
         if err?
