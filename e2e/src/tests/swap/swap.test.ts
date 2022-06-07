@@ -89,7 +89,7 @@ test.describe('Swap', () => {
 
     // TODO: no tokens! need replenishment
     test('USDC (Velas) > USDC (Ethereum) @smoke', async ({ wallets }) => {
-      await wallets.swapTokens('token-vlx_usdc', 'token-usdc', '0.001');
+      await wallets.swapTokens('token-vlx_usdc', 'token-usdc', '0.000001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
@@ -101,7 +101,7 @@ test.describe('Swap', () => {
     });
 
     test('USDT (Velas) > USDT (Ethereum)', async ({ wallets }) => {
-      await wallets.swapTokens('token-vlx_usdt', 'token-usdt_erc20', '0.001');
+      await wallets.swapTokens('token-vlx_usdt', 'token-usdt_erc20', '0.000001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(evmchain.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
@@ -141,7 +141,7 @@ test.describe('Swap', () => {
     });
 
     test('USDC (Ethereum) > USDC VRC-20 (Velas)', async ({ wallets }) => {
-      await wallets.swapTokens('token-usdc', 'token-vlx_usdc', '0.001');
+      await wallets.swapTokens('token-usdc', 'token-vlx_usdc', '0.000001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
@@ -154,7 +154,7 @@ test.describe('Swap', () => {
     });
 
     test('USDT (Ethereum) > USDT VRC-20 (Velas)', async ({ wallets }) => {
-      await wallets.swapTokens('token-usdt_erc20', 'token-vlx_usdt', '0.001');
+      await wallets.swapTokens('token-usdt_erc20', 'token-vlx_usdt', '0.000001');
       const txHash = await wallets.getTxHashFromTxlink();
       transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: !isSmokeRun }));
     });
