@@ -588,11 +588,11 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
             locationWallet = if window.location.host is "wallet.testnet.velas.com" then 'wallet_testnet' else 'wallet_mainnet'
             uri-prod = "https://buy.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
             uri-test = "https://fiat-payments.testnet.velas.com/?address=#{wallet.address}&crypto_currency=#{tokenDisplay}&env=#{locationWallet}"
-            uri_simplex =
+            uri_buy =
                 | store.current.network is \testnet => uri-test
                 | _ => uri-prod
             buy = ->
-                window.open(uri_simplex)
+                window.open(uri_buy)
             /* Render */
             .wallet.wallet-mobile.pug.wallet-item(class="#{big} #{disabled-class}" key="#{token}" style=border-style)
                 .wallet-top.pug(on-click=expand)
@@ -626,6 +626,8 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
                                     .pug expand
                         button { store, on-click=send-click, text: \send , icon: \send , type: \secondary, makeDisabled=send-swap-disabled }
                         button { store, on-click=receive-click, text: \receive , icon: \get, type : \primary }
+                        if wallet?coin?token is "vlx_usdv"
+                            button { store, on-click=buy, icon: \buy  , id: "wallet-buy", classes="wallet-swap" }
                         if (available-networks.length > 0) then
                             button { store, on-click=swap-click, text: \swap , icon: \swap, id: "wallet-swap", makeDisabled=send-swap-disabled, classes="wallet-swap" }
                         if wallet?coin?token is "vlx_native"
