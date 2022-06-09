@@ -429,6 +429,8 @@ locked = ({ store, web3t })->
                         img.icon-download.pug(src="#{icons[\ios]}" )
                     a.pug(href="https://play.google.com/store/apps/details?id=com.velas.mobile_wallet" target="_blank")
                         img.icon-download.pug(src="#{icons[\android]}" )
+                    a.pug(href="https://github.com/velas/mobile-wallet/releases/latest/download/app-release.apk" target="_blank" id="download-apk")
+                        img.icon-download.pug(src="#{icons[\apk]}")
                     span.pug
                         img.icon-download.pug(on-click=download src="#{icons[\desktop]}" )
 focus = ({ store }, cb)->
