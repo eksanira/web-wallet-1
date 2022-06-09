@@ -8,8 +8,11 @@ test.describe('Links', () => {
   test('Download links are correct', async ({ page, auth }) => {
     const appleLink = await auth.downloadButtons.iOS.getAttribute('href');
     const androidLink = await auth.downloadButtons.android.getAttribute('href');
+    const apkLink = await auth.downloadButtons.apk.getAttribute('href');
+
     assert.isTrue(appleLink?.includes('https://apps.apple.com/'));
     assert.isTrue(androidLink?.includes('https://play.google.com/'));
+    assert.isTrue(apkLink?.includes('https://github.com/velas/mobile-wallet/releases/latest/download/'));
 
     await auth.downloadButtons.desktop.click();
     await auth.installWallets.platformsList.waitFor();
