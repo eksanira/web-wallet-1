@@ -62,6 +62,14 @@ export const data = {
     manualSwap: {
       seed: 'cake wealth sudden fantasy spot stove clown apology own engine aisle clarify vessel indoor smoke tower horse scheme opinion train supply aspect pony wonder'
     },
+    customSwapFromVelas: {
+      seed: 'group inspire rough sting tell beyond front field scatter midnight snake ignore insane knee segment suit business trophy ivory rival sing choose rent muffin',
+      evmAddress: '0x112ddb603bf098340a401b495df5c5df94d147c3'
+    },
+    customSwapToVelas: {
+      seed: 'jungle rug jar sheriff payment alpha liquid core segment edge window decide protect among shrug maximum outside thought push tiny effort once inform brisk',
+      evmAddress: '0x598933a65e1784d5fcc428c3179f3a00c4ca3e29'
+    }
   },
   customTokens: {
     velas: {
