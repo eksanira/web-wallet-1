@@ -41,7 +41,7 @@ test.describe('Swap', () => {
   });
 
   test.afterAll(async () => {
-    log.info(`List of transactions:\n${txHashes}`);
+    log.info(`List of transactions:\n${txHashes.join('\n')}`);
   });
 
   for (let swapPair of swapPairs) {

@@ -4,7 +4,7 @@ import { log } from '../../tools/logger';
 
 test.describe('Swap', () => {
   const txHashes: string[] = [];
-  const customAddress = '0x9213191373dc805fabdf9975f47f234083eef597';
+  const customAddress = '';
   let amount = '0.0001';
   const swapPairs: Currency[][] = [
     ['token-vlx_evm', 'token-vlx_erc20'],
@@ -30,7 +30,7 @@ test.describe('Swap', () => {
   });
 
   test.afterAll(async () => {
-    log.info(`List of transactions:\n${txHashes}`);
+    log.info(`List of transactions:\n${txHashes.join('\n')}`);
   });
 
   for (let swapPair of swapPairs) {
