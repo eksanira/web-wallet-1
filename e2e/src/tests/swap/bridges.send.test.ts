@@ -45,7 +45,7 @@ test.describe('Swap', () => {
   });
 
   for (let swapPair of swapPairs) {
-    const [fromToken, toToken] = swapPair;
+    let [fromToken, toToken] = swapPair;
     if (swapPair == ['token-bsc_vlx', 'token-vlx_evm']) amount = '0.000002';
     if (swapPair == ['token-vlx_huobi', 'token-vlx_evm']) amount = '0.000004';
     test(`Swap ${fromToken} > ${toToken}`, async ({ wallets }) => {
