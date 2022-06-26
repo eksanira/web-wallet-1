@@ -2,7 +2,7 @@ import { data, test } from '../../common-test-exports';
 import { Currency } from '../../screens';
 import { log } from '../../tools/logger';
 
-const today = new Date().toLocaleDateString("nu").replace(/\//g, '');
+const today = new Date().toLocaleDateString('nu').replace(/\//g, '');
 let receiverAddress = '';
 
 test.describe('Bridge test 1:', () => {

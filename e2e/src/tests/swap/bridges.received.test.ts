@@ -3,7 +3,7 @@ import { Currency } from '../../screens';
 import { log } from '../../tools/logger';
 
 test.describe('Bridge test 2:', () => {
-  const today = new Date().toLocaleDateString("nu").replace(/\//g, '');
+  const today = new Date().toLocaleDateString('nu').replace(/\//g, '');
 
   test.beforeEach(async ({ auth }) => {
     await auth.goto({environment: 'prod'});
