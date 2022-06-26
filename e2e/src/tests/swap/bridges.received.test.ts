@@ -22,19 +22,17 @@ test.describe('Bridge test 2:', () => {
       await wallets.addToken(token);
     };
 
-    const balances = await wallets.getWalletsBalances();
+    let balances = await wallets.getWalletsBalances();
 
-    for (const [key, value] of Object.entries(balances)) {
+    for (let [key, value] of Object.entries(balances)) {
       let tokenKey = key as Currency;
       if (key === 'token-vlx_evm' && Number(value) < 0.000007){
-          throw new Error (`Balance of ${key} is ${value}, 0.000007 expected`)
+        throw new Error (`Balance of ${key} is ${value}, 0.000007 expected`)
       }
-
       if (key !== 'token-vlx_evm' && tokens.includes(tokenKey) && Number(value) === 0){
         throw new Error (`Balance of ${key} is zero`)
       }
     }
-
     log.debug(balances);
   });
 });
