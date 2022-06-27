@@ -37,6 +37,10 @@ export const data = {
         seed: 'horse valley hub funny photo raw tragic final update stable method split pond absurd tray organ pink vocal joy cook monkey nerve street copy',
       },
       staker2_1: {
+        publicKey: 'H46r7XaH76GvvgPW51yCLXDipsYPZ7y6xduSMwFtoZ15',
+        seed: 'obvious pottery mechanic amazing detail true balance ordinary tide novel error grief tomorrow dawn name picture search mansion feel argue luxury chief kangaroo soup',
+      },
+      staker2_1_old:{
         publicKey: '5uGmgxE5ia4dYmeffAM4bbx9ZUMrCUR6obZbL7VZ7svW',
         seed: 'gallery runway scissors faculty grocery spatial business judge ball lobster pitch sock stand marble degree alert once away festival reunion logic coach rural license',
       },
