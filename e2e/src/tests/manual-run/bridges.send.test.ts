@@ -2,10 +2,21 @@ import { data, test } from '../../common-test-exports';
 import { Currency } from '../../screens';
 import { log } from '../../tools/logger';
 
+const today = new Date().toLocaleDateString('nu').replace(/\//g, '');
+let receiverAddress = '';
+
+test.describe('Bridge test 1:', () => {
+  test('Get today\'s address', async ({ auth, wallets}) => {
+    await auth.goto({environment: 'prod'});
+    await auth.loginByRestoringSeed(today);
+    await wallets.selectWallet('token-vlx_evm');
+    receiverAddress = await wallets.getWalletAddress();    
+  });
+});
+
 test.describe('Swap', () => {
   const txHashes: string[] = [];
-  const customAddress = '';
-  let amount = '0.0001';
+  let amount = '0.000001';
   const swapPairs: Currency[][] = [
     ['token-vlx_evm', 'token-vlx_erc20'],
     ['token-vlx_evm', 'token-bsc_vlx'],
@@ -21,7 +32,7 @@ test.describe('Swap', () => {
     ['token-bsc_vlx', 'token-vlx_evm'],
     ['token-busd', 'token-vlx_busd'],
     ['token-vlx_huobi', 'token-vlx_evm']
-  ]
+  ];
 
   test.beforeEach(async ({ auth, wallets }) => {
     await auth.goto({environment: 'prod'});
@@ -36,12 +47,12 @@ test.describe('Swap', () => {
   for (let swapPair of swapPairs) {
     test(`${swapPair.join(' > ')}`, async ({ wallets }) => {
       let [fromToken, toToken] = swapPair;
-      if (fromToken === 'token-bsc_vlx') amount = '0.0002';
-      if (fromToken === 'token-vlx_huobi') amount = '0.0004';
-      await wallets.swapTokens(fromToken, toToken, amount, { customAddress: customAddress });
+      if (fromToken === 'token-bsc_vlx') amount = '0.000002';
+      if (fromToken === 'token-vlx_huobi') amount = '0.000004';
+      await wallets.swapTokens(fromToken, toToken, amount, { customAddress: receiverAddress });
       const txHash = await wallets.getTxHashFromTxlink();
       txHashes.push(txHash);
-      amount = '0.0001';
+      amount = '0.000001';
     });
   }
 });

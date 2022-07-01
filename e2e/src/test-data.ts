@@ -36,9 +36,13 @@ export const data = {
         publicKey: 'D4k7p4AB5j3hiLgbUS164wAufBefVagVLX2oRJQQhbpK',
         seed: 'horse valley hub funny photo raw tragic final update stable method split pond absurd tray organ pink vocal joy cook monkey nerve street copy',
       },
-      staker2_1: {
+      staker2_1:{
         publicKey: '5uGmgxE5ia4dYmeffAM4bbx9ZUMrCUR6obZbL7VZ7svW',
         seed: 'gallery runway scissors faculty grocery spatial business judge ball lobster pitch sock stand marble degree alert once away festival reunion logic coach rural license',
+      },
+      staker2_1_backup: {
+        publicKey: 'H46r7XaH76GvvgPW51yCLXDipsYPZ7y6xduSMwFtoZ15',
+        seed: 'obvious pottery mechanic amazing detail true balance ordinary tide novel error grief tomorrow dawn name picture search mansion feel argue luxury chief kangaroo soup',
       },
       withoutStakeAccounts: {
         address: '59vpQgPoDEhux1G84jk6dbbARQqfUwYtohLU4fgdxFKG',
