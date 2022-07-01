@@ -49,7 +49,7 @@ export class Staking2Screen extends BaseScreen {
       await this.page.locator('.index-title-row-staked select').selectOption(selectValues[sortBy]);
     },
 
-    loader: this.page.locator('.item.blink').first(),
+    loader: this.page.locator('.MuiCircularProgress-circle.MuiCircularProgress-circleIndeterminate'),
     reload: async (): Promise<void> => {
       const refreshStakesButton = this.page.locator('.balance .button.lock');
       await refreshStakesButton.click();
