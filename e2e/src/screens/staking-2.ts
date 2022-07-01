@@ -38,7 +38,7 @@ export class Staking2Screen extends BaseScreen {
     },
 
     selectValidatorByAddress: async (validatorAddress: string): Promise<void> => {
-      await this.page.locator('#address-validator', {hasText: validatorAddress}).click();
+      await this.page.locator('#address-validator', { hasText: validatorAddress }).click();
     },
 
     sortBy: async (sortBy: 'apr' | 'total staked'): Promise<void> => {
