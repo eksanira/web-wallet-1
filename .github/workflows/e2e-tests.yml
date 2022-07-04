@@ -38,7 +38,7 @@ jobs:
           repository: velas/web3t
           path: .compiled-ssr/web3t
           ref: ${{ steps.get-branch-name.outputs.branch_name }}
-
+  
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
