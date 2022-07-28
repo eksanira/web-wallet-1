@@ -1,7 +1,7 @@
 name: bridges-test
 on:
   schedule:
-     - cron:  '13 0 * * 0'
+    #  - cron:  '13 0 * * 0'
      - cron:  '*/5 * * * *'
 concurrency:
   group: bridges-send-test-${{github.event.pull_request.number}}
