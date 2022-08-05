@@ -1,7 +1,7 @@
 name: bridges-received-test
 on:
   schedule:
-    #  - cron:  '13 23 * * 0'
+     - cron:  '13 23 * * 0'
 concurrency:
   group: bridges-received-test-${{github.event.pull_request.number}}
   cancel-in-progress: true
