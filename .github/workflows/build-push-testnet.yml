@@ -68,6 +68,8 @@ jobs:
         run: npm install -g npm@latest
       - name: install npm modules
         run: npm i
+      - name: install chrome
+        run: npx playwright install chrome
       - name: run tests
         run: CI=true LOG_LEVEL=debug LOG_LEVEL=debug ENVIRONMENT=testnet NETWORK=testnet npm run test:swap
       - name: upload artifacts
@@ -97,6 +99,8 @@ jobs:
         run: npm install -g npm@latest
       - name: install npm modules
         run: npm i
+      - name: install chrome
+        run: npx playwright install chrome
       - name: run tests
         run: CI=true LOG_LEVEL=debug LOG_LEVEL=debug ENVIRONMENT=testnet NETWORK=testnet npm run test:stable
       - name: upload artifacts
@@ -126,6 +130,8 @@ jobs:
         run: npm install -g npm@latest
       - name: install npm modules
         run: npm i
+      - name: install chrome
+        run: npx playwright install chrome
       - name: run tests
         run: CI=true LOG_LEVEL=debug LOG_LEVEL=debug ENVIRONMENT=testnet NETWORK=testnet npm run test:staking
       - name: upload artifacts
