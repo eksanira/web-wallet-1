@@ -54,7 +54,7 @@ jobs:
       group: web-wallet-e2e-tests-swap
       cancel-in-progress: false
     needs: deploy
-    runs-on: testnet-services
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./e2e
@@ -68,8 +68,6 @@ jobs:
         run: npm install -g npm@latest
       - name: install npm modules
         run: npm i
-      - name: install chrome
-        run: npx playwright install chrome
       - name: run tests
         run: CI=true LOG_LEVEL=debug LOG_LEVEL=debug ENVIRONMENT=testnet NETWORK=testnet npm run test:swap
       - name: upload artifacts
@@ -85,7 +83,7 @@ jobs:
       group: web-wallet-e2e-tests-stable
       cancel-in-progress: false
     needs: deploy
-    runs-on: testnet-services
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./e2e
@@ -99,8 +97,6 @@ jobs:
         run: npm install -g npm@latest
       - name: install npm modules
         run: npm i
-      - name: install chrome
-        run: npx playwright install chrome
       - name: run tests
         run: CI=true LOG_LEVEL=debug LOG_LEVEL=debug ENVIRONMENT=testnet NETWORK=testnet npm run test:stable
       - name: upload artifacts
@@ -116,7 +112,7 @@ jobs:
       group: web-wallet-e2e-tests-staking
       cancel-in-progress: false
     needs: deploy
-    runs-on: testnet-services
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./e2e
@@ -130,8 +126,6 @@ jobs:
         run: npm install -g npm@latest
       - name: install npm modules
         run: npm i
-      - name: install chrome
-        run: npx playwright install chrome
       - name: run tests
         run: CI=true LOG_LEVEL=debug LOG_LEVEL=debug ENVIRONMENT=testnet NETWORK=testnet npm run test:staking
       - name: upload artifacts
