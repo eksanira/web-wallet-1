@@ -132,7 +132,7 @@ jobs:
           name: stable-test-report
           path: |
             e2e/stable-test-report
-          retention-days: 5
+          retention-days: 3
 
 
   swap-tests-on-feature-branch:
@@ -181,7 +181,7 @@ jobs:
           name: swap-test-report
           path: |
             e2e/swap-test-report
-          retention-days: 5
+          retention-days: 3
 
 
   staking-tests-on-feature-branch:
@@ -230,7 +230,7 @@ jobs:
           name: staking-test-report
           path: |
             e2e/staking-test-report
-          retention-days: 5
+          retention-days: 3
 
 # - name: balances api health check
 #   run: CI=true npm run balances-api-health-check
