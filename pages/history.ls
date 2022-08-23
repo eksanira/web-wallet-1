@@ -834,7 +834,7 @@ render-transaction = (store, web3t, tran)-->
                         .pug.direction #{arrow(type)}
                 .cell.pug.txhash
                     MiddleEllipsis.pug
-                        a.pug(href="#{url}" target="_blank") #{tx}
+                        a.pug(href="#{url}" target="_blank" rel="noopener noreferrer nofollow") #{tx}
                     CopyToClipboard.pug(text="#{tx}" on-copy=copied-inform(store) style=filter-icon)
                         copy store
                     .pug.gray(style=lightText)
