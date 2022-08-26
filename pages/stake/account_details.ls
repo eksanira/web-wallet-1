@@ -18,7 +18,6 @@ require! {
     \btoa
     \safe-buffer : { Buffer }
     \../../copied-inform.ls
-    \../../copy.ls
     \../../round5.ls
     \../../../web3t/addresses.js : { ethToVlx, vlxToEth }
     \../switch-account.ls
@@ -38,6 +37,8 @@ require! {
     \./rewards-stats.ls : RewardsStats
     \moment
     \../../components/popups/loader.ls
+    \../../components/copy.ls
+
 }
 .staking
     @import scheme
@@ -290,6 +291,8 @@ require! {
                     span
                         @media (max-width: 800px)
                             font-size: 14px
+                    .copy
+                        margin-left: 10px
                     .check
                         width: 15px
                         height: 15px
@@ -1019,6 +1022,8 @@ staking-content = (store, web3t)->
         font-weight: "bold"
         text-align: "center"
         max-width: "500px"
+    address-container-style = 
+        display: "flex"
     /* Render */    
     .pug.staking-content.delegate
         loader { loading: store.staking.splitting-staking-account, text: "Splitting in process" }
@@ -1038,9 +1043,10 @@ staking-content = (store, web3t)->
                     h3.pug #{lang.address}
                 .description.pug
                     .pug.chosen-account(title="#{store.staking.chosenAccount.address}")
-                        span.pug
+                        span.pug(style=address-container-style)
                             | #{store.staking.chosenAccount.address}
                             img.pug.check(src="#{icons.img-check}")
+                            copy { store, text: store.staking.chosenAccount.address }
             .pug.section
                 .title.pug
                     h3.pug ID
