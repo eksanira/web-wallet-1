@@ -1085,10 +1085,11 @@ staking-content = (store, web3t)->
                 .title.pug
                     h3.pug #{lang.validator}
                 .description.pug
-                    span.pug.chosen-account
+                    span.pug.chosen-account(style=address-container-style)
                         | #{$validator}
                         if has-validator
                             img.pug.check(src="#{icons.img-check}")
+                        copy { store, text: validator }
             .pug.section
                 .title.pug
                     h3.pug #{lang.creditsObserved}
