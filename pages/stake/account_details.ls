@@ -1046,7 +1046,7 @@ staking-content = (store, web3t)->
                         span.pug(style=address-container-style)
                             | #{store.staking.chosenAccount.address}
                             img.pug.check(src="#{icons.img-check}")
-                            copy { store, text: store.staking.chosenAccount.address }
+                            copy { store, text: store.staking.chosenAccount.address, elId: "copy-address-chosenAccount" }
             .pug.section
                 .title.pug
                     h3.pug ID
@@ -1089,7 +1089,7 @@ staking-content = (store, web3t)->
                         | #{$validator}
                         if has-validator
                             img.pug.check(src="#{icons.img-check}")
-                        copy { store, text: validator }
+                        copy { store, text: validator, elId: "copy-address-validator" }
             .pug.section
                 .title.pug
                     h3.pug #{lang.creditsObserved}
