@@ -117,6 +117,11 @@ build-version = (store, release)-->
         | last is 'exe' => "#{icons.windows}"
         | last is 'snap' => "#{icons.linux}"
     console.log "#{release.name}.md5"
+    download-container-style-for-two-btns = {display: "flex", align-items: "center",  justify-content: "space-evenly", }
+    download-container-style = 
+        | last is 'snap' => download-container-style-for-two-btns 
+        | _ => {}
+
     md5-file =
         store.releases
             |> map (it)->
@@ -130,8 +135,10 @@ build-version = (store, release)-->
         .pug.tag_name #{release.tag_name}
         .pug.source
             a.pug(href="#{source}" style=button-primary3-style target="_blank" rel="noopener noreferrer nofollow") Source Code
-        .pug.download
+        .pug.download(style=download-container-style)
             a.pug(href="#{release.browser_download_url}" style=button-primary1-style target="_blank" rel="noopener noreferrer nofollow") Install
+            if last is 'snap' 
+                    a.pug(href="https://snapcraft.io/velas-desktop-wallet" style=button-primary1-style target="_blank" rel="noopener noreferrer nofollow") Snapcraft
         .pug.source.link
             a.pug(href="#{md5-file?browser_download_url}" style=button-link target="_blank" rel="noopener noreferrer nofollow") MD5
 only-version = (item)->

@@ -22,8 +22,10 @@ test.describe('Links', () => {
     for (let i = 0; i < donwloadLinks.length; i++) {
       const linkElement = donwloadLinks[i];
       const downloadLink = await linkElement.getAttribute('href');
-      const linkText = await linkElement.textContent();
-      assert.isTrue(downloadLink?.includes('https://github.com/velas/JsWalletDesktop'), `${linkText} doesn't lead to correct destination`);
+      if (!downloadLink?.includes('snapcraft')){
+        const linkText = await linkElement.textContent();
+        assert.isTrue(downloadLink?.includes('https://github.com/velas/JsWalletDesktop'), `${linkText} doesn't lead to correct destination`);        
+      }
     }
   });
 });
