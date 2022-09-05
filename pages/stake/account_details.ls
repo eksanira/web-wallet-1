@@ -1146,7 +1146,7 @@ staking-content = (store, web3t)->
                             margin-top: "10px"
                         .pug.notification(style=notification-style)
                             span.pug(style=tip-style) Only 25% of active stake can be activated per epoch.
-                            a.pug(href="https://support.velas.com/hc/en-150/articles/360021044820-Delegation-Warmup-and-Cooldown" target="_blank" style=link-style)
+                            a.pug(href="https://support.velas.com/hc/en-150/articles/360021044820-Delegation-Warmup-and-Cooldown" target="_blank" rel="noopener noreferrer nofollow" style=link-style)
                                 span.pug(style=more-style) More...
             .pug.section
                 .title.pug
