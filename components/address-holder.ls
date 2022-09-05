@@ -136,7 +136,7 @@ module.exports = ({ store, wallet, type, text })->
                 a.browse.pug(on-click=rotate-address-suffix)
                     img.pug(src="#{icons.choose}" style=filter-icon)
             else
-                a.browse.pug(target="_blank" href="#{address-link}")
+                a.browse.pug(target="_blank" rel="noopener noreferrer nofollow" href="#{address-link}")
                     img.pug(src="#{icons.browse-open}" style=icon1)
             if is-contract and no
                 address-display = contracts.get-contract-name(store, address)
