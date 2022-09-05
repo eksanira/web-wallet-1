@@ -232,7 +232,7 @@ module.exports = ({ store, web3t })->
             else
                 img.icon-sent.pug(src="#{icons.sent-check}")
         .pug.text(style=text-style)
-            a.pug(style=link-style href="#{store.current.last-tx-url}" target="_blank") #{lang.transaction}
+            a.pug(style=link-style href="#{store.current.last-tx-url}" target="_blank" rel="noopener noreferrer nofollow") #{lang.transaction}
             if no-recent
                 span.pug  #{lang.hasBeenSent}
             else if has-pending
