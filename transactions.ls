@@ -5,6 +5,7 @@ require! {
     \./pending-tx.ls : { get-pending-txs, remove-tx }
     \./apply-transactions.ls
     \./background/background-task.ls : { add-task }
+    \./calc-certain-wallet.ls
 }
 same = (x, y)->
     x?toUpperCase?! is y?toUpperCase?!
@@ -44,8 +45,10 @@ check-transaction-task = (bg-store, web3, network, token, ptx)-> (store, cb)->
     return cb null if not tx?
     make-not-pending store, tx if data?.status is \confirmed
     make-not-pending store, tx if data?.status is \reverted
-    return cb null if data?.status is \confirmed
     return cb null if data?.status is \reverted
+    if data?.status is \confirmed then
+        err <- calc-certain-wallet store, token
+        return cb null
     cb \pending
 export check-ptx-in-background = (store, web3, network, token, ptx, cb)->
     add-task ptx.0, check-transaction-task(store, web3, network, token, ptx)
