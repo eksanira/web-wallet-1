@@ -132,7 +132,8 @@ test.describe('Swap', () => {
     });
   });
 
-  test.describe('From Ethereum network', async () => {
+  // TODO: migrate from Ropsten
+  test.describe.skip('From Ethereum network', async () => {
     // ETH ropsten testnet has a huge gas price (111,363 Gwei)
     test('ETH (Ethereum) > ETH VRC-20 (Velas)', async ({ wallets }) => {
       await wallets.swapTokens('token-eth', 'token-vlx_eth', '0.00000001');

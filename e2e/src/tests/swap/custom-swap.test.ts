@@ -76,25 +76,29 @@ test.describe('Custom swap to Velas network', () => {
     await Promise.all(transactionsInProgress);
   });
 
-  test('ETH (Ethereum) > ETH VRC-20 (Velas)', async ({ wallets }) => {
+  // TODO: migrate from Ropsten
+  test.skip('ETH (Ethereum) > ETH VRC-20 (Velas)', async ({ wallets }) => {
     await wallets.swapTokens('token-eth', 'token-vlx_eth', minSwapAmount, {customAddress: data.wallets.customSwapFromVelas.evmAddress});
     const txHash = await wallets.getTxHashFromTxlink();
     transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: true }));
   });
 
-  test('USDC (Ethereum) > USDC VRC-20 (Velas)', async ({ wallets }) => {
+  // TODO: migrate from Ropsten
+  test.skip('USDC (Ethereum) > USDC VRC-20 (Velas)', async ({ wallets }) => {
     await wallets.swapTokens('token-usdc', 'token-vlx_usdc', minSwapAmountUsdtUsdc, {customAddress: data.wallets.customSwapFromVelas.evmAddress});
     const txHash = await wallets.getTxHashFromTxlink();
     transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: true }));
   });
 
-  test('VLX ERC-20 (Ethereum) > VLX EVM (Velas)', async ({ wallets }) => {
+  // TODO: migrate from Ropsten
+  test.skip('VLX ERC-20 (Ethereum) > VLX EVM (Velas)', async ({ wallets }) => {
     await wallets.swapTokens('token-vlx_erc20', 'token-vlx_evm', minSwapAmount, {customAddress: data.wallets.customSwapFromVelas.evmAddress});
     const txHash = await wallets.getTxHashFromTxlink();
     transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: true }));
   });
 
-  test('USDT (Ethereum) > USDT VRC-20 (Velas)', async ({ wallets }) => {
+  // TODO: migrate from Ropsten
+  test.skip('USDT (Ethereum) > USDT VRC-20 (Velas)', async ({ wallets }) => {
     await wallets.swapTokens('token-usdt_erc20', 'token-vlx_usdt', minSwapAmountUsdtUsdc, {customAddress: data.wallets.customSwapFromVelas.evmAddress});
     const txHash = await wallets.getTxHashFromTxlink();
     transactionsInProgress.push(ropsten.waitForTx({ txHash, testName: test.info().title, waitForConfirmation: true }));
