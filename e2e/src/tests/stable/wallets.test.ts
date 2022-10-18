@@ -104,7 +104,8 @@ test.describe.parallel('Wallets screen', () => {
       assert.equal(customTokenBalance, '1');
     });
 
-    test('WEENUS on Ethereum', async ({ wallets }) => {
+    // TODO: migrate from Ropsten
+    test.skip('WEENUS on Ethereum', async ({ wallets }) => {
       await wallets.addCustomToken(data.customTokens.eth.weenus, 'Ethereum', 'testnet');
       const customTokenBalance = await wallets.getCustomTokenBalance('#token-weenus_testnet_Ethereum__custom');
       assert.equal(customTokenBalance, '2');
