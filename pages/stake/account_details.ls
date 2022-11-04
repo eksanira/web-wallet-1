@@ -1129,7 +1129,8 @@ staking-content = (store, web3t)->
                         | #{$validator}
                         if has-validator
                             img.pug.check(src="#{icons.img-check}")
-                        copy { store, text: validator, elId: "copy-address-validator" }
+                        if has-validator
+                            copy { store, text: validator, elId: "copy-address-validator" }
             .pug.section
                 .title.pug
                     h3.pug #{lang.creditsObserved}
