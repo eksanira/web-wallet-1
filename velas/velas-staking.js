@@ -259,6 +259,35 @@ class VelasStaking {
         return stakeAccountWithSeed;   
     }
 
+    async authorize(params) {
+        const {
+            stakePubkey, //PublicKey
+            authorizedPubkey, //string
+            newAuthorizedPubkey, //string
+            custodianPubkey //string
+        } = params;
+        try {
+            const authorizedPublicKey = this.getAccountPublicKey();
+            const newAuthorizedPublicKey = new PublicKey(newAuthorizedPubkey);
+            const stakeAuthorizationType = StakeProgram.programId;
+            const custodianPublicKey = new PublicKey(custodianPubkey);
+            const _params = {
+                stakePubkey,
+                authorizedPubkey: authorizedPublicKey,
+                stakeAuthorizationType,
+                newAuthorizedPubkey: newAuthorizedPublicKey,
+                custodianPubkey: custodianPublicKey
+            };
+            const transaction = StakeProgram.authorize(_params);
+            return this.sendTransaction(transaction);
+        } catch (err) {
+            return {
+                error: "authorize_prepare_transaction_error",
+                description: err.message,
+            };
+        }
+    };
+
     async createAccount(amount_sol = (this.min_stake * this.sol)) {
 
         // check balance and amount

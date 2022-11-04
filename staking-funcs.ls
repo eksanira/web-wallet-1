@@ -244,7 +244,8 @@ highlight = (store, AccountIndex)->
     store.staking.accounts[AccountIndex].highlight = no
 query-accounts-web3t = (store, web3t, on-progress, on-finish) ->
     native-wallet = store.current.account.wallets |> find(-> it.coin.token is "vlx_native")
-    validatorsBackend = native-wallet.network.api.validatorsBackend + \/v1/staking-accounts
+    staker = native-wallet.publicKey
+    validatorsBackend = native-wallet.network.api.validatorsBackend + \/v1/staking-accounts + \?staker= + staker
     err, data <- get validatorsBackend .end
     console.log "[get validatorsBackend err]" err if err?
     return on-finish err if err?

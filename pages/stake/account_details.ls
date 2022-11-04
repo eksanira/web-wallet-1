@@ -26,7 +26,7 @@ require! {
     \../../icons.ls
     \../placeholder.ls
     \../epoch.ls
-    \../confirmation.ls : { alert, notify, confirm, prompt2, prompt3 }
+    \../confirmation.ls : { alert, notify, confirm, prompt2, prompt3, prompt-stake-authorize }
     \../../components/button.ls
     \../../components/address-holder.ls
     \../alert-txn.ls
@@ -38,6 +38,7 @@ require! {
     \moment
     \../../components/popups/loader.ls
     \../../components/copy.ls
+    \../../api.ls : { is-valid-address }
 
 }
 .staking
@@ -740,6 +741,8 @@ staking-content = (store, web3t)->
     style = get-primary-info store
     lang = get-lang store
     down = (it)-> it.toLowerCase!
+    if !store.staking.chosenAccount
+        return null
     account = store.staking.chosenAccount
     {
         address,
@@ -752,7 +755,8 @@ staking-content = (store, web3t)->
         commission,
         lastVote,
         lockup,
-        stakers,
+        staker,
+        withdrawer,
         is-validator,
         status,
         myStake,
@@ -761,6 +765,13 @@ staking-content = (store, web3t)->
         pubkey
         lamports
     } = account
+    up = (str) -> (str || '').trim!.toUpperCase!
+
+    err, accountAddress <- web3t.vlx_native.getAddress!
+    can-withdraw = up(withdrawer) === up(accountAddress)
+    can-delegate = up(staker) === up(accountAddress)
+    exit-from-stake-account = !can-withdraw and !can-delegate
+
     rent = rentExemptReserve `div` (10^9)
     balanceRaw = if (not isNaN(rent) and rent?) then lamports `minus` rent else lamports
     button-primary3-style=
@@ -859,14 +870,11 @@ staking-content = (store, web3t)->
         return cb err if err?
         cb null, \done
     remove-stake-acc = (public_key)->
-        console.log "pubKey to remove" public_key
         index = store.staking.accounts |> findIndex (-> it.pubkey is public_key)
         if index > -1
             store.staking.accounts.splice(index,1)
-        console.log "index to remove" index
         accountIndex = store.current.accountIndex
         index2 = (store.staking.accountsCached[accountIndex] ? []) |> findIndex (-> it.pubkey is public_key)
-        console.log "index cache to remove" index2
         if index2 > -1
             (store.staking.accountsCached[accountIndex] ? []).splice(index2,1)
     withdraw = ->
@@ -898,6 +906,39 @@ staking-content = (store, web3t)->
         if store.staking.webSocketAvailable is no
             return navigate store, web3t, \validators
         store.current.page = \validators
+
+    set-authorize-staker = ->
+        newAuthorizedPubkey <- prompt-stake-authorize store, 'Update the account with a new authorized staker'
+        return if !newAuthorizedPubkey
+        store.staking.setting-new-staking-authority = yes
+        { custodian, pubKey, withdrawer } = store.staking.chosenAccount
+        params = {
+            stakePubkey: pubKey,
+            authorizedPubkey: withdrawer,
+            newAuthorizedPubkey,
+            custodianPubkey: custodian
+        }
+        err, result <- as-callback web3t.velas.NativeStaking.authorize(params)
+        store.staking.setting-new-staking-authority = no
+        err-message = get-error-message(err, result)
+        if err-message?
+            store.staking.setting-new-staking-authority = no
+            return alert store, err-message
+
+        <- notify store, lang.newStakeAuthorityWasSuccessfullySetTo + " " + newAuthorizedPubkey
+        store.staking.chosenAccount.staker = newAuthorizedPubkey
+        store.staking.setting-new-staking-authority = no
+
+        can-withdraw1 = up(withdrawer) === up(accountAddress)
+        can-delegate1 = up(newAuthorizedPubkey) === up(accountAddress)
+        exit-from-stake-account1 = !can-withdraw1 and !can-delegate1
+
+        if exit-from-stake-account1
+            store.staking.getAccountsFromCashe = no
+            store.current.page = "validators"
+            store.staking.chosenAccount = null
+            remove-stake-acc(account.pubkey)
+
     split-account = ->
         cb = console.log
         buffer = {}
@@ -943,7 +984,6 @@ staking-content = (store, web3t)->
         stakeAccount = store.staking.chosenAccount.address
         $voter = store.staking.chosenAccount.voter
         err, signature <- as-callback web3t.velas.NativeStaking.splitStakeAccount(stakeAccount, splitStakePubkey, amount)
-        console.log "spit signature" signature
         err-message = get-error-message(err, signature)
         if err-message?
             store.staking.splitting-staking-account = no
@@ -1009,7 +1049,6 @@ staking-content = (store, web3t)->
         | _ => lang.inactiveStake 
     { lockupUnixTimestamp, epoch, lockup } = store.staking.chosenAccount
     is-locked = lockupUnixTimestamp? and lockupUnixTimestamp > moment!.unix!
-    console.log {}
     date-expires =
         | is-locked is yes => moment.unix(lockupUnixTimestamp).format("MMMM D, YYYY");
         | _ => ""
@@ -1027,6 +1066,7 @@ staking-content = (store, web3t)->
     /* Render */    
     .pug.staking-content.delegate
         loader { loading: store.staking.splitting-staking-account, text: "Splitting in process" }
+        loader { loading: store.staking.setting-new-staking-authority, text: "Setting new stake authority in process" }
         .pug.single-section.form-group(id="choosen-pull")
             .pug.section
                 .title.pug
@@ -1150,17 +1190,41 @@ staking-content = (store, web3t)->
                                 span.pug(style=more-style) More...
             .pug.section
                 .title.pug
+                    h2.pug #{lang.Authorities}
+            .pug.section
+                .title.pug
+                    h3.pug #{lang.stakeAuthorityAddress}
+                .description.pug
+                    span.pug.chosen-account(style=address-container-style)
+                        | #{staker}
+                        img.pug.check(src="#{icons.img-check}")
+                        copy { store, text: staker, elId: "copy-staker-address" }
+                    button { store, on-click: set-authorize-staker , type: \secondary , text: 'Set manager', classes: "set-manager", no-icon: yes }
+
+            .pug.section
+                .title.pug
+                    h3.pug #{lang.withdrawAuthorityAddress}
+                .description.pug
+                    span.pug.chosen-account(style=address-container-style)
+                        | #{withdrawer}
+                        img.pug.check(src="#{icons.img-check}")
+                        copy { store, text: withdrawer, elId: "copy-withdawer-address" }
+
+            .pug.section
+                .title.pug
                     h2.pug Actions
                 .description.pug
                     .pug.buttons
                         if (store.staking.chosenAccount.status is "inactive") 
                             .pug
-                                button { store, on-click: delegate , type: \secondary , text: lang.to_delegate, icon : \arrowRight }
-                                if is-locked is no
+                                if can-delegate
+                                    button { store, on-click: delegate , type: \secondary , text: lang.to_delegate, icon : \arrowRight }
+                                if can-withdraw and is-locked is no
                                     button { store, on-click: withdraw , type: \secondary , text: lang.withdraw, icon : \arrowLeft }
-                        else if store.staking.chosenAccount.status isnt \deactivating then
+                        else if  can-delegate and store.staking.chosenAccount.status isnt \deactivating then
                             button { store, on-click: undelegate , type: \secondary , text: lang.to_undelegate, icon : \arrowLeft, classes: "action-undelegate" }
-                        button { store, on-click: split-account , type: \secondary , text: lang.to_split, classes: "action-split", no-icon: yes }
+                        if can-delegate
+                            button { store, on-click: split-account , type: \secondary , text: lang.to_split, classes: "action-split", no-icon: yes }
             Rewards.pug
 account-details = ({ store, web3t })->
     lang = get-lang store

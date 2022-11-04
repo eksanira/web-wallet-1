@@ -30,6 +30,7 @@ require! {
     \../../staking-funcs.ls : { creation-account-subscribe }
     \../../components/popups/loader.ls
 }
+up = (str) -> (str || '').trim!.toUpperCase!
 as-callback = (p, cb)->
     p.catch (err) -> cb err
     p.then (data)->
@@ -191,6 +192,8 @@ staking-accounts-content = (store, web3t)->
     perPage =  store.staking.accounts_per_page
     page = store.staking.current_accounts_page
     _index = 1 + ((page - 1) * perPage)
+    err, accountAddress <- web3t.vlx_native.getAddress!
+
     build = (store, web3t)-> (item)->
         index = _index++
         return null if not item? or not item.key?
@@ -278,19 +281,24 @@ staking-accounts-content = (store, web3t)->
         now = moment!.unix!        
         locked-and-can-withdraw = lockupUnixTimestamp? and (lockupUnixTimestamp <= now)
         not-locked = not lockupUnixTimestamp? || +lockupUnixTimestamp is 0 || +lockupUnixTimestamp < now
+
+        authority-can-withdraw = up(item.withdrawer) === up(accountAddress)
+        authority-can-delegate = up(item.staker) === up(accountAddress)
+
         can-delegate =
-            | has-validator => no
+            | (item.status is "active" and has-validator) or (item.status isnt "inactive" and has-validator) => no
             | _ => yes
+
         $button =
-            | can-delegate =>
+            | authority-can-delegate and can-delegate =>
                 button { classes: "action-delegate", store, text: lang.to_delegate, on-click: choose, type: \secondary , icon : \arrowRight }
             | (not-locked or locked-and-can-withdraw) and (+deactivationEpoch isnt +max-epoch) and (+store.staking.current-epoch >= +deactivationEpoch) =>
                 disabled =
-                    | (deactivationEpoch? and activationEpoch?) and +deactivationEpoch >= +store.staking.current-epoch => yes
+                    | (deactivationEpoch? and activationEpoch?) and +deactivationEpoch >= +store.staking.current-epoch and !authority-can-withdraw => yes
                     | _ => no
                 button { classes: "action-withdraw", store, text: lang.withdraw, on-click: withdraw, type: \secondary , icon : \arrowLeft, makeDisabled:disabled }
             | _ =>
-                disabled = item.status in <[ deactivating ]>
+                disabled = item.status in <[ deactivating ]> or !authority-can-delegate
                 icon =
                     | not-locked => 'arrowLeft'
                     | _ => 'lock'
@@ -453,6 +461,10 @@ staking-accounts-content = (store, web3t)->
                                                     td.pug(width="10%" style=stats) #{(lang.action ? "Action")}
                                             tbody.pug
                                                 paginate( (store.staking.accounts |> sort-by (.seed-index)), perPage, page)
+                                                    |> filter (it) ->
+                                                        can-withdraw = up(it.withdrawer) === up(accountAddress)
+                                                        can-delegate = up(it.staker) === up(accountAddress)
+                                                        return can-withdraw || can-delegate
                                                     |> map build store, web3t
                                 if store.staking.accounts-are-loading is no then
                                     pagination {store, type: \accounts, disabled: pagination-disabled, config: {array: store.staking.accounts }}
