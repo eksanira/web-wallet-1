@@ -350,7 +350,7 @@ class VelasStaking {
     async getOwnStakingAccounts(accounts) {
         let owner = this.getAccountPublicKey();
         accounts = accounts.filter(item => {
-            return item.staker === owner.toBase58();
+            return item.staker === owner.toBase58() || item.withdrawer === owner.toBase58();
         });
         return accounts;
     }
