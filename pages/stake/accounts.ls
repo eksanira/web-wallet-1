@@ -282,22 +282,30 @@ staking-accounts-content = (store, web3t)->
         locked-and-can-withdraw = lockupUnixTimestamp? and (lockupUnixTimestamp <= now)
         not-locked = not lockupUnixTimestamp? || +lockupUnixTimestamp is 0 || +lockupUnixTimestamp < now
 
+        max-epoch = '18446744073709551615'
         authority-can-withdraw = up(item.withdrawer) === up(accountAddress)
         authority-can-delegate = up(item.staker) === up(accountAddress)
 
         can-delegate =
-            | (item.status is "active" and has-validator) or (item.status isnt "inactive" and has-validator) => no
-            | _ => yes
+            | not has-validator and authority-can-delegate => yes
+            | item.status is "inactive" and has-validator and authority-can-delegate => yes
+            | _ => no
+
+        can-withdraw =
+            | authority-can-withdraw and (not-locked or locked-and-can-withdraw) and (+deactivationEpoch isnt +max-epoch) and (+store.staking.current-epoch >= +deactivationEpoch) => yes
+            | _ => no
+        is-disabled-withdraw = (deactivationEpoch? and activationEpoch?) and +deactivationEpoch >= +store.staking.current-epoch
+
+        can-undelegate =
+            | authority-can-delegate and deactivationEpoch === max-epoch => yes
+            | _ => no
 
         $button =
-            | authority-can-delegate and can-delegate =>
+            | can-withdraw =>
+                button { classes: "action-withdraw", store, text: lang.withdraw, on-click: withdraw, type: \secondary , icon : \arrowLeft, makeDisabled:is-disabled-withdraw }
+            | can-delegate =>
                 button { classes: "action-delegate", store, text: lang.to_delegate, on-click: choose, type: \secondary , icon : \arrowRight }
-            | (not-locked or locked-and-can-withdraw) and (+deactivationEpoch isnt +max-epoch) and (+store.staking.current-epoch >= +deactivationEpoch) =>
-                disabled =
-                    | (deactivationEpoch? and activationEpoch?) and +deactivationEpoch >= +store.staking.current-epoch and !authority-can-withdraw => yes
-                    | _ => no
-                button { classes: "action-withdraw", store, text: lang.withdraw, on-click: withdraw, type: \secondary , icon : \arrowLeft, makeDisabled:disabled }
-            | _ =>
+            | can-undelegate =>
                 disabled = item.status in <[ deactivating ]> or !authority-can-delegate
                 icon =
                     | not-locked => 'arrowLeft'
@@ -306,6 +314,9 @@ staking-accounts-content = (store, web3t)->
                     if +activationEpoch < +deactivationEpoch and +deactivationEpoch isnt +max-epoch
                         disabled = yes
                 button { store, classes: "action-undelegate" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon, makeDisabled: disabled }
+            | authority-can-delegate and !can-delegate and !can-undelegate =>
+                button { store, classes: "action-undelegate" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon, makeDisabled: true }
+            | _ => ''
         highlighted = if highlight is yes then "highlight" else ""
         tr.pug(class="stake-account-item #{item.status} #{highlighted}" key="#{address}")
             td.pug
