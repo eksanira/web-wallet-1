@@ -314,8 +314,8 @@ staking-accounts-content = (store, web3t)->
                     if +activationEpoch < +deactivationEpoch and +deactivationEpoch isnt +max-epoch
                         disabled = yes
                 button { store, classes: "action-undelegate" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon, makeDisabled: disabled }
-            | authority-can-delegate and !can-delegate and !can-undelegate =>
-                button { store, classes: "action-undelegate" text: lang.to_undelegate, on-click: undelegate , type: \secondary , icon, makeDisabled: true }
+            | !can-delegate and !can-undelegate and !can-withdraw =>
+                button { classes: "action-withdraw", store, text: lang.withdraw, on-click: withdraw, type: \secondary , icon : \arrowLeft, makeDisabled:true }
             | _ => ''
         highlighted = if highlight is yes then "highlight" else ""
         tr.pug(class="stake-account-item #{item.status} #{highlighted}" key="#{address}")
