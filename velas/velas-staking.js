@@ -267,13 +267,12 @@ class VelasStaking {
             custodianPubkey //string
         } = params;
         try {
-            const authorizedPublicKey = this.getAccountPublicKey();
             const newAuthorizedPublicKey = new PublicKey(newAuthorizedPubkey);
             const stakeAuthorizationType = StakeProgram.programId;
             const custodianPublicKey = new PublicKey(custodianPubkey);
             const _params = {
                 stakePubkey,
-                authorizedPubkey: authorizedPublicKey,
+                authorizedPubkey: new PublicKey(authorizedPubkey),
                 stakeAuthorizationType,
                 newAuthorizedPubkey: newAuthorizedPublicKey,
                 custodianPubkey: custodianPublicKey
