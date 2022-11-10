@@ -301,10 +301,12 @@ staking-accounts-content = (store, web3t)->
             | _ => no
 
         $button =
-            | can-withdraw =>
-                button { classes: "action-withdraw", store, text: lang.withdraw, on-click: withdraw, type: \secondary , icon : \arrowLeft, makeDisabled:is-disabled-withdraw }
+            | can-withdraw and has-validator and item.status is "inactive" =>
+                button { classes: "action-withdraw", store, text: lang.withdraw, on-click: withdraw, type: \secondary , icon : \arrowLeft }
             | can-delegate =>
                 button { classes: "action-delegate", store, text: lang.to_delegate, on-click: choose, type: \secondary , icon : \arrowRight }
+            | can-withdraw =>
+                button { classes: "action-withdraw", store, text: lang.withdraw, on-click: withdraw, type: \secondary , icon : \arrowLeft, makeDisabled:is-disabled-withdraw }
             | can-undelegate =>
                 disabled = item.status in <[ deactivating ]> or !authority-can-delegate
                 icon =
