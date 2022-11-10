@@ -912,12 +912,15 @@ staking-content = (store, web3t)->
         return if !newAuthorizedPubkey
         store.staking.setting-new-staking-authority = yes
         { custodian, pubKey, withdrawer } = store.staking.chosenAccount
+        wallet = store.current.account.wallets.find(-> it.coin.token is \vlx_native)
+        return alert store, 'VLX Native wallet was not found' if not wallet?
         params = {
             stakePubkey: pubKey,
-            authorizedPubkey: withdrawer,
+            authorizedPubkey: wallet.publicKey,
             newAuthorizedPubkey,
             custodianPubkey: custodian
         }
+        console.log({params})
         err, result <- as-callback web3t.velas.NativeStaking.authorize(params)
         store.staking.setting-new-staking-authority = no
         err-message = get-error-message(err, result)
@@ -1294,6 +1297,10 @@ account-details.init = ({ store, web3t }, cb)!->
         store.staking.chosenAccount.active_stake = stakeActivation.active
         store.staking.chosenAccount.inactive_stake = stakeActivation.inactive
     return alert store, err, cb if err?
+    wallet = store.current.account.wallets.find(-> it.coin.token is \vlx_native)
+    return alert store, 'VLX Native wallet was not found', cb if not wallet?
+    web3t.velas.NativeStaking.setAccountPublicKey(wallet.publicKey)
+    web3t.velas.NativeStaking.setAccountSecretKey(wallet.secretKey)
     cb null
 stringify = (value) ->
     if value? then
