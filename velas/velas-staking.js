@@ -235,7 +235,6 @@ class VelasStaking {
     };
     
     async createNewStakeAccountWithSeed(){
-        console.log("[createNewStakeAccountWithSeed]",  this.getAccountPublicKey().toBase58());
 
         let stakeAccountWithSeed;
 
@@ -381,6 +380,9 @@ class VelasStaking {
 
         accounts = accounts.filter(item => {
             if (deepEq$(item.staker, owner.toBase58(), '===')) {
+                return true;
+            }
+            if (deepEq$(item.withdrawer, owner.toBase58(), '===')) {
                 return true;
             }
             return false;
