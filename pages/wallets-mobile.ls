@@ -626,8 +626,6 @@ wallet-group = (store, web3t, wallets, wallets-groups, wallets-group)-->
                                     .pug expand
                         button { store, on-click=send-click, text: \send , icon: \send , type: \secondary, makeDisabled=send-swap-disabled }
                         button { store, on-click=receive-click, text: \receive , icon: \get, type : \primary }
-                        if wallet?coin?token is "vlx_usdv"
-                            button { store, on-click=buy, icon: \buy  , id: "wallet-buy", classes="wallet-swap" }
                         if (available-networks.length > 0) then
                             button { store, on-click=swap-click, text: \swap , icon: \swap, id: "wallet-swap", makeDisabled=send-swap-disabled, classes="wallet-swap" }
                         if wallet?coin?token is "vlx_native"
