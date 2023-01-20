@@ -1,8 +1,17 @@
 diff --git a/node_modules/@velas/staking.2.0/lib/modules/staking-store.js b/node_modules/@velas/staking.2.0/lib/modules/staking-store.js
-index 3aac74e..0ebeee1 100644
+index 3aac74e..7ffca31 100644
 --- a/node_modules/@velas/staking.2.0/lib/modules/staking-store.js
 +++ b/node_modules/@velas/staking.2.0/lib/modules/staking-store.js
-@@ -469,7 +469,6 @@ var StakingStore = /*#__PURE__*/function () {
+@@ -9,6 +9,8 @@ exports.StakingStore = void 0;
+ 
+ var _mobx = require("mobx");
+ 
++var Fraction = require('fractional').Fraction;
++
+ var _bn = _interopRequireDefault(require("bn.js"));
+ 
+ var _bs = _interopRequireDefault(require("bs58"));
+@@ -469,7 +471,6 @@ var StakingStore = /*#__PURE__*/function () {
      key: "isWebSocketAvailable",
      value: function isWebSocketAvailable() {
        var _WebSocket$prototype, _this$connection2;
@@ -10,7 +19,7 @@ index 3aac74e..0ebeee1 100644
        return ('WebSocket' in window || 'MozWebSocket' in window) && [false, undefined].indexOf((_WebSocket$prototype = WebSocket.prototype) === null || _WebSocket$prototype === void 0 ? void 0 : _WebSocket$prototype.blocked) > -1 && typeof Object.values(((_this$connection2 = this.connection) === null || _this$connection2 === void 0 ? void 0 : _this$connection2._accountChangeSubscriptions) || []).find(function (it) {
          return it.subscriptionId == null;
        }) === 'undefined'; //&& this.connection._rpcWebSocketConnected === true;
-@@ -1729,33 +1728,79 @@ var StakingStore = /*#__PURE__*/function () {
+@@ -1729,33 +1730,79 @@ var StakingStore = /*#__PURE__*/function () {
    }, {
      key: "getSwapAmountByStakeAmount",
      value: function getSwapAmountByStakeAmount(amountStr) {
