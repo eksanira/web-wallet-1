@@ -1,0 +1,101 @@
+diff --git a/node_modules/@velas/staking.2.0/lib/modules/staking-store.js b/node_modules/@velas/staking.2.0/lib/modules/staking-store.js
+index 3aac74e..0ebeee1 100644
+--- a/node_modules/@velas/staking.2.0/lib/modules/staking-store.js
++++ b/node_modules/@velas/staking.2.0/lib/modules/staking-store.js
+@@ -469,7 +469,6 @@ var StakingStore = /*#__PURE__*/function () {
+     key: "isWebSocketAvailable",
+     value: function isWebSocketAvailable() {
+       var _WebSocket$prototype, _this$connection2;
+-
+       return ('WebSocket' in window || 'MozWebSocket' in window) && [false, undefined].indexOf((_WebSocket$prototype = WebSocket.prototype) === null || _WebSocket$prototype === void 0 ? void 0 : _WebSocket$prototype.blocked) > -1 && typeof Object.values(((_this$connection2 = this.connection) === null || _this$connection2 === void 0 ? void 0 : _this$connection2._accountChangeSubscriptions) || []).find(function (it) {
+         return it.subscriptionId == null;
+       }) === 'undefined'; //&& this.connection._rpcWebSocketConnected === true;
+@@ -1729,33 +1728,79 @@ var StakingStore = /*#__PURE__*/function () {
+   }, {
+     key: "getSwapAmountByStakeAmount",
+     value: function getSwapAmountByStakeAmount(amountStr) {
+-      var amount = typeof amountStr === 'string' ? new _bn.default(amountStr * 1e9) : amountStr;
++      var amount = (typeof amount === 'string')
++        ? new Fraction(amountStr.toString())
++          .multiply(new Fraction(1e9))
++        : new Fraction(amountStr.toString());
+ 
+       if (!this.vlxNativeBalance) {
+         return null;
+       }
+       
+-      if (this.vlxNativeBalance.gte(amount.add(PRESERVE_BALANCE))) {
++      var vlxNativeBalanceStr = this.vlxNativeBalance.toString();
++      var nativeBalanceFraction = new Fraction(vlxNativeBalanceStr);
++      
++      var preserveBalanceFraction = new Fraction('1000000000');
++      var amountWithPreserveFraction = amount.add(preserveBalanceFraction);
++      var nativeBalanceEqualsAmount = 
++          nativeBalanceFraction.equals(amountWithPreserveFraction);
++      var nativeBalanceGreaterThanAmount =
++          nativeBalanceFraction.subtract(amountWithPreserveFraction) > 0;
++
++      if (nativeBalanceEqualsAmount || nativeBalanceGreaterThanAmount) {
+         return new _bn.default(0);
+       }
++      //if (this.vlxNativeBalance.gte(amount.add(PRESERVE_BALANCE))) {
++        //return new _bn.default(0);
++      //}
+ 
+       if (!this.vlxEvmBalance) {
+         return null;
+       }
+ 
+-      if (this.vlxNativeBalance.add(this.vlxEvmBalance).lt(amount)) {
++      var vlxEvmBalanceFraction = new Fraction(this.vlxEvmBalance.toString());
++      var evmBalanceWithNativeFraction = 
++        vlxEvmBalanceFraction.add(nativeBalanceFraction);
++      var evmBalanceWithNativeFractionLessThanAmount =
++          evmBalanceWithNativeFraction.subtract(amount) < 0;
++      
++      if (evmBalanceWithNativeFractionLessThanAmount) {
+         return null;
+       }
+-
+-      if (this.vlxNativeBalance.add(this.vlxEvmBalance).lte(amount.add(PRESERVE_BALANCE))) {
+-        if (this.vlxEvmBalance.eq(amount.add(PRESERVE_BALANCE))) {
+-          return this.vlxEvmBalance.sub(PRESERVED_FOR_COMMISSION_FROM_EVM_TO_NATIVE);
++      //if (this.vlxNativeBalance.add(this.vlxEvmBalance).lt(amount)) {
++        //return null;
++      //}
++      var evmBalanceWithNativeLessThanAmountAndPreserve =
++          evmBalanceWithNativeFraction.subtract(amountWithPreserveFraction) < 0;
++      var evmBalanceWithNativeEqualsToAmountAndPreserve =
++          evmBalanceWithNativeFraction.equals(amountWithPreserveFraction);
++      
++      if (evmBalanceWithNativeLessThanAmountAndPreserve || evmBalanceWithNativeEqualsToAmountAndPreserve) {
++        var evmBalanceEqualsToAmountWIthPreserve =
++            vlxEvmBalanceFraction.equals(amountWithPreserveFraction); 
++        if (evmBalanceEqualsToAmountWIthPreserve) {
++          var PRESERVED_FOR_COMMISSION_FROM_EVM_TO_NATIVE_FRACTION = new Fraction(0.5);
++          var diffFraction = 
++            vlxEvmBalanceFraction.subtract(PRESERVED_FOR_COMMISSION_FROM_EVM_TO_NATIVE_FRACTION);
++          //??? check here diffFraction can throw error
++          var diffBN = new _bn.default(diffFraction);
++          return diffBN;  
+         }
+-
+         return this.vlxEvmBalance;
+       }
+         
+-      return amount.add(PRESERVE_BALANCE).sub(this.vlxNativeBalance);
++      //if (this.vlxNativeBalance.add(this.vlxEvmBalance).lte(amount.add(PRESERVE_BALANCE))) {
++        //if (this.vlxEvmBalance.eq(amount.add(PRESERVE_BALANCE))) {
++          //return this.vlxEvmBalance.sub(PRESERVED_FOR_COMMISSION_FROM_EVM_TO_NATIVE);
++        //}
++
++        //return this.vlxEvmBalance;
++      //}
++
++      //return amount.add(PRESERVE_BALANCE).sub(this.vlxNativeBalance);
++      var resultFraction = 
++        amountWithPreserveFraction.subtract(vlxEvmBalanceFraction);
++      return new _bn.default(resultFraction.toString());
+     }
+   }, {
+     key: "splitStakeAccountTransaction",
