@@ -215,7 +215,7 @@ test.describe('Staking 2', () => {
       expect(lastRewardEpoch).toEqual(epochNumberFromBlockchain - 1);
     });
 
-    test('use max', async ({ auth, staking2, wallets }) => {
+    test('use max', async ({ auth, staking2, wallets, page }) => {
       await auth.loginByRestoringSeed(data.wallets.staking.useMax.seed);
       await wallets.waitForWalletsDataLoaded();
       await wallets.openMenu('staking');
@@ -227,7 +227,10 @@ test.describe('Staking 2', () => {
       await staking2.stakeForm.useMaxButton.click();
       const inputValue = await staking2.stakeForm.amountInput.inputValue();
 
-      expect(Number(inputValue)).toEqual(availableForStakingAmount - 1);
+      expect(Number(inputValue.replace(/[^0-9.]/g, ''))).toEqual(availableForStakingAmount - 1);
+
+      await staking2.stakeForm.nextButton.click();
+      await expect(page.locator('"These actions will be made"')).toBeVisible();
     });
 
     test('copy validator address', async ({ auth, page, staking2, wallets }) => {

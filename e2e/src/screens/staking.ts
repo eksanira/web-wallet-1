@@ -80,7 +80,7 @@ export class StakingScreen extends BaseScreen {
     maxAmount: '',
     getMaxAmount: async () => {
       const maxAmountValue = await this.createStakingAccountForm.amount.getAttribute('value');
-      const maxAmount = Number(maxAmountValue?.replace(',', ''));
+      const maxAmount = Number(maxAmountValue?.replace(/[^0-9.]/g, ''));
       return maxAmount;
     },
   };
@@ -345,7 +345,7 @@ diff: ${diff || '<no diff>'}
 
   async getVLXNativeBalance(): Promise<number> {
     const textWithBalance = (await this.vlxNativeBalance.textContent())?.trim();
-    const balance = Number(textWithBalance?.split(' ')[0]);
-    return balance;
+    const balance = textWithBalance?.split(' ')[0];
+    return Number(balance?.replace(/[^0-9.]/g, ''));
   }
 }

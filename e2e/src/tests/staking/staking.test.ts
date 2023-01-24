@@ -5,19 +5,20 @@ import {
 
 // TODO: validators loading takes too much time
 test.describe('Staking', () => {
-  test.beforeEach(async ({ auth, wallets, dApps, staking }) => {
+  test.beforeEach(async ({ auth }) => {
     await auth.goto();
-    await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
-    await wallets.openMenu('dApps');
-    await dApps.oldStaking.click();
-    await staking.waitForLoaded();
   });
 
   // Don't remove "serial". Tests in this suite depend on each other
   test.describe.serial('Actions >', () => {
     const stakingAmount = 5;
 
-    test('Cleanup beforeall', async ({ page, staking }) => {
+    test('Cleanup beforeall', async ({ page, staking, auth, wallets, dApps }) => {
+      await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
+      await wallets.openMenu('dApps');
+      await dApps.oldStaking.click();
+      await staking.waitForLoaded();
+
       if (await page.isVisible('#staking-accounts button[disabled]')) {
         throw new Error('There are stakes in warm up or cool down perios. Test suite could not be continued.');
       }
@@ -26,7 +27,12 @@ test.describe('Staking', () => {
       await staking.cleanup.stakesNotDelegated();
     });
 
-    test('Create staking account', async ({ staking }) => {
+    test('Create staking account', async ({ staking, auth, wallets, dApps }) => {
+      await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
+      await wallets.openMenu('dApps');
+      await dApps.oldStaking.click();
+      await staking.waitForLoaded();
+
       // arrange
       // VLXNativeAddress is hardcoded address for the account with index 1
       const VLXNativeAddress = data.wallets.staking.staker.publicKey;
@@ -63,7 +69,12 @@ test.describe('Staking', () => {
       assert.equal(helpers.toFixedNumber((await velasNative.getBalance(newlyAddedStakingAccountAddress)).VLX), stakingAmount);
     });
 
-    test('Delegate stake', async ({ page, staking }) => {
+    test('Delegate stake', async ({ page, staking, auth, wallets, dApps }) => {
+      await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
+      await wallets.openMenu('dApps');
+      await dApps.oldStaking.click();
+      await staking.waitForLoaded();
+
       // precondition: wait for validators api cache update
       await staking.waitForStakesAmountUpdated({ initialStakesAmount: 0, stakeType: 'Delegate' });
 
@@ -89,7 +100,12 @@ test.describe('Staking', () => {
       assert.equal(stakeAccOnBlockchain.state, 'activating');
     });
 
-    test('Undelegate stake', async ({ page, staking }) => {
+    test('Undelegate stake', async ({ page, staking, auth, wallets, dApps }) => {
+      await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
+      await wallets.openMenu('dApps');
+      await dApps.oldStaking.click();
+      await staking.waitForLoaded();
+
       // precondition: wait for validators api cache update
       await staking.waitForStakesAmountUpdated({ initialStakesAmount: 0, stakeType: 'Undelegate' });
 
@@ -114,7 +130,12 @@ test.describe('Staking', () => {
       assert.equal(stakeAccOnBlockchain.state, 'inactive');
     });
 
-    test('Split stake', async ({ page, staking }) => {
+    test('Split stake', async ({ page, staking, auth, wallets, dApps }) => {
+      await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
+      await wallets.openMenu('dApps');
+      await dApps.oldStaking.click();
+      await staking.waitForLoaded();
+
       // precondition: wait for validators api cache update
       await staking.waitForStakesAmountUpdated({ initialStakesAmount: 1, stakeType: 'Undelegate' });
 
@@ -137,7 +158,12 @@ test.describe('Staking', () => {
       if (!addedAfterSplitAccountAddress) throw new Error('No staking accounts appears. But it was expected after staking');
     });
 
-    test('Withdraw stake', async ({ page, staking }) => {
+    test('Withdraw stake', async ({ page, staking, auth, wallets, dApps }) => {
+      await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
+      await wallets.openMenu('dApps');
+      await dApps.oldStaking.click();
+      await staking.waitForLoaded();
+
       // precondition: wait for validators api cache update
       await staking.waitForStakesAmountUpdated({ initialStakesAmount: 1, stakeType: 'Delegate' });
 
@@ -169,7 +195,12 @@ test.describe('Staking', () => {
       await staking.modals.clickOK();
     });
 
-    test('Cleanup afterall', async ({ staking }) => {
+    test('Cleanup afterall', async ({ staking, auth, wallets, dApps }) => {
+      await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
+      await wallets.openMenu('dApps');
+      await dApps.oldStaking.click();
+      await staking.waitForLoaded();
+
       await staking.waitForStakesAmountUpdated({ initialStakesAmount: 2, stakeType: 'Delegate' });
 
       await staking.cleanup.stakesToUndelegate();
@@ -178,7 +209,12 @@ test.describe('Staking', () => {
     });
   });
 
-  test('Use max', async ({ staking }) => {
+  test('Use max', async ({ staking, auth, wallets, dApps }) => {
+    await auth.loginByRestoringSeed(data.wallets.staking.useMax.seed);
+    await wallets.openMenu('dApps');
+    await dApps.oldStaking.click();
+    await staking.waitForLoaded();
+
     const balance = await staking.getVLXNativeBalance();
     await staking.createStakingAccountButton.click();
     await staking.useMax();
@@ -186,7 +222,12 @@ test.describe('Staking', () => {
     assert.equal(maxAmount, Math.floor(balance) - 1);
   });
 
-  test('Validators list', async ({ page, staking }) => {
+  test('Validators list', async ({ page, staking, auth, wallets, dApps }) => {
+    await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
+    await wallets.openMenu('dApps');
+    await dApps.oldStaking.click();
+    await staking.waitForLoaded();
+
     await page.waitForSelector('.validator-item .identicon', { timeout: 10000 });
     await staking.validatorsList.validator.icon.first().waitFor();
     assert.isTrue(await staking.validatorsList.validator.browse.first().isVisible(), 'No icon with link to explorer in validators list');
