@@ -2,6 +2,7 @@ import { velasNative } from '@velas/velas-chain-test-wrapper';
 import {
   assert, data, expect, helpers, test
 } from '../../common-test-exports';
+import { log } from '../../tools/logger';
 
 // TODO: validators loading takes too much time
 test.describe('Staking', () => {
@@ -13,7 +14,7 @@ test.describe('Staking', () => {
   test.describe.serial('Actions >', () => {
     const stakingAmount = 5;
 
-    test('Cleanup beforeall', async ({ page, staking, auth, wallets, dApps }) => {
+    test('Cleanup beforeall', async ({ staking2, auth, wallets, page, staking, dApps }) => {
       await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
       await wallets.openMenu('dApps');
       await dApps.oldStaking.click();
@@ -22,9 +23,14 @@ test.describe('Staking', () => {
       if (await page.isVisible('#staking-accounts button[disabled]')) {
         throw new Error('There are stakes in warm up or cool down perios. Test suite could not be continued.');
       }
-      await staking.cleanup.stakesToUndelegate();
-      await staking.cleanup.stakesToWithdraw();
+      // await staking.cleanup.stakesToUndelegate();
+      // await staking.cleanup.stakesToWithdraw();
       await staking.cleanup.stakesNotDelegated();
+
+      // will try to use staking2 cleanup for the rest, seems to work better
+      await wallets.openMenu('staking');
+      await staking2.waitForLoaded();
+      await staking2.cleanup();
     });
 
     test('Create staking account', async ({ staking, auth, wallets, dApps }) => {
@@ -188,24 +194,43 @@ test.describe('Staking', () => {
       assert.equal(withdrawedStakeAccountAddress, stakeAccountAddress);
 
       // POSTCONDITION: withdraw second splitted account
+      const remainingStakeAccountAddress = await staking.getFirstStakingAccountAddressFromTheList('Delegate');
       await staking.selectAccount('Delegate');
       await staking.stakeAccount.withdrawButton.click();
       await staking.modals.confirmPrompt();
       await page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
       await staking.modals.clickOK();
+
+      await staking.waitForLoaded();
+      await staking.makeSureStakingAccountDoesNotExistOnBlockchain(remainingStakeAccountAddress);
+      await staking.refresh();
+      await staking.waitForLoaded();
+      await staking.waitForStakedListCleared();
     });
 
-    test('Cleanup afterall', async ({ staking, auth, wallets, dApps }) => {
+    test('Cleanup afterall', async ({ staking2, auth, wallets, dApps, staking }) => {
       await auth.loginByRestoringSeed(data.wallets.staking.staker.seed);
+      await wallets.waitForWalletsDataLoaded();
       await wallets.openMenu('dApps');
       await dApps.oldStaking.click();
       await staking.waitForLoaded();
+      
+      try {
+        await staking.cleanup.stakesNotDelegated();
+      } catch (e) {
+        log.debug(e);
+        log.warn('cleanup.stakesNotDelegated didn\'t finish successfully, this may affect next test run');
+      }
 
-      await staking.waitForStakesAmountUpdated({ initialStakesAmount: 2, stakeType: 'Delegate' });
+      await wallets.openMenu('staking');
+      await staking2.waitForLoaded();
 
-      await staking.cleanup.stakesToUndelegate();
-      await staking.cleanup.stakesToWithdraw();
-      await staking.cleanup.stakesNotDelegated();
+      try {
+        await staking2.cleanup();
+      } catch (e) {
+        log.debug(e);
+        log.warn('staking2.cleanup didn\'t finish successfully, this may affect next test run');
+      }
     });
   });
 

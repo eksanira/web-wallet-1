@@ -125,7 +125,7 @@ test.describe('Staking 2', () => {
       await page.locator('"Stake account has been created successfully"').waitFor({ timeout: 15000 });
       await staking2.stakeForm.okButton.click();
       await staking2.validator.goBack();
-      await staking2.validatorsList.stakedValidatorsAmountIsVisible(1); // WS
+      expect(await staking2.validatorsList.stakedValidatorsAmountIsVisible(1)).toBeTruthy(); // WS
       await staking2.validatorsList.reload(); //no WS
       await staking2.validatorsList.refreshStakesUntilStakedValidatorAppears();
     });
@@ -136,7 +136,7 @@ test.describe('Staking 2', () => {
       await wallets.openMenu('staking');
       await staking2.waitForLoaded();
 
-      await staking2.validatorsList.stakedValidatorsAmountIsVisible(1);
+      expect(await staking2.validatorsList.stakedValidatorsAmountIsVisible(1)).toBeTruthy();
       await staking2.validatorsList.selectFirstValidator();
       await staking2.validator.staked.clickStakeMore();
       await staking2.stakeForm.typeAmount(0.2);
@@ -156,7 +156,7 @@ test.describe('Staking 2', () => {
       await wallets.openMenu('staking');
       await staking2.waitForLoaded();
 
-      await staking2.validatorsList.stakedValidatorsAmountIsVisible(1);
+      expect(await staking2.validatorsList.stakedValidatorsAmountIsVisible(1)).toBeTruthy();
       await staking2.validatorsList.selectFirstValidator();
       await staking2.validator.staked.clickrequestWithdraw();
       await staking2.stakeForm.useMaxButton.click();
@@ -171,7 +171,7 @@ test.describe('Staking 2', () => {
       await wallets.openMenu('staking');
       await staking2.waitForLoaded();
 
-      await staking2.validatorsList.stakedValidatorsAmountIsVisible(1);
+      expect(await staking2.validatorsList.stakedValidatorsAmountIsVisible(1)).toBeTruthy();
       await staking2.validatorsList.selectFirstValidator();
       await staking2.validator.tab.withdrawals.click();
       await staking2.validator.withdrawals.withdrawButton.click();
@@ -179,7 +179,7 @@ test.describe('Staking 2', () => {
       await staking2.stakeForm.okButton.click();
       await staking2.validator.goBack();
 
-      await staking2.validatorsList.stakedValidatorsAmountIsVisible(0); // WS
+      expect(await staking2.validatorsList.stakedValidatorsAmountIsVisible(1)).toBeFalsy(); // WS
       await staking2.validatorsList.reload(); // no WS
       await staking2.validatorsList.refreshStakesUntilStakedValidatorDisappears();
 
@@ -194,7 +194,13 @@ test.describe('Staking 2', () => {
       await wallets.openMenu('staking');
       await staking2.waitForLoaded();
 
-      await staking2.cleanup();
+      // there is no reason to fail test-run on final cleanup
+      try {
+        await staking2.cleanup();
+      } catch (e) {
+        log.debug(e);
+        log.warn('staking2.cleanup didn\'t finish successfully, this may affect next test run');
+      }
     });
   });
 
@@ -205,7 +211,7 @@ test.describe('Staking 2', () => {
       await wallets.openMenu('staking');
       await staking2.waitForLoaded();
 
-      await staking2.validatorsList.stakedValidatorsAmountIsVisible(1);
+      expect(await staking2.validatorsList.stakedValidatorsAmountIsVisible(1)).toBeTruthy();
       await staking2.validatorsList.selectFirstValidator();
       await staking2.validator.rewards.open();
 

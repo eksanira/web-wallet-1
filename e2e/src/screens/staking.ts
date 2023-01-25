@@ -139,8 +139,17 @@ export class StakingScreen extends BaseScreen {
       await this.refresh();
       finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);
     }
-    log.debug(`Great! Amount of "${params.stakeType}" stakes amount has changed: ${initialStakesAmount} > ${finalAmountOfStakingAccounts}.`);
+    log.debug(`Great! Amount of "${params.stakeType}" stakes amount has changed from ${initialStakesAmount} to ${finalAmountOfStakingAccounts}.`);
     return finalAmountOfStakingAccounts;
+  }
+
+  async waitForStakedListCleared(timeout = 30000): Promise<void> {
+    const startTime = new Date().getTime();
+    while (await this.accounts.delegateButton.isVisible() && new Date().getTime() - startTime < timeout) {
+      await this.page.waitForTimeout(1000);
+      await this.refresh();
+    }
+    if (await this.accounts.delegateButtonSecond.isVisible()) throw new Error(`Staked accounts list didn\'t clear out in ${timeout} seconds`);
   }
 
   async getFirstStakingAccountAddressFromTheList(type: Stake): Promise<string> {
