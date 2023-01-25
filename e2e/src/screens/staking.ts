@@ -339,14 +339,19 @@ diff: ${diff || '<no diff>'}
       while (notDelegatedStakesAmount > 0) {
         log.debug(`There are ${notDelegatedStakesAmount} not delegated stakes to be withdrawn as precondition`);
         await this.selectAccount('Delegate');
-        await this.stakeAccount.withdrawButton.click();
-        await this.modals.confirmPrompt();
-        await this.page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
-        await this.modals.clickOK();
+        if (await this.page.locator('text=Account not found').isVisible()){
+          await this.page.locator('text=CANCEL').click();
+          await this.refresh();
+        } else {
+          await this.stakeAccount.withdrawButton.click();
+          await this.modals.confirmPrompt();
+          await this.page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
+          await this.modals.clickOK();
 
-        await this.refresh();
-        await this.waitForStakesAmountUpdated({ stakeType: 'Delegate', initialStakesAmount: notDelegatedStakesAmount });
-        notDelegatedStakesAmount = await this.getAmountOfStakes('Delegate');
+          await this.refresh();
+          await this.waitForStakesAmountUpdated({ stakeType: 'Delegate', initialStakesAmount: notDelegatedStakesAmount });
+          notDelegatedStakesAmount = await this.getAmountOfStakes('Delegate');
+        }
       }
     },
 
