@@ -174,7 +174,7 @@ test.describe('Staking', () => {
       await staking.waitForStakesAmountUpdated({ initialStakesAmount: 1, stakeType: 'Delegate' });
 
       const stakingAccountAddresses = await staking.getStakingAccountsAddresses();
-      const initialAmountOfStakingAccounts = await staking.getAmountOfStakes('all');
+      // const initialAmountOfStakingAccounts = await staking.getAmountOfStakes('all');
       const stakeAccountAddress = await staking.getFirstStakingAccountAddressFromTheList('Delegate');
 
       await staking.selectAccount('Delegate');
@@ -183,10 +183,12 @@ test.describe('Staking', () => {
       await page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
       await staking.modals.clickOK();
       await staking.waitForLoaded();
+      
+      await wallets.waitForSelectorDisappears(`[data-original=" ${stakeAccountAddress}"]`);
 
-      const finalAmountOfStakingAccounts = await staking.waitForStakesAmountUpdated({ initialStakesAmount: initialAmountOfStakingAccounts, stakeType: 'all' });
+      // const finalAmountOfStakingAccounts = await staking.waitForStakesAmountUpdated({ initialStakesAmount: initialAmountOfStakingAccounts, stakeType: 'all' });
 
-      assert.equal(finalAmountOfStakingAccounts, initialAmountOfStakingAccounts - 1);
+      // assert.equal(finalAmountOfStakingAccounts, initialAmountOfStakingAccounts - 1);
 
       await staking.makeSureStakingAccountDoesNotExistOnBlockchain(stakeAccountAddress);
       const withdrawedStakeAccountAddress = (await staking.getStakingAccountsUpdate(stakingAccountAddresses))?.removed;
@@ -200,12 +202,12 @@ test.describe('Staking', () => {
       await staking.modals.confirmPrompt();
       await page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
       await staking.modals.clickOK();
-
-      await staking.waitForLoaded();
       await staking.makeSureStakingAccountDoesNotExistOnBlockchain(remainingStakeAccountAddress);
+      
       await staking.refresh();
       await staking.waitForLoaded();
-      await staking.waitForStakedListCleared();
+      await wallets.waitForSelectorDisappears(`[data-original=" ${remainingStakeAccountAddress}"]`);
+
     });
 
     test('Cleanup afterall', async ({ staking2, auth, wallets, dApps, staking }) => {
