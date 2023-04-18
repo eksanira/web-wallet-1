@@ -95,7 +95,9 @@ require! {
     .swap-notification
         p
             font-size: 12px
-            opacity: 0.3
+            opacity: 1
+            background: rgba(144, 151, 51, 0.11)
+            padding: 5px
     .more-buttons
         top: 30px
         right: 0
@@ -699,7 +701,7 @@ send = ({ store, web3t })->
                 if store.current.send.is-swap is yes
                     if not is-not-bridge!
                         .pug.swap-notification
-                            p.pug #{lang.swapNotification}
+                            p.pug ⚠️ #{lang.swapNotification}
 module.exports = send
 module.exports.init = ({ store, web3t }, cb)->
     return cb null if not store? or not web3t?
